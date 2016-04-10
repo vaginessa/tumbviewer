@@ -13,10 +13,13 @@ import com.huang.humblr.rest.bean.BlogInfo;
 import com.huang.humblr.rest.bean.BlogInfoItem;
 import com.huang.humblr.rest.bean.BlogLikes;
 import com.huang.humblr.rest.bean.BlogPosts;
+import com.orhanobut.logger.Logger;
 
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String API_KEY = "fuiKNFp9vQFvjLNvx4sUwti4Yb5yGutBN4Xh10LXZhhRKjWlV4";
+    private static final String TEST_USER = "momo1234560.tumblr.com";
     private BlogService blogService;
 
     @Override
@@ -25,16 +28,15 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         blogService = RestClient.getInstance().getBlogService();
-        Call<BaseBean<BlogInfo>> infoCall = blogService.getBlogInfo("momo1234560.tumblr.com",
-                "fuiKNFp9vQFvjLNvx4sUwti4Yb5yGutBN4Xh10LXZhhRKjWlV4");
+        //get blog info
+        Call<BaseBean<BlogInfo>> infoCall = blogService.getBlogInfo(TEST_USER, API_KEY);
         infoCall.enqueue(new RestCallBack<BlogInfo>(listener, "info"));
 
-        Call<BaseBean<BlogLikes>> likesCall = blogService.getBlogLikes("momo1234560.tumblr.com",
-                "fuiKNFp9vQFvjLNvx4sUwti4Yb5yGutBN4Xh10LXZhhRKjWlV4", null);
+        //get likes blog
+        Call<BaseBean<BlogLikes>> likesCall = blogService.getBlogLikes(TEST_USER, API_KEY, null);
         likesCall.enqueue(new RestCallBack<BlogLikes>(listener, "likes"));
 
-        Call<BaseBean<BlogPosts>> postsCall = blogService.getBlogPosts("momo1234560.tumblr.com",
-                "text", "fuiKNFp9vQFvjLNvx4sUwti4Yb5yGutBN4Xh10LXZhhRKjWlV4", null);
+        Call<BaseBean<BlogPosts>> postsCall = blogService.getBlogPosts(TEST_USER, "text", API_KEY, null);
         postsCall.enqueue(new RestCallBack<BlogPosts>(listener, "posts"));
     }
 
@@ -45,20 +47,15 @@ public class MainActivity extends AppCompatActivity {
                 case "info":
                     BlogInfo blogInfo = (BlogInfo) baseBean.getResponse();
                     BlogInfoItem item = blogInfo.getItem();
-                    Log.d("blog", "title-" + item.getTitle());
-                    Log.d("blog", "posts-" + item.getPosts());
-                    Log.d("blog", "name-" + item.getName());
-                    Log.d("blog", "updated-" + item.getUpdated());
-                    Log.d("blog", "des-" + item.getDescription());
-                    Log.d("blog", "ask-" + item.isAsk());
-                    Log.d("blog", "ask_anon-" + item.isAsk_anon());
-                    Log.d("blog", "likes-" + item.getLikes());
+                    Logger.d("info", item);
                     break;
                 case "likes":
                     BlogLikes blogLikes = (BlogLikes) baseBean.getResponse();
                     Log.d("blog", "likes count-" + blogLikes.getCount());
                     break;
                 case "posts":
+                    BlogPosts blogPosts = (BlogPosts) baseBean.getResponse();
+                    Logger.d("posts", blogPosts);
                     break;
             }
         }
