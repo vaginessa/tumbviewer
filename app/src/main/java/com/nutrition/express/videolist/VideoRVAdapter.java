@@ -154,7 +154,8 @@ public class VideoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             if (draweeView != null) {
                 draweeView.setOnClickListener(this);
             }
-            blogName = (TextView) itemView.findViewById(R.id.blog_source_name);
+            blogName = (TextView) itemView.findViewById(R.id.blog_name);
+            blogName.setOnClickListener(this);
             noteCount = (TextView) itemView.findViewById(R.id.note_count);
         }
 
@@ -178,7 +179,11 @@ public class VideoRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View v) {
-            openBottomSheet(videoUrl);
+            if (v.getId() == R.id.simpleDraweeView) {
+                openBottomSheet(videoUrl);
+            } else if (v.getId() == R.id.blog_name) {
+                loadListener.openBlog(blogName.getText().toString());
+            }
         }
 
         private void openBottomSheet(String url) {

@@ -1,11 +1,13 @@
 package com.nutrition.express.videolist;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,6 +86,15 @@ public class VideoListFragment extends Fragment implements OnLoadListener {
     @Override
     public void loadPostsNext() {
         getPostsVideo(blogName, type);
+    }
+
+    @Override
+    public void openBlog(String blogName) {
+        if (!TextUtils.equals(blogName, this.blogName)) {
+            Intent intent = new Intent(getActivity(), VideoListActivity.class);
+            intent.putExtra("blog_name", blogName);
+            getActivity().startActivity(intent);
+        }
     }
 
     private void getPostsVideo(String blogName, int type) {

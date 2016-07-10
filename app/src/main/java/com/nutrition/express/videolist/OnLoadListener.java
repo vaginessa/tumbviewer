@@ -6,4 +6,5 @@ package com.nutrition.express.videolist;
 public interface OnLoadListener {
     void loadPostsAgain();
     void loadPostsNext();
+    void openBlog(String blogName);
 }

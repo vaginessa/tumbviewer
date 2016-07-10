@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("blog_name", blogName);
         startActivity(intent);
         HistoryUtils.add(this, blogName);
+        rvAdapter.notifyDataSetChanged();
     }
 
 }
