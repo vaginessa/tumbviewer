@@ -1,4 +1,4 @@
-package com.nutrition.express.rest.bean;
+package com.nutrition.express.model.rest.bean;
 
 import java.util.List;
 

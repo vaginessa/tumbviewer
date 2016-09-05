@@ -1,4 +1,4 @@
-package com.nutrition.express.rest.bean;
+package com.nutrition.express.model.rest.bean;
 
 /**
  * Created by huang on 2/17/16.

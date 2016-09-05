@@ -1,6 +1,6 @@
-package com.nutrition.express.rest;
+package com.nutrition.express.model.rest;
 
-import com.nutrition.express.rest.bean.BaseBean;
+import com.nutrition.express.model.rest.bean.BaseBean;
 
 /**
  * Created by huang on 2/18/16.

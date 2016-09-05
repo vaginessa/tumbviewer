@@ -1,7 +1,7 @@
-package com.nutrition.express.rest;
+package com.nutrition.express.model.rest;
 
 import com.nutrition.express.BuildConfig;
-import com.nutrition.express.rest.bean.BaseBean;
+import com.nutrition.express.model.rest.bean.BaseBean;
 
 import retrofit2.Call;
 import retrofit2.Callback;

@@ -1,16 +1,16 @@
-package com.nutrition.express.rest.bean;
+package com.nutrition.express.model.rest.bean;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
 
 /**
- * Created by huang on 2/18/16.
+ * Created by huang on 2/19/16.
  */
-public class BlogLikes {
-    @SerializedName("liked_count")
+public class BlogPosts {
+    @SerializedName("total_posts")
     private int count;
-    @SerializedName("liked_posts")
+    @SerializedName("posts")
     private ArrayList<PostsItem> list;
 
     public int getCount() {

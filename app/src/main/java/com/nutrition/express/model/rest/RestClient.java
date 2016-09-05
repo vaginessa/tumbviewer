@@ -1,8 +1,8 @@
-package com.nutrition.express.rest;
+package com.nutrition.express.model.rest;
 
 import android.content.Context;
 
-import com.nutrition.express.rest.ApiService.BlogService;
+import com.nutrition.express.model.rest.ApiService.BlogService;
 
 import java.io.IOException;
 

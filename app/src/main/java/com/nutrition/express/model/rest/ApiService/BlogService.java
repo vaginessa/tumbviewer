@@ -1,9 +1,9 @@
-package com.nutrition.express.rest.ApiService;
+package com.nutrition.express.model.rest.ApiService;
 
-import com.nutrition.express.rest.bean.BaseBean;
-import com.nutrition.express.rest.bean.BlogInfo;
-import com.nutrition.express.rest.bean.BlogLikes;
-import com.nutrition.express.rest.bean.BlogPosts;
+import com.nutrition.express.model.rest.bean.BaseBean;
+import com.nutrition.express.model.rest.bean.BlogInfo;
+import com.nutrition.express.model.rest.bean.BlogLikes;
+import com.nutrition.express.model.rest.bean.BlogPosts;
 
 import java.util.HashMap;
 
