@@ -21,12 +21,14 @@ public class PostsItem {
     private String summary;
     private String recommended_source;
     private String recommended_color;
-    //// TODO: 4/24/16 unknown
     private List<String> highlighted;
     private long note_count;
     private String caption;
     private ReblogItem reblog;
     private List<TrailItem> trail;
+    //-----------------------------------------------------------
+    //             video
+    //-----------------------------------------------------------
     private String video_url;
     private boolean html5_capable;
     private String thumbnail_url;
@@ -35,7 +37,21 @@ public class PostsItem {
     private int duration;
     private List<PlayerItem> player;
     private String viedo_type;
-    private long liked_timestamp;
+
+    //-----------------------------------------------------------
+    //            photo
+    //-----------------------------------------------------------
+    private String photoset_layout;
+    private List<PhotoItem> photos;
+
+    //-----------------------------------------------------------
+    //            common
+    //-----------------------------------------------------------
+    private boolean can_like;
+    private boolean can_reblog;
+    private boolean can_send_in_message;
+    private boolean can_reply;
+    private boolean display_avatar;
 
     public String getBlog_name() {
         return blog_name;
@@ -149,7 +165,31 @@ public class PostsItem {
         return viedo_type;
     }
 
-    public long getLiked_timestamp() {
-        return liked_timestamp;
+    public String getPhotoset_layout() {
+        return photoset_layout;
+    }
+
+    public List<PhotoItem> getPhotos() {
+        return photos;
+    }
+
+    public boolean isCan_like() {
+        return can_like;
+    }
+
+    public boolean isCan_reblog() {
+        return can_reblog;
+    }
+
+    public boolean isCan_send_in_message() {
+        return can_send_in_message;
+    }
+
+    public boolean isCan_reply() {
+        return can_reply;
+    }
+
+    public boolean isDisplay_avatar() {
+        return display_avatar;
     }
 }

@@ -8,6 +8,7 @@ public class TrailItem {
     private Post post;
     private String content_raw;
     private String content;
+    private boolean is_current_item;
 
     public Blog getBlog() {
         return blog;
@@ -31,6 +32,7 @@ public class TrailItem {
 //        private Theme theme;
         private boolean share_likes;
         private boolean share_following;
+        private boolean can_be_followed;
 
         public String getName() {
             return name;
@@ -50,6 +52,10 @@ public class TrailItem {
 
         public boolean isShare_following() {
             return share_following;
+        }
+
+        public boolean isCan_be_followed() {
+            return can_be_followed;
         }
     }
 

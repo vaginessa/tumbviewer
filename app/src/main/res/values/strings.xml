@@ -3,5 +3,6 @@
     <string name="input">输入博客名</string>
     <string name="title_activity_main2">Main2Activity</string>
     <string name="no_video">无视频</string>
+    <string name="no_data">无数据</string>
     <string name="load_failed">加载失败</string>
 </resources>

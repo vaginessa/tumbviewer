@@ -20,8 +20,8 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         app:failureImage="@mipmap/ic_failed"
-        app:failureImageScaleType="fitCenter"
-        app:placeholderImage="@mipmap/ic_loading"
+        app:failureImageScaleType="center"
+        app:placeholderImage="@color/loading_color"
         app:placeholderImageScaleType="fitCenter"
         app:actualImageScaleType="fitStart"
         />

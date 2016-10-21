@@ -1,0 +1,288 @@
+package com.nutrition.express.common;
+
+import android.support.v7.widget.RecyclerView;
+import android.util.SparseArray;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+import com.nutrition.express.R;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
+
+/**
+ * Created by huang on 10/19/16.
+ */
+
+public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
+    private static final int TYPE_DATA_BASE = 1000;
+    /* 状态 */
+    private static final int EMPTY = 10;                //显示EMPTY VIEW
+    private static final int LOADING = 11;              //显示LOADING VIEW
+    private static final int LOADING_FAILURE = 12;      //显示LOADING FAILURE VIEW
+    private static final int LOADING_NEXT = 13;         //显示LOADING NEXT VIEW
+    private static final int LOADING_NEXT_FAILURE = 14; //显示LOADING NEXT FAILURE VIEW
+    private static final int LOADING_FINISH = 15;       //显示LOADING FINISH VIEW
+
+    private int state = LOADING_FINISH;
+
+    //保存了layout_id与MultiType键值对
+    private SparseArray<MultiType> typeArray;
+    //保存了数据类型名称与layout_id的键值对
+    private HashMap<String, Integer> typeMap;
+    private OnLoadListener loadListener;
+    private List<Object> data;
+
+    private View.OnClickListener onRetryListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (loadListener != null) {
+                loadListener.retry();
+                if (data.size() > 0) {
+                    state = LOADING_NEXT;
+                } else {
+                    state = LOADING;
+                }
+                notifyItemChanged(data.size());
+            }
+        }
+    };
+
+    private CommonRVAdapter(Builder builder) {
+        typeArray = builder.typeArray;
+        typeMap = builder.typeMap;
+        loadListener = builder.loadListener;
+        data = builder.data;
+        if (data == null) {
+            data = new ArrayList<>();
+            state = LOADING;
+        } else if (data.size() == 0) {
+            state = EMPTY;
+        }
+    }
+
+    @Override
+    public CommonViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        MultiType type = typeArray.get(viewType);
+        View view = inflater.inflate(type.layout, parent, false);
+        if (state == LOADING_FAILURE) {
+            view.setOnClickListener(onRetryListener);
+        } else if (state == LOADING_NEXT_FAILURE) {
+            view.setOnClickListener(onRetryListener);
+        }
+        return type.create.onCreateVH(view);
+    }
+
+    @Override
+    public void onBindViewHolder(CommonViewHolder holder, int position) {
+        if (position < data.size()) {
+            holder.bindView(data.get(position));
+        } else {
+            holder.bindView(null);
+            if (state == LOADING_NEXT) {
+                loadListener.loadNextPage();
+            }
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == data.size()) {
+            return state;
+        } else {
+            return typeMap.get(data.get(position).getClass().getName());
+        }
+    }
+
+    @Override
+    public int getItemCount() {
+        if (data.size() > 0) {
+            if (state == EMPTY) {
+                state = LOADING_FINISH;
+            }
+        } else if (state == LOADING_FINISH) {
+            state = EMPTY;
+        }
+        return state == LOADING_FINISH ? data.size() : data.size() + 1;
+    }
+
+    /**
+     *
+     * @param data 列表数据，为空或无数据则表示加载完毕，不再自动加载下一页无论autoLoadingNext是否为true，
+     * @param autoLoadingNext 是否自动加载下一页
+     */
+    public void append(Object[] data, boolean autoLoadingNext) {
+        if (data != null && data.length > 0) {
+            int lastDataIndex = this.data.size();
+            int size = data.length;
+            Collections.addAll(this.data, data);
+            if (autoLoadingNext) {
+                state = LOADING_NEXT;
+                size++;
+            } else {
+                state = LOADING_FINISH;
+            }
+            notifyItemRangeChanged(lastDataIndex, size);
+        } else {
+            if (this.data.size() > 0) {
+                //all data has been loaded
+                state = LOADING_FINISH;
+            } else {
+                //no data, show empty view
+                state = EMPTY;
+            }
+        }
+    }
+
+    public void showLoadingFinish() {
+        state = LOADING_FINISH;
+        notifyItemChanged(data.size());
+    }
+
+    /**
+     * 目前无数据，显示加载失败
+     */
+    public void showLoadingFailure() {
+        state = LOADING_FAILURE;
+        notifyItemChanged(data.size());
+    }
+
+    /**
+     * 目前有数据，显示加载下一页失败
+     */
+    public void showLoadingNextFailure() {
+        state = LOADING_NEXT_FAILURE;
+        notifyItemChanged(data.size());
+    }
+
+    public static Builder newBuilder() {
+        return new Builder();
+    }
+
+    public interface OnLoadListener {
+        void retry();
+        void loadNextPage();
+    }
+
+    public interface CreateViewHolder {
+        CommonViewHolder onCreateVH (View view);
+    }
+
+    private static class MultiType {
+        int layout;
+        CreateViewHolder create;
+
+        private MultiType(int layout, CreateViewHolder create) {
+            this.layout = layout;
+            this.create = create;
+        }
+    }
+
+    public static class Builder {
+        private int emptyView = 0;
+        private int loadingView = 0;
+        private int failureView = 0;
+        private int loadingNextView = 0;
+        private int loadingNextFailureView = 0;
+        private OnLoadListener loadListener;
+        private List<Object> data;
+        private SparseArray<MultiType> typeArray = new SparseArray<>();
+        private HashMap<String, Integer> typeMap = new HashMap<>();
+        private int base = TYPE_DATA_BASE;
+
+
+        private Builder() {
+        }
+
+        public Builder setEmptyView(int emptyView) {
+            this.emptyView = emptyView;
+            return this;
+        }
+
+        public Builder setLoadingView(int loadingView) {
+            this.loadingView = loadingView;
+            return this;
+        }
+
+        public Builder setFailureView(int failureView) {
+            this.failureView = failureView;
+            return this;
+        }
+
+        public Builder setLoadingNextView(int loadingNextView) {
+            this.loadingNextView = loadingNextView;
+            return this;
+        }
+
+        public Builder setLoadingNextFailureView(int loadingNextFailureView) {
+            this.loadingNextFailureView = loadingNextFailureView;
+            return this;
+        }
+
+        public Builder setLoadListener(OnLoadListener loadListener) {
+            this.loadListener = loadListener;
+            return this;
+        }
+
+        public Builder addItemType(Class c, int layout, CreateViewHolder create) {
+            typeArray.put(base, new MultiType(layout, create));
+            typeMap.put(c.getName(), base);
+            base++;
+            return this;
+        }
+
+        public Builder setData(List<Object> data) {
+            this.data = data;
+            return this;
+        }
+
+        public CommonRVAdapter build() {
+            addStateType();
+            return new CommonRVAdapter(this);
+        }
+
+        private void checkAndSetDefault() {
+            if (emptyView <= 0) {
+                emptyView = R.layout.item_empty;
+            }
+            if (loadingView <= 0) {
+                loadingView = R.layout.item_loading;
+            }
+            if (failureView <= 0) {
+                failureView = R.layout.item_loading_failure;
+            }
+            if (loadingNextView <= 0) {
+                loadingNextView = R.layout.item_loading;
+            }
+            if (loadingNextFailureView <= 0) {
+                loadingNextFailureView = R.layout.item_loading_failure;
+            }
+        }
+
+        private void addStateType() {
+            checkAndSetDefault();
+            CreateViewHolder create = new CreateViewHolder() {
+                @Override
+                public CommonViewHolder onCreateVH(View view) {
+                    return new CommonViewHolder(view);
+                }
+            };
+            MultiType emptyType = new MultiType(emptyView, create);
+            MultiType loadingType = new MultiType(loadingView, create);
+            MultiType failureType = new MultiType(failureView, create);
+            MultiType loadingNextType = new MultiType(loadingNextView, create);
+            MultiType loadingNextFailureType = new MultiType(loadingNextFailureView, create);
+            typeArray.put(EMPTY, emptyType);
+            typeArray.put(LOADING, loadingType);
+            typeArray.put(LOADING_FAILURE, failureType);
+            typeArray.put(LOADING_NEXT, loadingNextType);
+            typeArray.put(LOADING_NEXT_FAILURE, loadingNextFailureType);
+        }
+    }
+
+}

@@ -21,10 +21,17 @@ public class RestCallBack<T> implements Callback<BaseBean<T>> {
 
     @Override
     public void onResponse(Call<BaseBean<T>> call, Response<BaseBean<T>> response) {
-        BaseBean<T> body = response.body();
-        if (body != null) {
-            listener.onResponse(body, tag);
+        if (response.isSuccessful()) {
+            // status code [200, 299]
+            BaseBean<T> body = response.body();
+            if (body != null) {
+                listener.onResponse(body, tag);
+            } else {
+                listener.onFailure(tag);
+            }
         } else {
+            // status code [400, 599]
+            // the server can return a JsonObject that contain error message.
             listener.onFailure(tag);
         }
     }
