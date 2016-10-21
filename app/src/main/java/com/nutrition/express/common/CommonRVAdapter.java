@@ -1,5 +1,7 @@
 package com.nutrition.express.common;
 
+import android.support.annotation.LayoutRes;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -75,7 +77,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         } else if (state == LOADING_NEXT_FAILURE) {
             view.setOnClickListener(onRetryListener);
         }
-        return type.create.onCreateVH(view);
+        return type.creator.createVH(view);
     }
 
     @Override
@@ -170,16 +172,16 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
     }
 
     public interface CreateViewHolder {
-        CommonViewHolder onCreateVH (View view);
+        CommonViewHolder createVH(View view);
     }
 
     private static class MultiType {
         int layout;
-        CreateViewHolder create;
+        CreateViewHolder creator;
 
-        private MultiType(int layout, CreateViewHolder create) {
+        private MultiType(int layout, CreateViewHolder creator) {
             this.layout = layout;
-            this.create = create;
+            this.creator = creator;
         }
     }
 
@@ -187,40 +189,56 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         private int emptyView = 0;
         private int loadingView = 0;
         private int failureView = 0;
-        private int loadingNextView = 0;
-        private int loadingNextFailureView = 0;
+        private int nextView = 0;
+        private int nextFailureView = 0;
+        private CreateViewHolder emptyCreator = null;
+        private CreateViewHolder loadingCreator = null;
+        private CreateViewHolder failureCreator = null;
+        private CreateViewHolder nextCreator = null;
+        private CreateViewHolder nextFailureCreator = null;
         private OnLoadListener loadListener;
         private List<Object> data;
         private SparseArray<MultiType> typeArray = new SparseArray<>();
         private HashMap<String, Integer> typeMap = new HashMap<>();
         private int base = TYPE_DATA_BASE;
+        private CreateViewHolder defaultCreator = new CreateViewHolder() {
+            @Override
+            public CommonViewHolder createVH(View view) {
+                return new CommonViewHolder(view);
+            }
+        };
 
 
         private Builder() {
         }
 
-        public Builder setEmptyView(int emptyView) {
+        public Builder setEmptyView(@LayoutRes int emptyView,
+                                    @Nullable CreateViewHolder creator) {
             this.emptyView = emptyView;
             return this;
         }
 
-        public Builder setLoadingView(int loadingView) {
+        public Builder setLoadingView(@LayoutRes int loadingView,
+                                      @Nullable CreateViewHolder creator) {
             this.loadingView = loadingView;
             return this;
         }
 
-        public Builder setFailureView(int failureView) {
+        public Builder setFailureView(@LayoutRes int failureView,
+                                      @Nullable CreateViewHolder creator) {
             this.failureView = failureView;
             return this;
         }
 
-        public Builder setLoadingNextView(int loadingNextView) {
-            this.loadingNextView = loadingNextView;
+        public Builder setNextView(@LayoutRes int nextView,
+                                   @Nullable CreateViewHolder creator) {
+            this.nextView = nextView;
             return this;
         }
 
-        public Builder setLoadingNextFailureView(int loadingNextFailureView) {
-            this.loadingNextFailureView = loadingNextFailureView;
+        public Builder setNextFailureView(@LayoutRes int nextFailureView,
+                                          @Nullable CreateViewHolder creator) {
+            this.nextFailureView = nextFailureView;
             return this;
         }
 
@@ -256,32 +274,36 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             if (failureView <= 0) {
                 failureView = R.layout.item_loading_failure;
             }
-            if (loadingNextView <= 0) {
-                loadingNextView = R.layout.item_loading;
+            if (nextView <= 0) {
+                nextView = R.layout.item_loading;
             }
-            if (loadingNextFailureView <= 0) {
-                loadingNextFailureView = R.layout.item_loading_failure;
+            if (nextFailureView <= 0) {
+                nextFailureView = R.layout.item_loading_failure;
+            }
+            if (emptyCreator == null) {
+                emptyCreator = defaultCreator;
+            }
+            if (loadingCreator == null) {
+                loadingCreator = defaultCreator;
+            }
+            if (failureCreator == null) {
+                failureCreator = defaultCreator;
+            }
+            if (nextCreator == null) {
+                nextCreator = defaultCreator;
+            }
+            if (nextFailureCreator == null) {
+                nextFailureCreator = defaultCreator;
             }
         }
 
         private void addStateType() {
             checkAndSetDefault();
-            CreateViewHolder create = new CreateViewHolder() {
-                @Override
-                public CommonViewHolder onCreateVH(View view) {
-                    return new CommonViewHolder(view);
-                }
-            };
-            MultiType emptyType = new MultiType(emptyView, create);
-            MultiType loadingType = new MultiType(loadingView, create);
-            MultiType failureType = new MultiType(failureView, create);
-            MultiType loadingNextType = new MultiType(loadingNextView, create);
-            MultiType loadingNextFailureType = new MultiType(loadingNextFailureView, create);
-            typeArray.put(EMPTY, emptyType);
-            typeArray.put(LOADING, loadingType);
-            typeArray.put(LOADING_FAILURE, failureType);
-            typeArray.put(LOADING_NEXT, loadingNextType);
-            typeArray.put(LOADING_NEXT_FAILURE, loadingNextFailureType);
+            typeArray.put(EMPTY, new MultiType(emptyView, emptyCreator));
+            typeArray.put(LOADING, new MultiType(loadingView, loadingCreator));
+            typeArray.put(LOADING_FAILURE, new MultiType(failureView, failureCreator));
+            typeArray.put(LOADING_NEXT, new MultiType(nextView, nextCreator));
+            typeArray.put(LOADING_NEXT_FAILURE, new MultiType(nextFailureView, nextFailureCreator));
         }
     }
 

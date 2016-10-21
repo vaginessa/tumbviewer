@@ -134,7 +134,7 @@ public class VideoListFragment extends Fragment
         builder.addItemType(PostsItem.class, R.layout.item_video_1,
                 new CommonRVAdapter.CreateViewHolder() {
                     @Override
-                    public CommonViewHolder onCreateVH(View view) {
+                    public CommonViewHolder createVH(View view) {
                         return new VideoVH(view);
                     }
                 });

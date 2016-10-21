@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         builder.setData(historyHelper.getHistories());
         builder.addItemType(String.class, R.layout.item_text, new CommonRVAdapter.CreateViewHolder() {
             @Override
-            public CommonViewHolder onCreateVH(View view) {
+            public CommonViewHolder createVH(View view) {
                 return new BaseVH(view);
             }
         });
