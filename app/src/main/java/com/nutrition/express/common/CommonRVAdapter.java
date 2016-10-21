@@ -138,6 +138,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
                 //no data, show empty view
                 state = EMPTY;
             }
+            notifyItemChanged(this.data.size());
         }
     }
 
