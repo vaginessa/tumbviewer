@@ -1,5 +1,6 @@
 package com.nutrition.express.common;
 
+import android.graphics.Color;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
@@ -7,6 +8,7 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.nutrition.express.R;
 
@@ -22,6 +24,7 @@ import java.util.List;
 
 public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
     private static final int TYPE_DATA_BASE = 1000;
+    private static final int TYPE_UNKNOWN = 0;       //未知类型
     /* 状态 */
     private static final int EMPTY = 10;                //显示EMPTY VIEW
     private static final int LOADING = 11;              //显示LOADING VIEW
@@ -71,13 +74,21 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
     public CommonViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         MultiType type = typeArray.get(viewType);
-        View view = inflater.inflate(type.layout, parent, false);
-        if (state == LOADING_FAILURE) {
-            view.setOnClickListener(onRetryListener);
-        } else if (state == LOADING_NEXT_FAILURE) {
-            view.setOnClickListener(onRetryListener);
+        if (type == null) {     //check if unknown type
+            TextView textView = (TextView) inflater
+                    .inflate(android.R.layout.simple_list_item_1, parent, false);
+            textView.setText("Error!!! Unknown type!!!");
+            textView.setTextColor(Color.parseColor("#ff0000"));
+            return new CommonViewHolder(textView);
+        } else {
+            View view = inflater.inflate(type.layout, parent, false);
+            if (state == LOADING_FAILURE) {
+                view.setOnClickListener(onRetryListener);
+            } else if (state == LOADING_NEXT_FAILURE) {
+                view.setOnClickListener(onRetryListener);
+            }
+            return type.creator.createVH(view);
         }
-        return type.creator.createVH(view);
     }
 
     @Override
@@ -97,7 +108,8 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         if (position == data.size()) {
             return state;
         } else {
-            return typeMap.get(data.get(position).getClass().getName());
+            Integer type = typeMap.get(data.get(position).getClass().getName());
+            return (null == type ? TYPE_UNKNOWN : type);
         }
     }
 
