@@ -10,8 +10,8 @@ import android.widget.Toast;
  * Created by huang on 5/16/16.
  */
 public class Utils {
-    public static float dp2Pixels(Context context, int pixels) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, pixels,
+    public static float dp2Pixels(Context context, int dp) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
                 context.getResources().getDisplayMetrics());
     }
 

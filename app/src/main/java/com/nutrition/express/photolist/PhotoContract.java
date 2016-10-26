@@ -14,6 +14,8 @@ public interface PhotoContract {
     }
 
     interface PhotoView extends BaseView<PhotoPresenter> {
-        void showPhotos(BlogPosts posts);
+        void showPhotos(BlogPosts posts, boolean autoLoadingNext);
+        void showLoadingFailure();
+        void showLoadingNextFailure();
     }
 }

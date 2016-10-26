@@ -25,15 +25,15 @@ import static android.content.ContentValues.TAG;
  * Created by huang on 2/17/16.
  */
 public class RestClient {
-    private static RestClient client;
     private Retrofit retrofit;
     private OkHttpClient okHttpClient;
 
+    private static class Holder {
+        private static RestClient holder = new RestClient();
+    }
+
     public static RestClient getInstance() {
-        if (client == null) {
-            client = new RestClient();
-        }
-        return client;
+        return Holder.holder;
     }
 
     private RestClient() {

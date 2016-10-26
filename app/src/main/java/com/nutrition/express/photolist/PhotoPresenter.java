@@ -50,14 +50,16 @@ public class PhotoPresenter implements PhotoContract.PhotoPresenter, ResponseLis
     public void onResponse(BaseBean baseBean, String tag) {
         call = null;
         if (view != null) {
-            view.showPhotos(((BlogPosts) baseBean.getResponse()));
+            view.showPhotos(((BlogPosts) baseBean.getResponse()), false);
         }
-
     }
 
     @Override
     public void onFailure(String tag) {
         call = null;
+        if (view != null) {
+            view.showLoadingFailure();
+        }
     }
 
 }
