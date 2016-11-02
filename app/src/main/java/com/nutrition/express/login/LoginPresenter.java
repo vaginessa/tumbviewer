@@ -6,7 +6,7 @@ import android.util.Log;
 
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.data.DataManager;
-import com.nutrition.express.model.helper.AuthHeaderBuilder;
+import com.nutrition.express.model.helper.OAuth1SigningHelper;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.util.PreferencesUtils;
 
@@ -177,12 +177,12 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
     public void getRequestToken() {
         if (!requesting) {
             requesting = true;
-            String auth = new AuthHeaderBuilder()
+            String auth = new OAuth1SigningHelper()
                     .buildRequestHeader("POST", Constants.REQUEST_TOKEN_URL);
             Request request = new Request.Builder()
                     .url(Constants.REQUEST_TOKEN_URL)
                     .method("POST", RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), "empty"))
-                    .header("Authorization", "OAuth " + auth)
+                    .header("Authorization", auth)
                     .build();
             Call call = okHttpClient.newCall(request);
             call.enqueue(new Callback() {
@@ -213,13 +213,13 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
         this.oauthVerifier =  oauthVerifier;
         if (!requesting) {
             requesting = true;
-            String auth = new AuthHeaderBuilder()
+            String auth = new OAuth1SigningHelper()
                     .buildAccessHeader("POST", Constants.ACCESS_TOKEN_URL,
                             oauthToken, oauthVerifier, oauthTokenSecret);
             Request request = new Request.Builder()
                     .url(Constants.ACCESS_TOKEN_URL)
                     .method("POST", RequestBody.create(MediaType.parse("text/plain; charset=utf-8"), "empty"))
-                    .header("Authorization", "OAuth " + auth)
+                    .header("Authorization", auth)
                     .build();
             Call call = okHttpClient.newCall(request);
             call.enqueue(new Callback() {
