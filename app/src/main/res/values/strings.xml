@@ -1,10 +1,13 @@
 <resources>
     <string name="app_name">Tumblr lite</string>
-    <string name="input">输入博客名</string>
+    <string name="search_hint">输入博客名</string>
     <string name="no_video">无视频</string>
     <string name="no_data">无数据</string>
     <string name="load_failed">加载失败</string>
 
+    <string name="page_main">主页</string>
+    <string name="page_video">视频</string>
+    <string name="page_photo">图片</string>
     <string name="page_search">搜索</string>
     <string name="page_user">我的</string>
     <string name="page_user_account">账户</string>

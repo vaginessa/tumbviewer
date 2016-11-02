@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,19 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         recyclerView = (RecyclerView) view.findViewById(R.id.blog_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        SearchView searchView = (SearchView) view.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                openPostsVideo(query);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
         return view;
     }
 
@@ -62,7 +76,7 @@ public class SearchFragment extends Fragment {
         historyHelper = new SearchHistoryHelper();
 
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.setData(historyHelper.getHistories().toArray());
+        builder.setData(historyHelper.getHistories());
         builder.addItemType(String.class, R.layout.item_text, new CommonRVAdapter.CreateViewHolder() {
             @Override
             public CommonViewHolder createVH(View view) {
@@ -74,6 +88,26 @@ public class SearchFragment extends Fragment {
         loaded = true;
     }
 
+    private void openPostsVideo(String blogName) {
+        Intent intent = new Intent(getActivity(), VideoListActivity.class);
+        intent.putExtra("blog_name", blogName);
+        startActivity(intent);
+        historyHelper.add(blogName);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void showDeleteDialog(final  String text, final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setMessage("删除记录" + text + "?");
+        builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                historyHelper.remove(text);
+                adapter.notifyItemRemoved(position);
+            }
+        });
+        builder.create().show();
+    }
 
     public class BaseVH extends CommonViewHolder<String>
             implements View.OnClickListener, View.OnLongClickListener {
@@ -102,25 +136,6 @@ public class SearchFragment extends Fragment {
             return true;
         }
     }
-    public void openPostsVideo(String blogName) {
-        Intent intent = new Intent(getActivity(), VideoListActivity.class);
-        intent.putExtra("blog_name", blogName);
-        startActivity(intent);
-        historyHelper.add(blogName);
-        adapter.notifyDataSetChanged();
-    }
 
-    private void showDeleteDialog(final  String text, final int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("删除记录" + text + "?");
-        builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                historyHelper.remove(text);
-                adapter.notifyItemRemoved(position);
-            }
-        });
-        builder.create().show();
-    }
 
 }
