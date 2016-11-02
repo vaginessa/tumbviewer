@@ -20,6 +20,8 @@ import com.nutrition.express.following.FollowingActivity;
 import com.nutrition.express.model.rest.bean.BlogInfoItem;
 import com.nutrition.express.model.rest.bean.UserInfo;
 
+import java.util.ArrayList;
+
 /**
  * Created by huang on 11/2/16.
  */
@@ -80,7 +82,7 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
                         return new BlogVH(view);
                     }
                 });
-        builder.setData(info.getUser().getBlogs().toArray());
+        builder.setData(new ArrayList<Object>(info.getUser().getBlogs()));
         recyclerView.setAdapter(builder.build());
     }
 

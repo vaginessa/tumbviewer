@@ -34,7 +34,7 @@ public class PostsItem {
     private String thumbnail_url;
     private int thumbnail_width;
     private int thumbnail_height;
-    private int duration;
+    private String duration;
     private List<PlayerItem> player;
     private String viedo_type;
 
@@ -153,7 +153,7 @@ public class PostsItem {
         return thumbnail_height;
     }
 
-    public int getDuration() {
+    public String getDuration() {
         return duration;
     }
 

@@ -1,6 +1,7 @@
 package com.nutrition.express.model.rest.ApiService;
 
 import com.nutrition.express.model.rest.bean.BaseBean;
+import com.nutrition.express.model.rest.bean.BlogPosts;
 import com.nutrition.express.model.rest.bean.FollowingBlog;
 import com.nutrition.express.model.rest.bean.UserInfo;
 
@@ -23,4 +24,7 @@ public interface UserService {
     @GET("/v2/user/info")
     Call<BaseBean<UserInfo>> getInfo(@Header("Authorization") String auth);
 
+    @GET("/v2/user/dashboard")
+    Call<BaseBean<BlogPosts>> getDashboard(@Header("Authorization") String auth,
+                                           @QueryMap Map<String, String> options);
 }

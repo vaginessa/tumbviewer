@@ -22,6 +22,13 @@
         app:dividerDrawable="@drawable/shape_flexbox_divider"
         />
 
+    <TextView
+        android:id="@+id/blog_caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/cn_text_size_title"
+        />
+
     <LinearLayout
         android:id="@+id/photo_trail"
         android:orientation="vertical"

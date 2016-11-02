@@ -1,5 +1,6 @@
 package com.nutrition.express.photolist;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
 import android.text.TextUtils;
@@ -17,11 +18,13 @@ import com.google.android.flexbox.FlexboxLayout;
 import com.nutrition.express.R;
 import com.nutrition.express.application.ExpressApplication;
 import com.nutrition.express.common.CommonViewHolder;
+import com.nutrition.express.imageviewer.ImageViewerActivity;
 import com.nutrition.express.model.rest.bean.PhotoItem;
 import com.nutrition.express.model.rest.bean.PostsItem;
 import com.nutrition.express.util.Utils;
 
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.content.ContentValues.TAG;
 
@@ -29,16 +32,19 @@ import static android.content.ContentValues.TAG;
  * Created by huang on 10/26/16.
  */
 
-public class PhotoVH extends CommonViewHolder<PostsItem> {
-    private TextView textView;
+public class PhotoVH extends CommonViewHolder<PostsItem> implements View.OnClickListener {
+    private TextView nameTV, captionTV;
     private FlexboxLayout contentLayout;
     private LinearLayout trailLayout;
     private ArrayList<SimpleDraweeView> cacheView;
     private int dividerWidth;
+    private AtomicInteger atomicInteger = new AtomicInteger(0);
+    private ArrayList<String> photos = new ArrayList<>();
 
     public PhotoVH(View itemView) {
         super(itemView);
-        textView = (TextView) itemView.findViewById(R.id.blog_name);
+        nameTV = (TextView) itemView.findViewById(R.id.blog_name);
+        captionTV = (TextView) itemView.findViewById(R.id.blog_caption);
         contentLayout = (FlexboxLayout) itemView.findViewById(R.id.photo_content);
         trailLayout = (LinearLayout) itemView.findViewById(R.id.photo_trail);
         cacheView = new ArrayList<>();
@@ -47,8 +53,13 @@ public class PhotoVH extends CommonViewHolder<PostsItem> {
 
     @Override
     public void bindView(PostsItem postsItem) {
-        textView.setText(Html.fromHtml(postsItem.getCaption()));
+        nameTV.setText(postsItem.getBlog_name());
+        captionTV.setText(Html.fromHtml(postsItem.getCaption()));
         contentLayout.removeAllViews();
+        photos.clear();
+        for (PhotoItem item: postsItem.getPhotos()) {
+            photos.add(item.getOriginal_size().getUrl());
+        }
         int size = postsItem.getPhotos().size();
         createPhotoView(size);
         String layout = postsItem.getPhotoset_layout();
@@ -86,6 +97,15 @@ public class PhotoVH extends CommonViewHolder<PostsItem> {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        Integer tag = (Integer) v.getTag();
+        Intent intent = new Intent(itemView.getContext(), ImageViewerActivity.class);
+        intent.putExtra("selected_index", tag.intValue());
+        intent.putStringArrayListExtra("image_urls", photos);
+        itemView.getContext().startActivity(intent);
+    }
+
     private void createPhotoView(int count) {
         while (count > cacheView.size()) {
             cacheView.add(createSimpleDraweeView());
@@ -105,9 +125,11 @@ public class PhotoVH extends CommonViewHolder<PostsItem> {
                 .setPlaceholderImage(R.color.loading_color)
                 .setPlaceholderImageScaleType(ScalingUtils.ScaleType.FIT_CENTER)
                 .setFailureImage(R.mipmap.ic_failed)
-                .setFailureImageScaleType(ScalingUtils.ScaleType.FIT_CENTER)
+                .setFailureImageScaleType(ScalingUtils.ScaleType.CENTER)
                 .build();
         view.setHierarchy(hierarchy);
+        view.setTag(atomicInteger.getAndIncrement());
+        view.setOnClickListener(this);
         return view;
     }
 

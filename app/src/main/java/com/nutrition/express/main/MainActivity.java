@@ -21,6 +21,11 @@ public class MainActivity extends AppCompatActivity {
 
         List<Fragment> list = new ArrayList<>();
         List<String> titles = new ArrayList<>();
+
+        list.add(new DashboardFragment());
+        titles.add(getString(R.string.page_video));
+        list.add(new PhotoDashboardFragment());
+        titles.add(getString(R.string.page_photo));
         list.add(new SearchFragment());
         titles.add(getString(R.string.page_search));
         list.add(new UserFragment());
@@ -32,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
     }
-
 
 
 }
