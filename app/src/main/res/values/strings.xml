@@ -1,8 +1,16 @@
 <resources>
-    <string name="app_name">Humblr</string>
+    <string name="app_name">Tumblr lite</string>
     <string name="input">输入博客名</string>
-    <string name="title_activity_main2">Main2Activity</string>
     <string name="no_video">无视频</string>
     <string name="no_data">无数据</string>
     <string name="load_failed">加载失败</string>
+
+    <string name="page_search">搜索</string>
+    <string name="page_user">我的</string>
+    <string name="page_user_account">账户</string>
+    <string name="page_user_blog">博客</string>
+    <string name="page_user_like">喜欢</string>
+    <string name="page_user_following">关注</string>
+    <string name="page_user_setting">设置</string>
+
 </resources>

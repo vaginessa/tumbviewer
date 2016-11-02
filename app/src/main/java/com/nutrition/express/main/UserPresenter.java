@@ -1,34 +1,33 @@
-package com.nutrition.express.follower;
+package com.nutrition.express.main;
 
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
 import com.nutrition.express.model.rest.RestCallBack;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
-import com.nutrition.express.model.rest.bean.Users;
+import com.nutrition.express.model.rest.bean.UserInfo;
 
 import retrofit2.Call;
 
 /**
- * Created by huang on 10/18/16.
+ * Created by huang on 11/2/16.
  */
 
-public class FollowersPresenter implements FollowersContract.FollowersPresenter, ResponseListener {
-    private FollowersContract.FollowersView view;
+public class UserPresenter implements UserContract.Presenter, ResponseListener {
     private UserService service;
-    private Call<BaseBean<Users>> call;
-    private final int defaultLimit = 20;
-    private int offset = 0;
+    private UserContract.View view;
+    private Call<BaseBean<UserInfo>> call;
 
-    public FollowersPresenter(FollowersContract.FollowersView view) {
+    public UserPresenter(UserContract.View view) {
         this.view = view;
         service = RestClient.getInstance().getUserService();
     }
 
-    public void getFollowers(String id) {
+    @Override
+    public void getMyInfo() {
         if (call == null) {
-            call = service.getFollowers(id, defaultLimit, offset);
-            call.enqueue(new RestCallBack<Users>(this, "followers"));
+            call = service.getInfo("OAuth");
+            call.enqueue(new RestCallBack<UserInfo>(this, "info"));
         }
     }
 
@@ -44,12 +43,19 @@ public class FollowersPresenter implements FollowersContract.FollowersPresenter,
 
     @Override
     public void onResponse(BaseBean baseBean, String tag) {
-
+        if (view == null) {
+            return;
+        }
+        call = null;
+        view.showMyInfo((UserInfo) baseBean.getResponse());
     }
 
     @Override
     public void onFailure(String tag) {
-
+        if (view == null) {
+            return;
+        }
+        call = null;
+        view.showFailure();
     }
-
 }

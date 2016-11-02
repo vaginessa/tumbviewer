@@ -1,0 +1,91 @@
+package com.nutrition.express.following;
+
+import com.nutrition.express.model.rest.ApiService.UserService;
+import com.nutrition.express.model.rest.ResponseListener;
+import com.nutrition.express.model.rest.RestCallBack;
+import com.nutrition.express.model.rest.RestClient;
+import com.nutrition.express.model.rest.bean.BaseBean;
+import com.nutrition.express.model.rest.bean.FollowingBlog;
+
+import java.util.HashMap;
+
+import retrofit2.Call;
+
+/**
+ * Created by huang on 10/18/16.
+ */
+
+public class FollowingPresenter implements FollowingContract.FollowersPresenter, ResponseListener {
+    private FollowingContract.FollowersView view;
+    private UserService service;
+    private Call<BaseBean<FollowingBlog>> followingCall;
+    private int defaultLimit = 20;
+    private int offset = 0;
+    private boolean hasNext = true;
+
+    public FollowingPresenter(FollowingContract.FollowersView view) {
+        this.view = view;
+        service = RestClient.getInstance().getUserService();
+    }
+
+    @Override
+    public void getMyFollowing() {
+        getFollowingBlog();
+    }
+
+    @Override
+    public void getNextFollowing() {
+        getFollowingBlog();
+    }
+
+    /**
+     * the header is not empty to tell okhttp to using oauth1
+     */
+    private void getFollowingBlog() {
+        if (followingCall == null) {
+            HashMap<String, String> options = new HashMap<>(2);
+            options.put("limit", "" + defaultLimit);
+            options.put("offset", "" + offset);
+            followingCall = service.getFollowing("OAuth", options);
+            followingCall.enqueue(new RestCallBack<FollowingBlog>(this, "following"));
+        }
+    }
+
+    @Override
+    public void onAttach() {
+
+    }
+
+    @Override
+    public void onDetach() {
+        view = null;
+    }
+
+    @Override
+    public void onResponse(BaseBean baseBean, String tag) {
+        if (view == null) {
+            return;
+        }
+        followingCall = null;
+        FollowingBlog blogs = (FollowingBlog) baseBean.getResponse();
+        offset += blogs.getBlogs().size();
+        if (blogs.getBlogs().size() < defaultLimit || offset >= blogs.getTotal_blogs()) {
+            hasNext = false;
+        }
+        view.showFollowing(blogs.getBlogs(), hasNext);
+    }
+
+    @Override
+    public void onFailure(String tag) {
+        if (view == null) {
+            return;
+        }
+        followingCall = null;
+        if (offset > 0) {
+            view.showLoadingNextFailure();
+        } else {
+            view.showLoadingFailure();
+        }
+    }
+
+}

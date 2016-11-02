@@ -40,7 +40,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
     //保存了数据类型名称与layout_id的键值对
     private HashMap<String, Integer> typeMap;
     private OnLoadListener loadListener;
-    private List<Object> data;
+    private List<Object> data = new ArrayList<>();
 
     private View.OnClickListener onRetryListener = new View.OnClickListener() {
         @Override
@@ -61,12 +61,12 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         typeArray = builder.typeArray;
         typeMap = builder.typeMap;
         loadListener = builder.loadListener;
-        data = builder.data;
-        if (data == null) {
-            data = new ArrayList<>();
+        if (builder.data == null) {
             state = LOADING;
-        } else if (data.size() == 0) {
+        } else if (builder.data.length == 0) {
             state = EMPTY;
+        } else {
+            Collections.addAll(data, builder.data);
         }
     }
 
@@ -210,7 +210,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         private CreateViewHolder nextCreator = null;
         private CreateViewHolder nextFailureCreator = null;
         private OnLoadListener loadListener;
-        private List<Object> data;
+        private Object[] data;
         private SparseArray<MultiType> typeArray = new SparseArray<>();
         private HashMap<String, Integer> typeMap = new HashMap<>();
         private int base = TYPE_DATA_BASE;
@@ -267,7 +267,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             return this;
         }
 
-        public Builder setData(List<Object> data) {
+        public Builder setData(Object[] data) {
             this.data = data;
             return this;
         }

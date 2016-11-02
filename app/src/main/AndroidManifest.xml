@@ -30,7 +30,7 @@
         </receiver>
 
         <activity android:name=".login.LoginActivity" />
-        <activity android:name=".follower.FollowersActivity" />
+        <activity android:name=".following.FollowingActivity" />
         <activity android:name=".photolist.PhotoActivity"/>
     </application>
 
