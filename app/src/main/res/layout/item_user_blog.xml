@@ -25,9 +25,9 @@
         android:layout_toRightOf="@+id/blog_image"
         android:layout_toEndOf="@+id/blog_image"
         android:paddingLeft="16dp"
+        android:singleLine="true"
         android:maxLines="1"
-        android:gravity="center"
-        />
+        android:ellipsize="end" />
     <TextView
         android:id="@+id/blog_name"
         android:layout_width="wrap_content"
@@ -35,8 +35,10 @@
         android:layout_toRightOf="@+id/blog_image"
         android:layout_toEndOf="@+id/blog_image"
         android:paddingLeft="16dp"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:layout_below="@+id/blog_title"
-        android:gravity="center"
         />
 
 </RelativeLayout>
