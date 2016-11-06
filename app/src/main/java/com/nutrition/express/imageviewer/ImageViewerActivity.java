@@ -27,8 +27,10 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.nutrition.express.R;
 import com.nutrition.express.imageviewer.zoomable.ZoomableDraweeView;
+import com.nutrition.express.util.FileUtils;
 import com.nutrition.express.util.FrescoUtils;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,11 +38,13 @@ import java.util.List;
  * Created by huang on 1/21/16.
  */
 public class ImageViewerActivity extends AppCompatActivity {
+    private final String ACTION = "SAVE_IMAGE";
     private ViewPager viewPager;
     private LinearLayout indicator;
     private ImageView mImageViews[];
-    private String filter = "ImageViewerActivity";
-    private List<String> photoUrls;
+    private MenuItem saveItem;
+    private List<Uri> photoUris;
+    private int savedCount, failureCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +57,14 @@ public class ImageViewerActivity extends AppCompatActivity {
         viewPager = (ViewPager) findViewById(R.id.viewPager);
         indicator = (LinearLayout) findViewById(R.id.indicator_container);
         int selectedIndex = getIntent().getIntExtra("selected_index", 0);
-        photoUrls = getIntent().getStringArrayListExtra("image_urls");
-        if (photoUrls != null) {
-            viewPager.setAdapter(new ViewImageAdapter(photoUrls));
-            if (photoUrls.size() > 1) {
+        List<String> photoUrls = getIntent().getStringArrayListExtra("image_urls");
+        convert2Uri(photoUrls);
+        if (photoUris != null) {
+            viewPager.setAdapter(new ViewImageAdapter(photoUris));
+            if (photoUris.size() > 1) {
                 viewPager.addOnPageChangeListener(pageChangeListener);
-                setIndicator(photoUrls.size());
-                if (selectedIndex < photoUrls.size()) {
+                setIndicator(photoUris.size());
+                if (selectedIndex < photoUris.size()) {
                     viewPager.setCurrentItem(selectedIndex);
                 }
             }
@@ -69,9 +74,18 @@ public class ImageViewerActivity extends AppCompatActivity {
             return;
         }
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                new IntentFilter(filter));
+                new IntentFilter(ACTION));
     }
 
+    private void convert2Uri(List<String> urls) {
+        photoUris = new ArrayList<>(urls.size());
+        for (String url : urls) {
+            if (!TextUtils.isEmpty(url)) {
+                photoUris.add(Uri.parse(url));
+            }
+        }
+
+    }
 
     private ViewPager.OnPageChangeListener pageChangeListener = new ViewPager.OnPageChangeListener() {
         @Override
@@ -85,6 +99,11 @@ public class ImageViewerActivity extends AppCompatActivity {
                 imageView.setImageResource(R.mipmap.radiobutton_default);
             }
             mImageViews[position].setImageResource(R.mipmap.radiobutton_select);
+            if (FileUtils.imageSaved(photoUris.get(position))) {
+                saveItem.setTitle(R.string.pic_saved);
+            } else {
+                saveItem.setTitle(R.string.pic_save);
+            }
         }
 
         @Override
@@ -120,16 +139,16 @@ public class ImageViewerActivity extends AppCompatActivity {
     }
 
     private class ViewImageAdapter extends PagerAdapter implements View.OnClickListener {
-        private List<String> urls;
+        private List<Uri> uris;
         private LinkedList<ZoomableDraweeView> viewCache = new LinkedList<>();
 
-        public ViewImageAdapter(List<String> urls) {
-            this.urls = urls;
+        public ViewImageAdapter(List<Uri> uris) {
+            this.uris = uris;
         }
 
         @Override
         public int getCount() {
-            return urls.size();
+            return uris.size();
         }
 
         @Override
@@ -152,9 +171,10 @@ public class ImageViewerActivity extends AppCompatActivity {
             } else {
                 draweeView = viewCache.removeFirst();
             }
-            String url = urls.get(position);
             DraweeController controller = Fresco.newDraweeControllerBuilder()
-                    .setUri(url == null ? Uri.EMPTY : Uri.parse(url))
+                    .setOldController(draweeView.getController())
+                    .setAutoPlayAnimations(true)
+                    .setUri(uris.get(position))
                     .build();
             draweeView.setController(controller);
             draweeView.setOnClickListener(this);
@@ -180,11 +200,22 @@ public class ImageViewerActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             boolean success = intent.getBooleanExtra("success", false);
             if (success) {
-                Toast.makeText(ImageViewerActivity.this, R.string.pic_saved,
-                        Toast.LENGTH_SHORT).show();
+                savedCount++;
+                Uri uri = intent.getParcelableExtra("uri");
+                if (photoUris.get(viewPager.getCurrentItem()).equals(uri)) {
+                    saveItem.setTitle(R.string.pic_saved);
+                }
             } else {
-                Toast.makeText(ImageViewerActivity.this, R.string.pic_saved_failure,
-                        Toast.LENGTH_SHORT).show();
+                failureCount++;
+            }
+            if (savedCount + failureCount == photoUris.size()) {
+                if (failureCount > 0) {
+                    Toast.makeText(ImageViewerActivity.this, R.string.pic_saved_failure,
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(ImageViewerActivity.this, R.string.pic_saved,
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         }
     };
@@ -198,6 +229,7 @@ public class ImageViewerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_image_viewer, menu);
+        saveItem = menu.findItem(R.id.save);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -205,16 +237,10 @@ public class ImageViewerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save:
-                String url = photoUrls.get(viewPager.getCurrentItem());
-                if (TextUtils.isEmpty(url)) {
-                    Toast.makeText(ImageViewerActivity.this, R.string.pic_not_found,
-                            Toast.LENGTH_SHORT).show();
-                } else {
-                    FrescoUtils.save(Uri.parse(url), filter);
-                }
+                FrescoUtils.save(photoUris.get(viewPager.getCurrentItem()), ACTION);
                 break;
             case R.id.save_all:
-                FrescoUtils.saveAll(photoUrls, filter);
+                FrescoUtils.saveAll(photoUris, ACTION);
                 break;
             default:
                 return super.onOptionsItemSelected(item);

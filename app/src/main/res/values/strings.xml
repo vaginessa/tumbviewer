@@ -21,6 +21,7 @@
     <string name="video_view_image">查看缩略图</string>
     <string name="video_download">下载</string>
     <string name="video_copy_url">复制链接</string>
+    <string name="video_exist">视频已存在</string>
 
     <string name="pic_save">保存</string>
     <string name="pic_cancel">取消</string>
