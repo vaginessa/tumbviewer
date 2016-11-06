@@ -9,9 +9,11 @@ import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.facebook.imagepipeline.request.ImageRequest;
+import com.nutrition.express.application.Constants;
 import com.nutrition.express.application.ExpressApplication;
 
 import java.io.File;
@@ -24,6 +26,15 @@ import java.util.List;
  */
 
 public class FrescoUtils {
+
+    public static void setTumblrAvatarUri(SimpleDraweeView view, String name, int size) {
+        String url = Constants.BASE_URL + "/v2/blog/" + name + "/avatar/";
+        if (size > 0 && size <= 512) {
+            url +=  size;
+        }
+        view.setImageURI(Uri.parse(url));
+    }
+
     public static void save(Uri uri, String action) {
         ImageRequest request = ImageRequest.fromUri(uri);
         ImagePipeline pipeline = Fresco.getImagePipeline();

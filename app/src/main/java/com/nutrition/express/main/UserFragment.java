@@ -9,16 +9,17 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.following.FollowingActivity;
 import com.nutrition.express.model.rest.bean.BlogInfoItem;
 import com.nutrition.express.model.rest.bean.UserInfo;
+import com.nutrition.express.util.FrescoUtils;
 
 import java.util.ArrayList;
 
@@ -118,12 +119,12 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
     }
 
     private class BlogVH extends CommonViewHolder<BlogInfoItem> {
-        private ImageView imageView;
+        private SimpleDraweeView avatarView;
         private TextView titleTV, nameTV;
 
         public BlogVH(View itemView) {
             super(itemView);
-            imageView = (ImageView) itemView.findViewById(R.id.blog_image);
+            avatarView = (SimpleDraweeView) itemView.findViewById(R.id.blog_avatar);
             titleTV = (TextView) itemView.findViewById(R.id.blog_title);
             nameTV = (TextView) itemView.findViewById(R.id.blog_name);
         }
@@ -132,6 +133,7 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
         public void bindView(BlogInfoItem infoItem) {
             titleTV.setText(infoItem.getTitle());
             nameTV.setText(infoItem.getName());
+            FrescoUtils.setTumblrAvatarUri(avatarView, infoItem.getName(), 128);
         }
     }
 

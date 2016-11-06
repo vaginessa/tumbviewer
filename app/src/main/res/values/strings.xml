@@ -17,6 +17,7 @@
     <string name="page_user_setting">设置</string>
 
     <string name= "note_count_description">%1$d 条热度 / 时长 %2$s</string>
+    <string name="update_des">%1$s 更新</string>
 
     <string name="video_view_image">查看缩略图</string>
     <string name="video_download">下载</string>

@@ -1,14 +1,19 @@
 package com.nutrition.express.application;
 
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.WindowManager;
 
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
+import com.nutrition.express.BuildConfig;
 import com.nutrition.express.model.rest.RestClient;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by huang on 4/25/16.
@@ -41,6 +46,14 @@ public class ExpressApplication extends Application {
 
         //init retrofit
         RestClient.getInstance().init(this);
+
+        //information
+        if (BuildConfig.DEBUG) {
+            ActivityManager  am = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+            Log.d(TAG, "onCreate: " + am.getMemoryClass());
+            Log.d(TAG, "onCreate: " + am.getLargeMemoryClass());
+            Log.d(TAG, "onCreate: " + Runtime.getRuntime().maxMemory());
+        }
     }
 
     public static ExpressApplication getApplication() {
