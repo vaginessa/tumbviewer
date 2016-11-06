@@ -5,7 +5,9 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
+import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.nutrition.express.model.rest.RestClient;
 
 /**
@@ -15,12 +17,20 @@ public class ExpressApplication extends Application {
     public static int width;
     public static int height;
     private static ExpressApplication application;
+    private ImagePipelineConfig imagePipelineConfig;
 
     @Override
     public void onCreate() {
         super.onCreate();
         application = this;
-        Fresco.initialize(this);
+        DiskCacheConfig cacheConfig = DiskCacheConfig.newBuilder(this)
+                .setMaxCacheSize(300 * 1024 * 1024)
+                .build();
+        imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
+                .setMainDiskCacheConfig(cacheConfig)
+                .setDownsampleEnabled(true)
+                .build();
+        Fresco.initialize(this, imagePipelineConfig);
 
         //init width and height
         DisplayMetrics dm = new DisplayMetrics();
@@ -35,5 +45,9 @@ public class ExpressApplication extends Application {
 
     public static ExpressApplication getApplication() {
         return application;
+    }
+
+    public ImagePipelineConfig getImagePipelineConfig() {
+        return imagePipelineConfig;
     }
 }
