@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.nutrition.express.R;
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.main.MainActivity;
+import com.nutrition.express.model.data.DataManager;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.LoginView {
     private WebView webView;
@@ -22,6 +23,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (DataManager.getInstance().isLogin()) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+            return;
+        }
         setContentView(R.layout.activity_login);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);

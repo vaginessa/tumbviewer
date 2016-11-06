@@ -15,11 +15,6 @@
         <activity
             android:name=".main.MainActivity"
             android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".videolist.VideoListActivity" />
 
@@ -29,10 +24,16 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".login.LoginActivity" />
+        <activity android:name=".login.LoginActivity" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".following.FollowingActivity" />
         <activity android:name=".photolist.PhotoActivity"/>
-        <activity android:name=".imageviewer.ImageViewerActivity"/>
+        <activity android:name=".imageviewer.ImageViewerActivity"
+            android:theme="@style/ImageViewerTheme"/>
     </application>
 
 </manifest>

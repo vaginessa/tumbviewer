@@ -6,4 +6,6 @@
 
     <color name="divider_color">#36465D</color>
     <color name="loading_color">#C8C8C8</color>
+
+    <color name="semi_transparent">#8036465D</color>
 </resources>
