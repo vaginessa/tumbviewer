@@ -1,10 +1,19 @@
 package com.nutrition.express.imageviewer;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,39 +27,49 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.nutrition.express.R;
 import com.nutrition.express.imageviewer.zoomable.ZoomableDraweeView;
+import com.nutrition.express.util.FrescoUtils;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by huang on 1/21/16.
  */
 public class ImageViewerActivity extends AppCompatActivity {
+    private ViewPager viewPager;
     private LinearLayout indicator;
     private ImageView mImageViews[];
+    private String filter = "ImageViewerActivity";
+    private List<String> photoUrls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_image);
-        ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(null);
+
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         indicator = (LinearLayout) findViewById(R.id.indicator_container);
         int selectedIndex = getIntent().getIntExtra("selected_index", 0);
-        ArrayList<String> urls = getIntent().getStringArrayListExtra("image_urls");
-        if (urls != null) {
-            viewPager.setAdapter(new ViewImageAdapter(urls));
-            if (urls.size() > 1) {
+        photoUrls = getIntent().getStringArrayListExtra("image_urls");
+        if (photoUrls != null) {
+            viewPager.setAdapter(new ViewImageAdapter(photoUrls));
+            if (photoUrls.size() > 1) {
                 viewPager.addOnPageChangeListener(pageChangeListener);
-                setIndicator(urls.size());
-                if (selectedIndex < urls.size()) {
+                setIndicator(photoUrls.size());
+                if (selectedIndex < photoUrls.size()) {
                     viewPager.setCurrentItem(selectedIndex);
                 }
             }
         } else {
-            Toast.makeText(this, "找不到图片", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, R.string.pic_not_found, Toast.LENGTH_SHORT).show();
             finish();
             return;
         }
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
+                new IntentFilter(filter));
     }
 
 
@@ -101,10 +120,10 @@ public class ImageViewerActivity extends AppCompatActivity {
     }
 
     private class ViewImageAdapter extends PagerAdapter implements View.OnClickListener {
-        private ArrayList<String> urls;
+        private List<String> urls;
         private LinkedList<ZoomableDraweeView> viewCache = new LinkedList<>();
 
-        public ViewImageAdapter(ArrayList<String> urls) {
+        public ViewImageAdapter(List<String> urls) {
             this.urls = urls;
         }
 
@@ -154,5 +173,52 @@ public class ImageViewerActivity extends AppCompatActivity {
         public void onClick(View v) {
             ImageViewerActivity.this.finish();
         }
+    }
+
+    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            boolean success = intent.getBooleanExtra("success", false);
+            if (success) {
+                Toast.makeText(ImageViewerActivity.this, R.string.pic_saved,
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(ImageViewerActivity.this, R.string.pic_saved_failure,
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_image_viewer, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.save:
+                String url = photoUrls.get(viewPager.getCurrentItem());
+                if (TextUtils.isEmpty(url)) {
+                    Toast.makeText(ImageViewerActivity.this, R.string.pic_not_found,
+                            Toast.LENGTH_SHORT).show();
+                } else {
+                    FrescoUtils.save(Uri.parse(url), filter);
+                }
+                break;
+            case R.id.save_all:
+                FrescoUtils.saveAll(photoUrls, filter);
+                break;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+        return true;
     }
 }
