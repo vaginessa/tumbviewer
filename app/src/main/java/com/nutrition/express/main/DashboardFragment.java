@@ -77,7 +77,7 @@ public class DashboardFragment extends Fragment
 
     protected CommonRVAdapter getAdapter() {
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.addItemType(PostsItem.class, R.layout.item_video_1, new CommonRVAdapter.CreateViewHolder() {
+        builder.addItemType(PostsItem.class, R.layout.item_video, new CommonRVAdapter.CreateViewHolder() {
             @Override
             public CommonViewHolder createVH(View view) {
                 return new VideoVH(view);

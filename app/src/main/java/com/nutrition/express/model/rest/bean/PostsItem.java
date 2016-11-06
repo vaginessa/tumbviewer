@@ -22,6 +22,8 @@ public class PostsItem {
     private String recommended_source;
     private String recommended_color;
     private List<String> highlighted;
+    private boolean followed;
+    private boolean liked;
     private long note_count;
     private String caption;
     private ReblogItem reblog;
@@ -115,6 +117,14 @@ public class PostsItem {
 
     public List<String> getHighlighted() {
         return highlighted;
+    }
+
+    public boolean isFollowed() {
+        return followed;
+    }
+
+    public boolean isLiked() {
+        return liked;
     }
 
     public long getNote_count() {

@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
+    android:layout_height="wrap_content"
+    >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -26,15 +26,16 @@
             android:textSize="@dimen/cn_text_size_body"
             />
     </LinearLayout>
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/photo_content"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/simpleDraweeView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:flexDirection="row"
-        app:flexWrap="wrap"
-        app:justifyContent="space_between"
-        app:showDividerHorizontal="middle"
-        app:dividerDrawableHorizontal="@drawable/shape_flexbox_divider"
+        android:layout_height="200dp"
+        android:layout_gravity="center"
+        app:failureImage="@mipmap/ic_failed"
+        app:failureImageScaleType="center"
+        app:placeholderImage="@color/loading_color"
+        app:placeholderImageScaleType="fitCenter"
+        app:actualImageScaleType="fitStart"
         />
 
     <TextView
@@ -42,17 +43,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:autoLink="web"
         />
 
-    <LinearLayout
-        android:id="@+id/photo_trail"
-        android:orientation="vertical"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+        <TextView
+            android:id="@+id/note_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:textSize="@dimen/cn_text_size_body"
+            />
 
-    <ImageView
+        <ImageView
+            android:id="@+id/blog_like"
+            android:layout_width="20dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="end|center"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp"
+            app:srcCompat="@drawable/selector_like"
+            />
+    </FrameLayout>
+
+    <View
         android:layout_width="match_parent"
         android:layout_height="8dp"
-        android:src="@color/divider_color"
+        android:background="@color/divider_color"
         />
 </LinearLayout>

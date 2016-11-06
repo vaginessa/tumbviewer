@@ -4,16 +4,20 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.nutrition.express.R;
 import com.nutrition.express.application.ExpressApplication;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.rest.bean.PostsItem;
-import com.nutrition.express.util.Utils;
 
 
 /**
@@ -22,9 +26,9 @@ import com.nutrition.express.util.Utils;
 
 public class VideoVH extends CommonViewHolder<PostsItem> implements View.OnClickListener {
     private SimpleDraweeView draweeView;
-    private TextView blogName;
-    private TextView noteCount;
-    private String videoUrl;
+    private TextView blogName, blogTime, blogCaption, noteCount;
+    private ImageView likeIV;
+    private String videoUrl, imageUrl;
     private int defaultWidth;
 
     public VideoVH(View itemView) {
@@ -35,15 +39,18 @@ public class VideoVH extends CommonViewHolder<PostsItem> implements View.OnClick
         }
         blogName = (TextView) itemView.findViewById(R.id.blog_name);
         blogName.setOnClickListener(this);
+        blogCaption = (TextView) itemView.findViewById(R.id.blog_caption);
+        blogTime = (TextView) itemView.findViewById(R.id.blog_time);
+        likeIV = (ImageView) itemView.findViewById(R.id.blog_like);
         noteCount = (TextView) itemView.findViewById(R.id.note_count);
 
-        int pxOf16dp = (int) Utils.dp2Pixels(itemView.getContext(), 16);
-        defaultWidth = ExpressApplication.width - 2 * pxOf16dp;
+        defaultWidth = ExpressApplication.width;
     }
 
     @Override
     public void bindView(PostsItem postsItem) {
         videoUrl = postsItem.getVideo_url();
+        imageUrl = postsItem.getThumbnail_url();
         String url = postsItem.getThumbnail_url();
         ViewGroup.LayoutParams params = draweeView.getLayoutParams();
         params.width = defaultWidth;
@@ -51,27 +58,53 @@ public class VideoVH extends CommonViewHolder<PostsItem> implements View.OnClick
                 postsItem.getThumbnail_width() > postsItem.getThumbnail_height()) {
             params.height = params.width *
                     postsItem.getThumbnail_height() / postsItem.getThumbnail_width();
+            draweeView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.FIT_CENTER);
         } else {
-            params.height = defaultWidth / 2;
+            params.height = defaultWidth;
+            draweeView.getHierarchy().setActualImageScaleType(ScalingUtils.ScaleType.CENTER_CROP);
         }
         draweeView.setLayoutParams(params);
         draweeView.setImageURI(url != null ? Uri.parse(url) : Uri.EMPTY);
         blogName.setText(postsItem.getBlog_name());
-        noteCount.setText(postsItem.getNote_count() + "  热度");
+        if (TextUtils.isEmpty(postsItem.getCaption())) {
+            blogCaption.setVisibility(View.VISIBLE);
+            blogCaption.setText(Html.fromHtml(postsItem.getCaption()));
+        } else {
+            blogCaption.setVisibility(View.GONE);
+        }
+        blogTime.setText(DateUtils.getRelativeTimeSpanString(postsItem.getTimestamp() * 1000,
+                System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
+        if (postsItem.isLiked()) {
+            likeIV.setSelected(true);
+        } else {
+            likeIV.setSelected(false);
+        }
+        noteCount.setText(itemView.getContext().getString(R.string.note_count_description,
+                postsItem.getNote_count(), formatTime(postsItem.getDuration())));
+    }
+
+    private String formatTime(String duration) {
+        try {
+            long dur = Long.valueOf(duration);
+            return DateUtils.formatElapsedTime(dur);
+        } catch (NumberFormatException e) {
+            return duration;
+        }
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.simpleDraweeView) {
-            openBottomSheet(videoUrl);
+            openBottomSheet();
         } else if (v.getId() == R.id.blog_name) {
             openBlog(blogName.getText().toString());
         }
     }
 
-    private void openBottomSheet(String url) {
+    private void openBottomSheet() {
         Bundle bundle = new Bundle();
-        bundle.putString("url", url);
+        bundle.putString("image_url", imageUrl);
+        bundle.putString("video_url", videoUrl);
         VideoBottomSheet bottomSheet = new VideoBottomSheet();
         bottomSheet.setArguments(bundle);
         bottomSheet.show(((FragmentActivity) itemView.getContext()).getSupportFragmentManager(),

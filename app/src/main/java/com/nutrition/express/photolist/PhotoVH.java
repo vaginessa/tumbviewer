@@ -4,15 +4,18 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.drawable.ScalingUtils;
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
+import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.flexbox.FlexboxLayout;
 import com.nutrition.express.R;
@@ -33,7 +36,7 @@ import static android.content.ContentValues.TAG;
  */
 
 public class PhotoVH extends CommonViewHolder<PostsItem> implements View.OnClickListener {
-    private TextView nameTV, captionTV;
+    private TextView nameTV, timeTV, captionTV;
     private FlexboxLayout contentLayout;
     private LinearLayout trailLayout;
     private ArrayList<SimpleDraweeView> cacheView;
@@ -44,6 +47,7 @@ public class PhotoVH extends CommonViewHolder<PostsItem> implements View.OnClick
     public PhotoVH(View itemView) {
         super(itemView);
         nameTV = (TextView) itemView.findViewById(R.id.blog_name);
+        timeTV = (TextView) itemView.findViewById(R.id.blog_time);
         captionTV = (TextView) itemView.findViewById(R.id.blog_caption);
         contentLayout = (FlexboxLayout) itemView.findViewById(R.id.photo_content);
         trailLayout = (LinearLayout) itemView.findViewById(R.id.photo_trail);
@@ -54,6 +58,8 @@ public class PhotoVH extends CommonViewHolder<PostsItem> implements View.OnClick
     @Override
     public void bindView(PostsItem postsItem) {
         nameTV.setText(postsItem.getBlog_name());
+        timeTV.setText(DateUtils.getRelativeTimeSpanString(postsItem.getTimestamp() * 1000,
+                System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS));
         captionTV.setText(Html.fromHtml(postsItem.getCaption()));
         contentLayout.removeAllViews();
         photos.clear();
@@ -76,6 +82,7 @@ public class PhotoVH extends CommonViewHolder<PostsItem> implements View.OnClick
                 info = postsItem.getPhotos().get(index).getOriginal_size();
                 w = calWidth(count);
                 h = w * info.getHeight() / info.getWidth();
+                Log.d(TAG, "bindView: " + w);
                 for (int j = 0; j < count; j++) {
                     if (index >= size) {
                         return;
@@ -145,11 +152,14 @@ public class PhotoVH extends CommonViewHolder<PostsItem> implements View.OnClick
     }
 
     private void setUri(SimpleDraweeView view, String url) {
-         if (url != null) {
-            view.setImageURI(Uri.parse(url));
-        } else {
-            view.setImageURI(Uri.EMPTY);
-        }
+        Uri uri = url == null ? Uri.EMPTY : Uri.parse(url);
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setOldController(view.getController())
+                .setTapToRetryEnabled(true)
+                .setAutoPlayAnimations(true)
+                .setUri(uri)
+                .build();
+        view.setController(controller);
     }
 
 }

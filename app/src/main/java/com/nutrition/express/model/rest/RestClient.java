@@ -6,6 +6,9 @@ import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.rest.ApiService.BlogService;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.intercept.OAuth1SigningInterceptor;
+import com.orhanobut.logger.Logger;
+
+import java.util.concurrent.TimeUnit;
 
 import okhttp3.Cache;
 import okhttp3.OkHttpClient;
@@ -33,13 +36,24 @@ public class RestClient {
 
     public void init(Context context) {
         Cache cache = new Cache(context.getCacheDir(), 10 * 1024 * 1024);
-
+        HttpLoggingInterceptor.Logger logger = new  HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
+                if (message.startsWith("{") || message.startsWith("[")) {
+                    Logger.json(message);
+                } else {
+                    Logger.log(Logger.DEBUG, "okhttp", message, null);
+                }
+            }
+        };
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okHttpClient = new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
                 .addInterceptor(new OAuth1SigningInterceptor())
+                .addInterceptor(interceptor)
                 .cache(cache)
+                .readTimeout(240, TimeUnit.SECONDS)
+                .writeTimeout(240, TimeUnit.SECONDS)
                 .build();
 
         retrofit = new Retrofit.Builder()
