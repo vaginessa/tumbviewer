@@ -32,7 +32,9 @@ dependencies {
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
     compile 'com.squareup.okhttp3:logging-interceptor:3.4.1'
 
-    compile 'com.facebook.fresco:fresco:0.13.0'
+    compile 'com.facebook.fresco:fresco:0.14.1'
+    compile 'com.facebook.fresco:animated-gif:0.14.1'
+
     compile 'com.orhanobut:logger:1.15'
 
     compile 'com.tumblr:jumblr:0.0.11'
