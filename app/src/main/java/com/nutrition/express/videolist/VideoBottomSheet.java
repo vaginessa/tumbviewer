@@ -2,11 +2,13 @@ package com.nutrition.express.videolist;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialog;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -65,6 +67,9 @@ public class VideoBottomSheet extends BottomSheetDialogFragment implements View.
                 Utils.copy2Clipboard(getActivity(), videoUrl);
                 break;
             case R.id.item_link:
+                if (!TextUtils.isEmpty(videoUrl)) {
+                    getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(videoUrl)));
+                }
                 break;
         }
         behavior.setState(BottomSheetBehavior.STATE_HIDDEN);
