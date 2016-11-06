@@ -52,8 +52,8 @@ public class RestClient {
                 .addInterceptor(new OAuth1SigningInterceptor())
                 .addInterceptor(interceptor)
                 .cache(cache)
-                .readTimeout(240, TimeUnit.SECONDS)
-                .writeTimeout(240, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS)
+                .writeTimeout(60, TimeUnit.SECONDS)
                 .build();
 
         retrofit = new Retrofit.Builder()
