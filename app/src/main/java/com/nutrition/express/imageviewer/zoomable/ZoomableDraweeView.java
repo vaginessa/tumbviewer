@@ -20,6 +20,7 @@ import android.graphics.drawable.Animatable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.ViewConfiguration;
 
 import com.facebook.common.internal.Preconditions;
 import com.facebook.common.logging.FLog;
@@ -151,26 +152,53 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
   }
 
     private long startClickTime;
+    private float initialMotionX, initialMotionY;
+    private int touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+    private Runnable longClick = new Runnable() {
+        @Override
+        public void run() {
+            performLongClick();
+        }
+    };
 
   @Override
   public boolean onTouchEvent(MotionEvent event) {
+      float x = event.getX();
+      float y = event.getY();
       //I add click detection
-      switch (event.getAction()) {
+      switch (event.getActionMasked()) {
           case MotionEvent.ACTION_DOWN:
               startClickTime = System.currentTimeMillis();
+              postDelayed(longClick, ViewConfiguration.getLongPressTimeout());
+              initialMotionX = x;
+              initialMotionY = y;
               break;
           case MotionEvent.ACTION_UP:
               long clickDuration = System.currentTimeMillis() - startClickTime;
               if (clickDuration < 200) {
                   performClick();
               }
+              getParent().requestDisallowInterceptTouchEvent(false);
+              removeCallbacks(longClick);
+              break;
+          case MotionEvent.ACTION_CANCEL:
+              removeCallbacks(longClick);
+          case MotionEvent.ACTION_MOVE:
+              float xDiff = Math.abs(x - initialMotionX);
+              float yDiff = Math.abs(y - initialMotionY);
+              if (xDiff > touchSlop || yDiff > touchSlop) {
+                  removeCallbacks(longClick);
+              }
+              break;
+          case MotionEvent.ACTION_POINTER_DOWN:
+              getParent().requestDisallowInterceptTouchEvent(true);
+              removeCallbacks(longClick);
               break;
       }
     if (mZoomableController.onTouchEvent(event)) {
-        //I comment the following
-//      if (mZoomableController.getScaleFactor() > 1.0f) {
-//        getParent().requestDisallowInterceptTouchEvent(true);
-//      }
+      if (mZoomableController.getScaleFactor() > 1.0f) {
+        getParent().requestDisallowInterceptTouchEvent(true);
+      }
       //FLog.v(TAG, "onTouchEvent: view %x, handled by zoomable controller", this.hashCode());
       return true;
     }
