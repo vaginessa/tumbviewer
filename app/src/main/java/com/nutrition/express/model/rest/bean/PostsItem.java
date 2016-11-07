@@ -127,6 +127,10 @@ public class PostsItem {
         return liked;
     }
 
+    public void setLiked(boolean liked) {
+        this.liked = liked;
+    }
+
     public long getNote_count() {
         return note_count;
     }

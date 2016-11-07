@@ -1,4 +1,4 @@
-package com.nutrition.express.videolist;
+package com.nutrition.express.useraction;
 
 import com.nutrition.express.common.BasePresenter;
 import com.nutrition.express.common.BaseView;
@@ -7,14 +7,14 @@ import com.nutrition.express.common.BaseView;
  * Created by huang on 11/7/16.
  */
 
-public interface FollowContract {
+public interface FollowBlogContract {
     interface Presenter extends BasePresenter {
         void follow(String url);
         void unfollow(String url);
     }
 
     interface View extends BaseView<Presenter> {
-        void onFollowed();
-        void onUnfollowed();
+        void onFollow();
+        void onUnfollow();
     }
 }

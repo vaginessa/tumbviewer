@@ -1,4 +1,4 @@
-package com.nutrition.express.videolist;
+package com.nutrition.express.useraction;
 
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
@@ -12,12 +12,12 @@ import retrofit2.Call;
  * Created by huang on 11/7/16.
  */
 
-public class FollowPresenter implements FollowContract.Presenter, ResponseListener {
-    private FollowContract.View view;
+public class FollowBlogPresenter implements FollowBlogContract.Presenter, ResponseListener {
+    private FollowBlogContract.View view;
     private UserService service;
     private Call<BaseBean<Void>> call;
 
-    public FollowPresenter(FollowContract.View view) {
+    public FollowBlogPresenter(FollowBlogContract.View view) {
         this.view = view;
         service = RestClient.getInstance().getUserService();
     }
@@ -58,10 +58,10 @@ public class FollowPresenter implements FollowContract.Presenter, ResponseListen
         call = null;
         switch (tag) {
             case "follow":
-                view.onFollowed();
+                view.onFollow();
                 break;
             case "unfollow":
-                view.onUnfollowed();
+                view.onUnfollow();
                 break;
         }
     }

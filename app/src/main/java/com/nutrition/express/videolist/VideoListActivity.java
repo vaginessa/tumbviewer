@@ -18,16 +18,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nutrition.express.R;
+import com.nutrition.express.useraction.FollowBlogContract;
+import com.nutrition.express.useraction.FollowBlogPresenter;
 
 /**
  * Created by huang on 5/16/16.
  */
-public class VideoListActivity extends AppCompatActivity implements FollowContract.View {
+public class VideoListActivity extends AppCompatActivity implements FollowBlogContract.View {
     public static final int POSTS_VIDEO_DEFAULT = 0;
     public static final int POSTS_VIDEO_LIKED = 1;
     private boolean granted = false;
     private MenuItem followItem;
-    private FollowPresenter followPresenter;
+    private FollowBlogPresenter followBlogPresenter;
     private boolean followed = false;
     private String blogName;
 
@@ -71,7 +73,7 @@ public class VideoListActivity extends AppCompatActivity implements FollowContra
                     }
                 });
 
-        followPresenter = new FollowPresenter(this);
+        followBlogPresenter = new FollowBlogPresenter(this);
     }
 
     @Override
@@ -89,9 +91,9 @@ public class VideoListActivity extends AppCompatActivity implements FollowContra
                 return true;
             case R.id.blog_follow:
                 if (followed) {
-                    followPresenter.unfollow(blogName);
+                    followBlogPresenter.unfollow(blogName);
                 } else {
-                    followPresenter.follow(blogName);
+                    followBlogPresenter.follow(blogName);
                 }
                 return true;
             default:
@@ -100,19 +102,19 @@ public class VideoListActivity extends AppCompatActivity implements FollowContra
     }
 
     @Override
-    public void onFollowed() {
+    public void onFollow() {
         followItem.setTitle(R.string.blog_unfollow);
         followed = true;
     }
 
     @Override
-    public void onUnfollowed() {
+    public void onUnfollow() {
         followItem.setTitle(R.string.blog_follow);
         followed = false;
     }
 
     @Override
-    public void setPresenter(FollowContract.Presenter presenter) {
+    public void setPresenter(FollowBlogContract.Presenter presenter) {
 
     }
 

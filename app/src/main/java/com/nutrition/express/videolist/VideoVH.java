@@ -18,18 +18,23 @@ import com.nutrition.express.R;
 import com.nutrition.express.application.ExpressApplication;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.useraction.LikePostContract;
+import com.nutrition.express.useraction.LikePostPresenter;
 
 
 /**
  * Created by huang on 11/2/16.
  */
 
-public class VideoVH extends CommonViewHolder<PostsItem> implements View.OnClickListener {
+public class VideoVH extends CommonViewHolder<PostsItem>
+        implements View.OnClickListener, LikePostContract.View {
     private SimpleDraweeView draweeView;
     private TextView blogName, blogTime, blogCaption, noteCount;
     private ImageView likeIV;
     private String videoUrl, imageUrl;
     private int defaultWidth;
+    private LikePostPresenter presenter;
+    private PostsItem postsItem;
 
     public VideoVH(View itemView) {
         super(itemView);
@@ -42,6 +47,7 @@ public class VideoVH extends CommonViewHolder<PostsItem> implements View.OnClick
         blogCaption = (TextView) itemView.findViewById(R.id.blog_caption);
         blogTime = (TextView) itemView.findViewById(R.id.blog_time);
         likeIV = (ImageView) itemView.findViewById(R.id.blog_like);
+        likeIV.setOnClickListener(this);
         noteCount = (TextView) itemView.findViewById(R.id.note_count);
 
         defaultWidth = ExpressApplication.width;
@@ -49,6 +55,7 @@ public class VideoVH extends CommonViewHolder<PostsItem> implements View.OnClick
 
     @Override
     public void bindView(PostsItem postsItem) {
+        this.postsItem = postsItem;
         videoUrl = postsItem.getVideo_url();
         imageUrl = postsItem.getThumbnail_url();
         String url = postsItem.getThumbnail_url();
@@ -98,6 +105,15 @@ public class VideoVH extends CommonViewHolder<PostsItem> implements View.OnClick
             openBottomSheet();
         } else if (v.getId() == R.id.blog_name) {
             openBlog(blogName.getText().toString());
+        } else if (v.getId() == R.id.blog_like) {
+            if (presenter == null) {
+                presenter = new LikePostPresenter(this);
+            }
+            if (likeIV.isSelected()) {
+                presenter.unlike(postsItem.getId(), postsItem.getReblog_key());
+            } else {
+                presenter.like(postsItem.getId(), postsItem.getReblog_key());
+            }
         }
     }
 
@@ -117,4 +133,23 @@ public class VideoVH extends CommonViewHolder<PostsItem> implements View.OnClick
         itemView.getContext().startActivity(intent);
     }
 
+    @Override
+    public void onLike() {
+        likeIV.setSelected(true);
+        postsItem.setLiked(true);
+    }
+
+    @Override
+    public void onLikeFailure() {
+    }
+
+    @Override
+    public void onUnlike() {
+        likeIV.setSelected(false);
+        postsItem.setLiked(false);
+    }
+
+    @Override
+    public void onUnlikeFailure() {
+    }
 }

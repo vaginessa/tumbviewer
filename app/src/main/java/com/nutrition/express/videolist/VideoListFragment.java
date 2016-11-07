@@ -82,7 +82,7 @@ public class VideoListFragment extends Fragment
 
     @Override
     public void onFollowed() {
-        videoListActivity.onFollowed();
+        videoListActivity.onFollow();
     }
 
     @Override

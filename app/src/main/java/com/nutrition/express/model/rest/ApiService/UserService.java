@@ -39,4 +39,12 @@ public interface UserService {
     @POST("/v2/user/unfollow")
     Call<BaseBean<Void>> unfollow(@Field("url") String url);
 
+    @FormUrlEncoded
+    @POST("/v2/user/like")
+    Call<BaseBean<Void[]>> like(@Field("id") long id, @Field("reblog_key") String key);
+
+    @FormUrlEncoded
+    @POST("/v2/user/unlike")
+    Call<BaseBean<Void[]>> unlike(@Field("id") long id, @Field("reblog_key") String key);
+
 }
