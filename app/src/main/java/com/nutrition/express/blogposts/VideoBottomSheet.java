@@ -1,4 +1,4 @@
-package com.nutrition.express.videolist;
+package com.nutrition.express.blogposts;
 
 import android.app.Dialog;
 import android.content.Intent;

@@ -18,7 +18,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.helper.SearchHistoryHelper;
-import com.nutrition.express.videolist.VideoListActivity;
+import com.nutrition.express.blogposts.VideoListActivity;
 
 /**
  * Created by huang on 11/2/16.

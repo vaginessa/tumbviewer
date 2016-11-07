@@ -6,7 +6,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.rest.bean.PostsItem;
-import com.nutrition.express.photolist.PhotoVH;
+import com.nutrition.express.blogposts.PhotoVH;
 
 /**
  * Created by huang on 11/2/16.

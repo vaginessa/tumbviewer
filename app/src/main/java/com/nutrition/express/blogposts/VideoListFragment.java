@@ -1,4 +1,4 @@
-package com.nutrition.express.videolist;
+package com.nutrition.express.blogposts;
 
 import android.content.Context;
 import android.os.Bundle;

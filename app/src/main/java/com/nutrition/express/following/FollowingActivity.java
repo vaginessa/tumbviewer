@@ -17,7 +17,7 @@ import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.rest.bean.FollowingBlog;
 import com.nutrition.express.util.FrescoUtils;
-import com.nutrition.express.videolist.VideoListActivity;
+import com.nutrition.express.blogposts.VideoListActivity;
 
 import java.util.List;
 

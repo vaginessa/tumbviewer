@@ -13,7 +13,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.rest.bean.PostsItem;
-import com.nutrition.express.videolist.VideoVH;
+import com.nutrition.express.blogposts.VideoVH;
 
 import java.util.List;
 

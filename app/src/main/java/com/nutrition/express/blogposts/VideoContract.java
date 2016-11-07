@@ -1,4 +1,4 @@
-package com.nutrition.express.videolist;
+package com.nutrition.express.blogposts;
 
 import com.nutrition.express.common.BasePresenter;
 import com.nutrition.express.common.BaseView;

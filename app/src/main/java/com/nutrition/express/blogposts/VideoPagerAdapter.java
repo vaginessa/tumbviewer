@@ -1,4 +1,4 @@
-package com.nutrition.express.videolist;
+package com.nutrition.express.blogposts;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

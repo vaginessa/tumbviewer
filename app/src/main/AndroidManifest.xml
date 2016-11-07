@@ -17,7 +17,7 @@
             android:name=".main.MainActivity"
             android:windowSoftInputMode="adjustResize">
         </activity>
-        <activity android:name=".videolist.VideoListActivity" />
+        <activity android:name=".blogposts.VideoListActivity" />
 
         <receiver android:name=".application.DownloadedReceiver">
             <intent-filter>
@@ -32,7 +32,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".following.FollowingActivity" />
-        <activity android:name=".photolist.PhotoActivity"/>
         <activity android:name=".imageviewer.ImageViewerActivity"
             android:theme="@style/ImageViewerTheme"/>
     </application>

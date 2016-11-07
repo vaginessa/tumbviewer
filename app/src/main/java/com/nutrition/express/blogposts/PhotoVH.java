@@ -1,4 +1,4 @@
-package com.nutrition.express.photolist;
+package com.nutrition.express.blogposts;
 
 import android.content.Intent;
 import android.net.Uri;
