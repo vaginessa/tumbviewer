@@ -4,18 +4,17 @@ import com.nutrition.express.common.BasePresenter;
 import com.nutrition.express.common.BaseView;
 
 /**
- * Created by huang on 7/13/16.
+ * Created by huang on 11/7/16.
  */
 
-public interface VideoContract {
+public interface FollowContract {
     interface Presenter extends BasePresenter {
-        void loadData(String blogName, int type);
+        void follow(String url);
+        void unfollow(String url);
     }
 
     interface View extends BaseView<Presenter> {
-        void showData(Object[] items, boolean autoLoadingNext);
-        void showLoadingFailure();
-        void showLoadingNextFailure();
         void onFollowed();
+        void onUnfollowed();
     }
 }

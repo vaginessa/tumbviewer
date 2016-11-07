@@ -8,6 +8,8 @@ import java.util.ArrayList;
  * Created by huang on 2/19/16.
  */
 public class BlogPosts {
+    @SerializedName("blog")
+    private BlogInfoItem blogInfo;
     @SerializedName("total_posts")
     private int count;
     @SerializedName("posts")
@@ -20,4 +22,9 @@ public class BlogPosts {
     public ArrayList<PostsItem> getList() {
         return list;
     }
+
+    public BlogInfoItem getBlogInfo() {
+        return blogInfo;
+    }
+
 }

@@ -36,7 +36,7 @@ public final class OAuth1SigningInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        if (DataManager.getInstance().isLogin() && request.header("Authorization") != null) {
+        if (DataManager.getInstance().isLogin()) {
             request = signRequest(request);
         }
         return chain.proceed(request);

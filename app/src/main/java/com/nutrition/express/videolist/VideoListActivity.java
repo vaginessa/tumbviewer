@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nutrition.express.R;
@@ -21,10 +22,14 @@ import com.nutrition.express.R;
 /**
  * Created by huang on 5/16/16.
  */
-public class VideoListActivity extends AppCompatActivity {
+public class VideoListActivity extends AppCompatActivity implements FollowContract.View {
     public static final int POSTS_VIDEO_DEFAULT = 0;
     public static final int POSTS_VIDEO_LIKED = 1;
     private boolean granted = false;
+    private MenuItem followItem;
+    private FollowPresenter followPresenter;
+    private boolean followed = false;
+    private String blogName;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -32,7 +37,7 @@ public class VideoListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_video_list);
 
         Intent intent = getIntent();
-        String blogName = intent.getStringExtra("blog_name");
+        blogName = intent.getStringExtra("blog_name");
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
@@ -65,6 +70,15 @@ public class VideoListActivity extends AppCompatActivity {
                         }
                     }
                 });
+
+        followPresenter = new FollowPresenter(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_blog, menu);
+        followItem = menu.findItem(R.id.blog_follow);
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -73,9 +87,33 @@ public class VideoListActivity extends AppCompatActivity {
             case android.R.id.home:
                 finish();
                 return true;
+            case R.id.blog_follow:
+                if (followed) {
+                    followPresenter.unfollow(blogName);
+                } else {
+                    followPresenter.follow(blogName);
+                }
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    public void onFollowed() {
+        followItem.setTitle(R.string.blog_unfollow);
+        followed = true;
+    }
+
+    @Override
+    public void onUnfollowed() {
+        followItem.setTitle(R.string.blog_follow);
+        followed = false;
+    }
+
+    @Override
+    public void setPresenter(FollowContract.Presenter presenter) {
+
     }
 
     @Override

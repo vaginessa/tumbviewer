@@ -8,8 +8,11 @@ import com.nutrition.express.model.rest.bean.UserInfo;
 import java.util.Map;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
+import retrofit2.http.POST;
 import retrofit2.http.QueryMap;
 
 /**
@@ -27,4 +30,13 @@ public interface UserService {
     @GET("/v2/user/dashboard")
     Call<BaseBean<BlogPosts>> getDashboard(@Header("Authorization") String auth,
                                            @QueryMap Map<String, String> options);
+
+    @FormUrlEncoded
+    @POST("/v2/user/follow")
+    Call<BaseBean<Void>> follow(@Field("url") String url);
+
+    @FormUrlEncoded
+    @POST("/v2/user/unfollow")
+    Call<BaseBean<Void>> unfollow(@Field("url") String url);
+
 }

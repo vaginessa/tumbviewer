@@ -4,6 +4,8 @@
     <string name="no_video">无视频</string>
     <string name="no_data">无数据</string>
     <string name="load_failed">加载失败</string>
+    <string name="blog_follow">关注</string>
+    <string name="blog_unfollow">取消关注</string>
 
     <string name="page_main">主页</string>
     <string name="page_video">视频</string>

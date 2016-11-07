@@ -44,6 +44,9 @@ public class VideoPresenter implements VideoContract.Presenter {
                     total = blogPosts.getCount();
                     offset += blogPosts.getList().size();
                     view.showData(blogPosts.getList().toArray(), offset < total);
+                    if (blogPosts.getBlogInfo().isFollowed()) {
+                        view.onFollowed();
+                    }
                     break;
                 case "likes":
                     BlogLikes blogLikes = (BlogLikes) baseBean.getResponse();

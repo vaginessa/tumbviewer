@@ -26,6 +26,7 @@ public class VideoListFragment extends Fragment
     private String blogName;
     private boolean loaded = false;
     private VideoPresenter presenter;
+    private VideoListActivity videoListActivity;
 
     @Override
     public void onAttach(Context context) {
@@ -34,6 +35,7 @@ public class VideoListFragment extends Fragment
         Bundle bundle = getArguments();
         type = bundle.getInt("type");
         blogName = bundle.getString("blog_name");
+        videoListActivity = (VideoListActivity) context;
     }
 
     @Override
@@ -76,6 +78,11 @@ public class VideoListFragment extends Fragment
     public void showData(Object[] items, boolean autoLoadingNext) {
         loaded = true;
         adapter.append(items, autoLoadingNext);
+    }
+
+    @Override
+    public void onFollowed() {
+        videoListActivity.onFollowed();
     }
 
     @Override

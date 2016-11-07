@@ -17,6 +17,11 @@ public class BlogInfoItem {
     private boolean ask_anon;
     private boolean share_likes;
     private int likes;
+    private boolean followed;
+    private boolean can_send_fan_mail;
+    private boolean is_blocked_from_primary;
+    private boolean subscribed;
+    private boolean can_subscribe;
 
     public String getTitle() {
         return title;
@@ -70,4 +75,23 @@ public class BlogInfoItem {
         return share_likes;
     }
 
+    public boolean isFollowed() {
+        return followed;
+    }
+
+    public boolean isCan_send_fan_mail() {
+        return can_send_fan_mail;
+    }
+
+    public boolean is_blocked_from_primary() {
+        return is_blocked_from_primary;
+    }
+
+    public boolean isSubscribed() {
+        return subscribed;
+    }
+
+    public boolean isCan_subscribe() {
+        return can_subscribe;
+    }
 }
