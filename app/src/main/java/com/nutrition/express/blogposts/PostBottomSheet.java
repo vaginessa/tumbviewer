@@ -22,7 +22,7 @@ import java.util.ArrayList;
 /**
  * Created by huang on 5/30/16.
  */
-public class VideoBottomSheet extends BottomSheetDialogFragment implements View.OnClickListener {
+public class PostBottomSheet extends BottomSheetDialogFragment implements View.OnClickListener {
     BottomSheetBehavior behavior;
     private String videoUrl;
     private String imageUrl;

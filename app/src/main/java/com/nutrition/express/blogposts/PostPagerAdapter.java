@@ -8,10 +8,10 @@ import android.support.v4.app.FragmentPagerAdapter;
 /**
  * Created by huang on 5/26/16.
  */
-public class VideoPagerAdapter extends FragmentPagerAdapter {
+public class PostPagerAdapter extends FragmentPagerAdapter {
     private String blogName;
 
-    public VideoPagerAdapter(FragmentManager fm, String blogName) {
+    public PostPagerAdapter(FragmentManager fm, String blogName) {
         super(fm);
         this.blogName = blogName;
     }
@@ -21,11 +21,11 @@ public class VideoPagerAdapter extends FragmentPagerAdapter {
         Bundle bundle = new Bundle();
         bundle.putString("blog_name", blogName);
         if (position == 0) {
-            bundle.putInt("type", VideoListActivity.POSTS_VIDEO_DEFAULT);
+            bundle.putInt("type", PostListActivity.POSTS_VIDEO_DEFAULT);
         } else if (position == 1) {
-            bundle.putInt("type", VideoListActivity.POSTS_VIDEO_LIKED);
+            bundle.putInt("type", PostListActivity.POSTS_VIDEO_LIKED);
         }
-        VideoListFragment fragment = new VideoListFragment();
+        PostListFragment fragment = new PostListFragment();
         fragment.setArguments(bundle);
         return fragment;
     }

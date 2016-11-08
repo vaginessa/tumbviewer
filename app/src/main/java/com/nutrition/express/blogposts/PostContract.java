@@ -7,7 +7,7 @@ import com.nutrition.express.common.BaseView;
  * Created by huang on 7/13/16.
  */
 
-public interface VideoContract {
+public interface PostContract {
     interface Presenter extends BasePresenter {
         void loadData(String blogName, int type);
     }

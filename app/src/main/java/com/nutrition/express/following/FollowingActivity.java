@@ -17,7 +17,7 @@ import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.rest.bean.FollowingBlog;
 import com.nutrition.express.util.FrescoUtils;
-import com.nutrition.express.blogposts.VideoListActivity;
+import com.nutrition.express.blogposts.PostListActivity;
 
 import java.util.List;
 
@@ -129,7 +129,7 @@ public class FollowingActivity extends AppCompatActivity
     }
 
     private void openBlog(String name) {
-        Intent intent = new Intent(this, VideoListActivity.class);
+        Intent intent = new Intent(this, PostListActivity.class);
         intent.putExtra("blog_name", name);
         startActivity(intent);
     }

@@ -328,14 +328,14 @@ public class PostVH extends CommonViewHolder<PostsItem>
         Bundle bundle = new Bundle();
         bundle.putString("image_url", postsItem.getThumbnail_url());
         bundle.putString("video_url", postsItem.getVideo_url());
-        VideoBottomSheet bottomSheet = new VideoBottomSheet();
+        PostBottomSheet bottomSheet = new PostBottomSheet();
         bottomSheet.setArguments(bundle);
         bottomSheet.show(((FragmentActivity) itemView.getContext()).getSupportFragmentManager(),
                 bottomSheet.getTag());
     }
 
     private void openBlog(String blogName) {
-        Intent intent = new Intent(itemView.getContext(), VideoListActivity.class);
+        Intent intent = new Intent(itemView.getContext(), PostListActivity.class);
         intent.putExtra("blog_name", blogName);
         itemView.getContext().startActivity(intent);
     }

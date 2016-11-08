@@ -18,7 +18,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.helper.SearchHistoryHelper;
-import com.nutrition.express.blogposts.VideoListActivity;
+import com.nutrition.express.blogposts.PostListActivity;
 
 /**
  * Created by huang on 11/2/16.
@@ -89,7 +89,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void openPostsVideo(String blogName) {
-        Intent intent = new Intent(getActivity(), VideoListActivity.class);
+        Intent intent = new Intent(getActivity(), PostListActivity.class);
         intent.putExtra("blog_name", blogName);
         startActivity(intent);
         historyHelper.add(blogName);

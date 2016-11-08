@@ -17,7 +17,7 @@
             android:name=".main.MainActivity"
             android:windowSoftInputMode="adjustResize">
         </activity>
-        <activity android:name=".blogposts.VideoListActivity" />
+        <activity android:name=".blogposts.PostListActivity" />
 
         <receiver android:name=".application.DownloadedReceiver">
             <intent-filter>

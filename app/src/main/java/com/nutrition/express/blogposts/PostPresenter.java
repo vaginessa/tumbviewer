@@ -1,5 +1,6 @@
 package com.nutrition.express.blogposts;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.nutrition.express.application.Constants;
@@ -10,7 +11,9 @@ import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.BlogLikes;
 import com.nutrition.express.model.rest.bean.BlogPosts;
+import com.nutrition.express.model.rest.bean.PostsItem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -20,13 +23,13 @@ import static android.content.ContentValues.TAG;
 /**
  * Created by huang on 5/17/16.
  */
-public class VideoPresenter implements VideoContract.Presenter {
-    private VideoContract.View view;
+public class PostPresenter implements PostContract.Presenter {
+    private PostContract.View view;
     private BlogService blogService;
     private int offset = 0, total;
     private boolean loading = false;
 
-    public VideoPresenter(VideoContract.View view) {
+    public PostPresenter(PostContract.View view) {
         this.view = view;
         blogService = RestClient.getInstance().getBlogService();
     }
@@ -43,7 +46,15 @@ public class VideoPresenter implements VideoContract.Presenter {
                     BlogPosts blogPosts = (BlogPosts) baseBean.getResponse();
                     total = blogPosts.getCount();
                     offset += blogPosts.getList().size();
-                    view.showData(blogPosts.getList().toArray(), offset < total);
+                    //trim to only show videos and photos
+                    ArrayList<PostsItem> postsItems = new ArrayList<>(blogPosts.getList().size());
+                    for (PostsItem item: blogPosts.getList()) {
+                        if (TextUtils.equals(item.getType(), "video") ||
+                                TextUtils.equals(item.getType(), "photo")) {
+                            postsItems.add(item);
+                        }
+                    }
+                    view.showData(postsItems.toArray(), offset < total);
                     if (blogPosts.getBlogInfo().isFollowed()) {
                         view.onFollowed();
                     }
@@ -80,8 +91,8 @@ public class VideoPresenter implements VideoContract.Presenter {
         loading = true;
         HashMap<String, String> para = new HashMap<>();
         para.put("offset", Integer.toString(offset));
-        if (type == VideoListActivity.POSTS_VIDEO_DEFAULT) {
-            Call<BaseBean<BlogPosts>> postsCall = blogService.getBlogPosts(blogName, "video",
+        if (type == PostListActivity.POSTS_VIDEO_DEFAULT) {
+            Call<BaseBean<BlogPosts>> postsCall = blogService.getBlogPosts(blogName, "",
                     Constants.CONSUMER_KEY, para);
             postsCall.enqueue(new RestCallBack<BlogPosts>(listener, "posts"));
         } else {

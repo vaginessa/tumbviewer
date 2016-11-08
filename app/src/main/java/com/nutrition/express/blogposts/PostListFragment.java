@@ -18,15 +18,15 @@ import com.nutrition.express.model.rest.bean.PostsItem;
 /**
  * Created by huang on 5/26/16.
  */
-public class VideoListFragment extends Fragment
-        implements CommonRVAdapter.OnLoadListener, VideoContract.View {
+public class PostListFragment extends Fragment
+        implements CommonRVAdapter.OnLoadListener, PostContract.View {
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
     private int type;
     private String blogName;
     private boolean loaded = false;
-    private VideoPresenter presenter;
-    private VideoListActivity videoListActivity;
+    private PostPresenter presenter;
+    private PostListActivity postListActivity;
 
     @Override
     public void onAttach(Context context) {
@@ -35,7 +35,7 @@ public class VideoListFragment extends Fragment
         Bundle bundle = getArguments();
         type = bundle.getInt("type");
         blogName = bundle.getString("blog_name");
-        videoListActivity = (VideoListActivity) context;
+        postListActivity = (PostListActivity) context;
     }
 
     @Override
@@ -82,7 +82,7 @@ public class VideoListFragment extends Fragment
 
     @Override
     public void onFollowed() {
-        videoListActivity.onFollow();
+        postListActivity.onFollow();
     }
 
     @Override
@@ -96,7 +96,7 @@ public class VideoListFragment extends Fragment
     }
 
     @Override
-    public void setPresenter(VideoContract.Presenter presenter) {
+    public void setPresenter(PostContract.Presenter presenter) {
 
     }
 
@@ -112,7 +112,7 @@ public class VideoListFragment extends Fragment
 
     private void getPostsVideo() {
         if (presenter == null) {
-            presenter = new VideoPresenter(this);
+            presenter = new PostPresenter(this);
         }
         presenter.loadData(blogName, type);
     }

@@ -24,7 +24,7 @@ import com.nutrition.express.useraction.FollowBlogPresenter;
 /**
  * Created by huang on 5/16/16.
  */
-public class VideoListActivity extends AppCompatActivity implements FollowBlogContract.View {
+public class PostListActivity extends AppCompatActivity implements FollowBlogContract.View {
     public static final int POSTS_VIDEO_DEFAULT = 0;
     public static final int POSTS_VIDEO_LIKED = 1;
     private boolean granted = false;
@@ -53,7 +53,7 @@ public class VideoListActivity extends AppCompatActivity implements FollowBlogCo
         collapsingToolbarLayout.setTitleEnabled(false);
 
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-        viewPager.setAdapter(new VideoPagerAdapter(getSupportFragmentManager(), blogName));
+        viewPager.setAdapter(new PostPagerAdapter(getSupportFragmentManager(), blogName));
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(
@@ -63,7 +63,7 @@ public class VideoListActivity extends AppCompatActivity implements FollowBlogCo
                         super.onTabReselected(tab);
                         if (tab.getPosition() == viewPager.getCurrentItem()) {
                             //hack code;
-                            VideoListFragment fragment = (VideoListFragment) getSupportFragmentManager()
+                            PostListFragment fragment = (PostListFragment) getSupportFragmentManager()
                                     .findFragmentByTag("android:switcher:" + R.id.viewPager + ":"
                                             + viewPager.getCurrentItem());
                             if (fragment != null) {
