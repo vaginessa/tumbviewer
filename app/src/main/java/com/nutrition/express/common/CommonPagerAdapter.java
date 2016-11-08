@@ -1,4 +1,4 @@
-package com.nutrition.express.main;
+package com.nutrition.express.common;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,11 +10,11 @@ import java.util.List;
  * Created by huang on 11/2/16.
  */
 
-public class MainPagerAdapter extends FragmentPagerAdapter {
+public class CommonPagerAdapter extends FragmentPagerAdapter {
     private List<Fragment> list;
     private List<String> titles;
 
-    public MainPagerAdapter(FragmentManager fm, List<Fragment> list, List<String> titles) {
+    public CommonPagerAdapter(FragmentManager fm, List<Fragment> list, List<String> titles) {
         super(fm);
         this.list = list;
         this.titles = titles;

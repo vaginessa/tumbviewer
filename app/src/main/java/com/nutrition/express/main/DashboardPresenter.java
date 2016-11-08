@@ -36,7 +36,7 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
             options.put("limit", "" + defaultLimit);
             options.put("offset", "" + offset);
             options.put("type", type);
-            call = userService.getDashboard("OAuth", options);
+            call = userService.getDashboard(options);
             call.enqueue(new RestCallBack<BlogPosts>(this, "dashboard"));
         }
     }

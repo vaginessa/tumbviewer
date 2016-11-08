@@ -7,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nutrition.express.R;
+import com.nutrition.express.common.CommonPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
         viewPager.setOffscreenPageLimit(5);
-        viewPager.setAdapter(new MainPagerAdapter(getSupportFragmentManager(), list, titles));
+        viewPager.setAdapter(new CommonPagerAdapter(getSupportFragmentManager(), list, titles));
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
     }

@@ -17,6 +17,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.following.FollowingActivity;
+import com.nutrition.express.likes.LikesActivity;
 import com.nutrition.express.model.rest.bean.BlogInfoItem;
 import com.nutrition.express.model.rest.bean.UserInfo;
 import com.nutrition.express.util.FrescoUtils;
@@ -101,6 +102,8 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.like_layout:
+                Intent likeIntent = new Intent(getActivity(), LikesActivity.class);
+                startActivity(likeIntent);
                 break;
             case R.id.following_layout:
                 Intent intent = new Intent(getActivity(), FollowingActivity.class);

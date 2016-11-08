@@ -22,7 +22,6 @@ public class PostListFragment extends Fragment
         implements CommonRVAdapter.OnLoadListener, PostContract.View {
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
-    private int type;
     private String blogName;
     private boolean loaded = false;
     private PostPresenter presenter;
@@ -33,7 +32,6 @@ public class PostListFragment extends Fragment
         super.onAttach(context);
 
         Bundle bundle = getArguments();
-        type = bundle.getInt("type");
         blogName = bundle.getString("blog_name");
         postListActivity = (PostListActivity) context;
     }
@@ -114,7 +112,7 @@ public class PostListFragment extends Fragment
         if (presenter == null) {
             presenter = new PostPresenter(this);
         }
-        presenter.loadData(blogName, type);
+        presenter.loadData(blogName);
     }
 
     private CommonRVAdapter buildAdapter() {

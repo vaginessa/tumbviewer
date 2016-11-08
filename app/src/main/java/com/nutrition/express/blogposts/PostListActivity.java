@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -18,15 +19,18 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nutrition.express.R;
+import com.nutrition.express.likes.LikesFragment;
+import com.nutrition.express.common.CommonPagerAdapter;
 import com.nutrition.express.useraction.FollowBlogContract;
 import com.nutrition.express.useraction.FollowBlogPresenter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by huang on 5/16/16.
  */
 public class PostListActivity extends AppCompatActivity implements FollowBlogContract.View {
-    public static final int POSTS_VIDEO_DEFAULT = 0;
-    public static final int POSTS_VIDEO_LIKED = 1;
     private boolean granted = false;
     private MenuItem followItem;
     private FollowBlogPresenter followBlogPresenter;
@@ -52,8 +56,26 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
                 (CollapsingToolbarLayout) findViewById(R.id.collapsingToolbar);
         collapsingToolbarLayout.setTitleEnabled(false);
 
+        List<Fragment> list = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("blog_name", blogName);
+        PostListFragment postListFragment = new PostListFragment();
+        postListFragment.setArguments(bundle);
+        LikesFragment likesFragment = new LikesFragment();
+        likesFragment.setArguments(bundle);
+
+        list.add(postListFragment);
+        titles.add(getString(R.string.page_user_blog));
+        list.add(likesFragment);
+        titles.add(getString(R.string.page_user_like));
+
+        CommonPagerAdapter pagerAdapter =
+                new CommonPagerAdapter(getSupportFragmentManager(), list, titles);
+
         final ViewPager viewPager = (ViewPager) findViewById(R.id.viewPager);
-        viewPager.setAdapter(new PostPagerAdapter(getSupportFragmentManager(), blogName));
+        viewPager.setAdapter(pagerAdapter);
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
         tabLayout.setOnTabSelectedListener(

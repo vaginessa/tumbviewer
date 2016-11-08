@@ -7,8 +7,6 @@ import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.FollowingBlog;
 
-import java.util.HashMap;
-
 import retrofit2.Call;
 
 /**
@@ -38,15 +36,9 @@ public class FollowingPresenter implements FollowingContract.FollowersPresenter,
         getFollowingBlog();
     }
 
-    /**
-     * the header is not empty to tell okhttp to using oauth1
-     */
     private void getFollowingBlog() {
         if (followingCall == null) {
-            HashMap<String, String> options = new HashMap<>(2);
-            options.put("limit", "" + defaultLimit);
-            options.put("offset", "" + offset);
-            followingCall = service.getFollowing("OAuth", options);
+            followingCall = service.getFollowing(defaultLimit, offset);
             followingCall.enqueue(new RestCallBack<FollowingBlog>(this, "following"));
         }
     }

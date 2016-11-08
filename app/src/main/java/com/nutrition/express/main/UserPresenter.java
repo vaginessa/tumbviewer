@@ -26,7 +26,7 @@ public class UserPresenter implements UserContract.Presenter, ResponseListener {
     @Override
     public void getMyInfo() {
         if (call == null) {
-            call = service.getInfo("OAuth");
+            call = service.getInfo();
             call.enqueue(new RestCallBack<UserInfo>(this, "info"));
         }
     }

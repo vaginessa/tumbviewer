@@ -9,11 +9,11 @@ import com.nutrition.express.common.BaseView;
 
 public interface PostContract {
     interface Presenter extends BasePresenter {
-        void loadData(String blogName, int type);
+        void loadData(String blogName);
     }
 
     interface View extends BaseView<Presenter> {
-        void showData(Object[] items, boolean autoLoadingNext);
+        void showData(Object[] items, boolean hasNext);
         void showLoadingFailure();
         void showLoadingNextFailure();
         void onFollowed();

@@ -31,6 +31,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".likes.LikesActivity"/>
         <activity android:name=".following.FollowingActivity" />
         <activity android:name=".imageviewer.ImageViewerActivity"
             android:theme="@style/ImageViewerTheme"/>
