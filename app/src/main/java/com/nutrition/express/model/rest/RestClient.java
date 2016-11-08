@@ -1,6 +1,7 @@
 package com.nutrition.express.model.rest;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.rest.ApiService.BlogService;
@@ -42,11 +43,11 @@ public class RestClient {
                 if (message.startsWith("{") || message.startsWith("[")) {
                     Logger.json(message);
                 } else {
-                    Logger.log(Logger.DEBUG, "okhttp", message, null);
+                    Log.d("okhttp", "" + message);
                 }
             }
         };
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(logger);
         interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new OAuth1SigningInterceptor())

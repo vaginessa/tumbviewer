@@ -10,10 +10,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.nutrition.express.R;
+import com.nutrition.express.blogposts.PostVH;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.rest.bean.PostsItem;
-import com.nutrition.express.blogposts.VideoVH;
 
 import java.util.List;
 
@@ -77,10 +77,10 @@ public class DashboardFragment extends Fragment
 
     protected CommonRVAdapter getAdapter() {
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.addItemType(PostsItem.class, R.layout.item_video, new CommonRVAdapter.CreateViewHolder() {
+        builder.addItemType(PostsItem.class, R.layout.item_post, new CommonRVAdapter.CreateViewHolder() {
             @Override
             public CommonViewHolder createVH(View view) {
-                return new VideoVH(view);
+                return new PostVH(view);
             }
         });
         builder.setLoadListener(this);

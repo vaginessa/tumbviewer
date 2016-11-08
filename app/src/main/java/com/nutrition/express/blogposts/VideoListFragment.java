@@ -119,11 +119,11 @@ public class VideoListFragment extends Fragment
 
     private CommonRVAdapter buildAdapter() {
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.addItemType(PostsItem.class, R.layout.item_video,
+        builder.addItemType(PostsItem.class, R.layout.item_post,
                 new CommonRVAdapter.CreateViewHolder() {
                     @Override
                     public CommonViewHolder createVH(View view) {
-                        return new VideoVH(view);
+                        return new PostVH(view);
                     }
                 });
         builder.setLoadListener(this);

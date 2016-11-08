@@ -3,6 +3,7 @@ package com.nutrition.express.application;
 import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
@@ -34,6 +35,7 @@ public class ExpressApplication extends Application {
         imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
                 .setMainDiskCacheConfig(cacheConfig)
                 .setDownsampleEnabled(true)
+                .setBitmapsConfig(Bitmap.Config.RGB_565)
                 .build();
         Fresco.initialize(this, imagePipelineConfig);
 

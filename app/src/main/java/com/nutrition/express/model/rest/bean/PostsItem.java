@@ -25,6 +25,8 @@ public class PostsItem {
     private boolean followed;
     private boolean liked;
     private long note_count;
+    private String source_url;
+    private String source_title;
     private String caption;
     private ReblogItem reblog;
     private List<TrailItem> trail;
@@ -133,6 +135,14 @@ public class PostsItem {
 
     public long getNote_count() {
         return note_count;
+    }
+
+    public String getSource_url() {
+        return source_url;
+    }
+
+    public String getSource_title() {
+        return source_title;
     }
 
     public String getCaption() {

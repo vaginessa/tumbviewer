@@ -99,6 +99,9 @@ public class ImageViewerActivity extends AppCompatActivity {
                 imageView.setImageResource(R.mipmap.radiobutton_default);
             }
             mImageViews[position].setImageResource(R.mipmap.radiobutton_select);
+            if (saveItem == null) {
+                return;
+            }
             if (FileUtils.imageSaved(photoUris.get(position))) {
                 saveItem.setTitle(R.string.pic_saved);
             } else {
@@ -230,6 +233,11 @@ public class ImageViewerActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_image_viewer, menu);
         saveItem = menu.findItem(R.id.save);
+        if (FileUtils.imageSaved(photoUris.get(viewPager.getCurrentItem()))) {
+            saveItem.setTitle(R.string.pic_saved);
+        } else {
+            saveItem.setTitle(R.string.pic_save);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
