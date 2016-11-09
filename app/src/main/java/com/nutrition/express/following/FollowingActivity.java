@@ -86,7 +86,7 @@ public class FollowingActivity extends AppCompatActivity
 
     @Override
     public void onFailure(Throwable t) {
-        adapter.showLoadingFailure(t);
+        adapter.showLoadingFailure(t.getMessage());
     }
 
     @Override

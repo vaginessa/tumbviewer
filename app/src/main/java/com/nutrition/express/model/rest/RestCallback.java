@@ -5,6 +5,7 @@ import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.nutrition.express.BuildConfig;
 import com.nutrition.express.model.rest.bean.BaseBean;
+import com.nutrition.express.model.rest.bean.ErrorBean;
 
 import java.io.IOException;
 
@@ -34,9 +35,9 @@ public class RestCallback<T> implements Callback<BaseBean<T>> {
             // status code [400, 599]
             // the server return a JsonObject that contain error message.
             try {
-                BaseBean<Void> baseBean = new Gson().fromJson(response.errorBody().string(),
-                        new TypeToken<BaseBean<Void>>(){}.getType());
-                listener.onError(baseBean.getMeta().getStatus(), baseBean.getMeta().getMsg(), tag);
+                ErrorBean errorBean = new Gson().fromJson(response.errorBody().string(),
+                        new TypeToken<ErrorBean>(){}.getType());
+                listener.onError(errorBean.getMeta().getStatus(), errorBean.getMeta().getMsg(), tag);
             } catch (IOException | JsonSyntaxException e) {
                 listener.onFailure(e, tag);
             }

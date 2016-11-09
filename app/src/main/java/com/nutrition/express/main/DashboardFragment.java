@@ -3,6 +3,7 @@ package com.nutrition.express.main;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,12 +26,20 @@ public class DashboardFragment extends Fragment
         implements DashboardContract.View, CommonRVAdapter.OnLoadListener {
     private DashboardPresenter presenter;
     private CommonRVAdapter adapter;
+    private SwipeRefreshLayout refreshLayout;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        refreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.refreshLayout);
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                presenter.refresh();
+            }
+        });
         RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
@@ -59,8 +68,14 @@ public class DashboardFragment extends Fragment
     }
 
     @Override
+    public void resetData(List<PostsItem> blogPosts, boolean hasNext) {
+        adapter.resetData(blogPosts.toArray(), hasNext);
+        refreshLayout.setRefreshing(false);
+    }
+
+    @Override
     public void onFailure(Throwable t) {
-        adapter.showLoadingFailure(t);
+        adapter.showLoadingFailure(t.getMessage());
     }
 
     @Override

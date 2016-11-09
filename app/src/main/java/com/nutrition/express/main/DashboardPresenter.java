@@ -21,7 +21,7 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
     private Call<BaseBean<BlogPosts>> call;
     private int defaultLimit = 20;
     private int offset = 0;
-    private boolean hasNext = true;
+    private boolean hasNext = true, reset = false;
     private String type;
 
     public DashboardPresenter(DashboardContract.View view, String type) {
@@ -39,6 +39,14 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
             call = userService.getDashboard(options);
             call.enqueue(new RestCallback<BlogPosts>(this, "dashboard"));
         }
+    }
+
+    @Override
+    public void refresh() {
+        offset = 0;
+        hasNext = true;
+        reset = true;
+        getDashboard();
     }
 
     @Override
@@ -72,7 +80,12 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
         if (posts.getList().size() < defaultLimit) {
             hasNext = false;
         }
-        view.showDashboard(posts.getList(), hasNext);
+        if (reset) {
+            reset = false;
+            view.resetData(posts.getList(), hasNext);
+        } else {
+            view.showDashboard(posts.getList(), hasNext);
+        }
     }
 
     @Override

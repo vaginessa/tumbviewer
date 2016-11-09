@@ -14,10 +14,12 @@ public interface DashboardContract {
     interface Presenter extends BasePresenter {
         void getDashboard();
         void getNextDashboard();
+        void refresh();
     }
 
     interface View extends BaseView {
         void showDashboard(List<PostsItem> blogPosts, boolean hasNext);
+        void resetData(List<PostsItem> blogPosts, boolean hasNext);
     }
 
 }

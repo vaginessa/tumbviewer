@@ -155,6 +155,11 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         }
     }
 
+    public void resetData(Object[] data, boolean autoLoadingNext ) {
+        this.data.clear();
+        append(data, autoLoadingNext);
+    }
+
     public void showLoadingFinish() {
         state = LOADING_FINISH;
         notifyItemChanged(data.size());

@@ -258,7 +258,7 @@ public class PostVH extends CommonViewHolder<PostsItem>
         Uri uri = url == null ? Uri.EMPTY : Uri.parse(url);
         DraweeController controller = Fresco.newDraweeControllerBuilder()
                 .setOldController(view.getController())
-                .setTapToRetryEnabled(true)
+//                .setTapToRetryEnabled(true)
                 .setAutoPlayAnimations(true)
                 .setUri(uri)
                 .build();

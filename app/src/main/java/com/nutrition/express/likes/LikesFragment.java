@@ -101,7 +101,7 @@ public class LikesFragment extends Fragment
 
     @Override
     public void onFailure(Throwable t) {
-        adapter.showLoadingFailure(t);
+        adapter.showLoadingFailure(t.getMessage());
     }
 
     @Override
