@@ -26,4 +26,9 @@
     <style name="ImageViewerTheme" parent="BaseAppTheme">
         <item name="android:windowBackground">@color/divider_color</item>
     </style>
+
+    <style name="VideoPlayerTheme" parent="BaseAppTheme">
+        <item name="android:windowBackground">@color/divider_color</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
 </resources>

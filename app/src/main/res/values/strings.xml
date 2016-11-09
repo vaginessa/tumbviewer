@@ -24,6 +24,7 @@
     <string name="note_count">%1$d 条热度</string>
     <string name="update_des">%1$s 更新</string>
 
+    <string name="video_play">播放</string>
     <string name="video_view_image">查看缩略图</string>
     <string name="video_download">下载</string>
     <string name="video_copy_url">复制链接</string>

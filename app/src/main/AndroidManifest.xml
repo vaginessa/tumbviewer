@@ -15,26 +15,33 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".main.MainActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait" />
+        <activity android:name=".blogposts.PostListActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".login.LoginActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
-        <activity android:name=".blogposts.PostListActivity" />
+        <activity android:name=".likes.LikesActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".following.FollowingActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".imageviewer.ImageViewerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/ImageViewerTheme" />
+        <activity android:name=".videoplayer.VideoPlayerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@style/VideoPlayerTheme" />
 
         <receiver android:name=".application.DownloadedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
-
-        <activity android:name=".login.LoginActivity" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".likes.LikesActivity"/>
-        <activity android:name=".following.FollowingActivity" />
-        <activity android:name=".imageviewer.ImageViewerActivity"
-            android:theme="@style/ImageViewerTheme"/>
     </application>
 
 </manifest>

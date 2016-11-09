@@ -16,6 +16,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.application.SystemDownload;
 import com.nutrition.express.imageviewer.ImageViewerActivity;
 import com.nutrition.express.util.Utils;
+import com.nutrition.express.videoplayer.VideoPlayerActivity;
 
 import java.util.ArrayList;
 
@@ -42,6 +43,7 @@ public class PostBottomSheet extends BottomSheetDialogFragment implements View.O
         TextView textView = (TextView) view.findViewById(R.id.item_link);
         textView.setText(videoUrl);
         textView.setOnClickListener(this);
+        view.findViewById(R.id.item_play).setOnClickListener(this);
         view.findViewById(R.id.item_view_image).setOnClickListener(this);
         view.findViewById(R.id.item_download).setOnClickListener(this);
         view.findViewById(R.id.item_copy).setOnClickListener(this);
@@ -53,6 +55,11 @@ public class PostBottomSheet extends BottomSheetDialogFragment implements View.O
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.item_play:
+                Intent playerIntent = new Intent(getContext(), VideoPlayerActivity.class);
+                playerIntent.putExtra("url", videoUrl);
+                startActivity(playerIntent);
+                break;
             case R.id.item_view_image:
                 ArrayList<String> urls = new ArrayList<>();
                 urls.add(imageUrl);

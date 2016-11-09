@@ -40,7 +40,7 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_video_list);
+        setContentView(R.layout.activity_blog_posts);
 
         Intent intent = getIntent();
         blogName = intent.getStringExtra("blog_name");
