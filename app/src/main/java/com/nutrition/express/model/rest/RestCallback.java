@@ -1,7 +1,12 @@
 package com.nutrition.express.model.rest;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.reflect.TypeToken;
 import com.nutrition.express.BuildConfig;
 import com.nutrition.express.model.rest.bean.BaseBean;
+
+import java.io.IOException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -10,11 +15,11 @@ import retrofit2.Response;
 /**
  * Created by huang on 2/18/16.
  */
-public class RestCallBack<T> implements Callback<BaseBean<T>> {
+public class RestCallback<T> implements Callback<BaseBean<T>> {
     private ResponseListener listener;
     private String tag;
 
-    public RestCallBack(ResponseListener listener, String tag) {
+    public RestCallback(ResponseListener listener, String tag) {
         this.listener = listener;
         this.tag = tag;
     }
@@ -24,15 +29,17 @@ public class RestCallBack<T> implements Callback<BaseBean<T>> {
         if (response.isSuccessful()) {
             // status code [200, 299]
             BaseBean<T> body = response.body();
-            if (body != null) {
-                listener.onResponse(body, tag);
-            } else {
-                listener.onFailure(tag);
-            }
+            listener.onResponse(body, tag);
         } else {
             // status code [400, 599]
-            // the server can return a JsonObject that contain error message.
-            listener.onFailure(tag);
+            // the server return a JsonObject that contain error message.
+            try {
+                BaseBean<Void> baseBean = new Gson().fromJson(response.errorBody().string(),
+                        new TypeToken<BaseBean<Void>>(){}.getType());
+                listener.onError(baseBean.getMeta().getStatus(), baseBean.getMeta().getMsg(), tag);
+            } catch (IOException | JsonSyntaxException e) {
+                listener.onFailure(e, tag);
+            }
         }
     }
 
@@ -41,7 +48,7 @@ public class RestCallBack<T> implements Callback<BaseBean<T>> {
         if (BuildConfig.DEBUG) {
             t.printStackTrace();
         }
-        listener.onFailure(tag);
+        listener.onFailure(t, tag);
     }
 
 }

@@ -13,9 +13,8 @@ public interface LoginContract {
         void getAccessToken(String oauthVerifier);
     }
 
-    interface LoginView extends BaseView<LoginPresenter> {
+    interface LoginView extends BaseView {
         void loadUrl(String url);
         void showLoginSuccess();
-        void showLoginFailure(String error);
     }
 }

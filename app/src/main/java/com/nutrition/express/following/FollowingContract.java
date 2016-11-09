@@ -16,9 +16,7 @@ public interface FollowingContract {
         void getNextFollowing();
     }
 
-    interface FollowersView extends BaseView<FollowersPresenter> {
+    interface FollowersView extends BaseView {
         void showFollowing(List<FollowingBlog.Blog> blogs, boolean hasNext);
-        void showLoadingFailure();
-        void showLoadingNextFailure();
     }
 }

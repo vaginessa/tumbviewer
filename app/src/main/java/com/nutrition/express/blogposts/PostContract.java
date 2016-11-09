@@ -12,10 +12,8 @@ public interface PostContract {
         void loadData(String blogName);
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         void showData(Object[] items, boolean hasNext);
-        void showLoadingFailure();
-        void showLoadingNextFailure();
         void onFollowed();
     }
 }

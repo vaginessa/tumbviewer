@@ -17,9 +17,7 @@ public interface LikesContract {
         void getLikePosts(String name);
     }
 
-    interface LikesView extends BaseView<LikesPresenter> {
+    interface LikesView extends BaseView {
         void showLikePosts(List<PostsItem> posts, boolean hasNext);
-        void onLoadFailure();
-        void onLoadNextFailure();
     }
 }

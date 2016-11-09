@@ -64,6 +64,12 @@ public class FollowingActivity extends AppCompatActivity
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        presenter.onDetach();
+    }
+
+    @Override
     public void retry() {
         presenter.getMyFollowing();
     }
@@ -79,18 +85,13 @@ public class FollowingActivity extends AppCompatActivity
     }
 
     @Override
-    public void showLoadingFailure() {
-        adapter.showLoadingFailure();
+    public void onFailure(Throwable t) {
+        adapter.showLoadingFailure(t);
     }
 
     @Override
-    public void showLoadingNextFailure() {
-        adapter.showLoadingNextFailure();
-    }
-
-    @Override
-    public void setPresenter(FollowingContract.FollowersPresenter presenter) {
-
+    public void onError(int code, String error) {
+        adapter.showLoadingFailure(getString(R.string.load_failure_des, code, error));
     }
 
     public class BlogVH extends CommonViewHolder<FollowingBlog.Blog>

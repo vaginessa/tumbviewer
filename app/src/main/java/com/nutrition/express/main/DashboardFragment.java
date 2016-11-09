@@ -46,23 +46,26 @@ public class DashboardFragment extends Fragment
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter != null) {
+            presenter.onDetach();
+        }
+    }
+
+    @Override
     public void showDashboard(List<PostsItem> blogPosts, boolean hasNext) {
         adapter.append(blogPosts.toArray(), hasNext);
     }
 
     @Override
-    public void showLoadingFailure() {
-        adapter.showLoadingFailure();
+    public void onFailure(Throwable t) {
+        adapter.showLoadingFailure(t);
     }
 
     @Override
-    public void showLoadingNextFailure() {
-        adapter.showLoadingNextFailure();
-    }
-
-    @Override
-    public void setPresenter(DashboardContract.Presenter presenter) {
-
+    public void onError(int code, String error) {
+        adapter.showLoadingFailure(getString(R.string.load_failure_des, code, error));
     }
 
     @Override

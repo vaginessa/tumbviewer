@@ -57,6 +57,14 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (loginPresenter != null) {
+            loginPresenter.onDetach();
+        }
+    }
+
+    @Override
     public void loadUrl(String url) {
         webView.loadUrl(url);
     }
@@ -70,14 +78,15 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     }
 
     @Override
-    public void showLoginFailure(String error) {
-        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+    public void onFailure(Throwable t) {
+        Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
         //// TODO: 10/18/16 show a failure view
     }
 
     @Override
-    public void setPresenter(LoginContract.LoginPresenter presenter) {
-
+    public void onError(int code, String error) {
+        Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        //// TODO: 10/18/16 show a failure view
     }
 
 }

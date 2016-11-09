@@ -84,18 +84,13 @@ public class PostListFragment extends Fragment
     }
 
     @Override
-    public void showLoadingFailure() {
-        adapter.showLoadingFailure();
+    public void onFailure(Throwable t) {
+        adapter.showLoadingFailure(t.getMessage());
     }
 
     @Override
-    public void showLoadingNextFailure() {
-        adapter.showLoadingNextFailure();
-    }
-
-    @Override
-    public void setPresenter(PostContract.Presenter presenter) {
-
+    public void onError(int code, String error) {
+        adapter.showLoadingFailure(getString(R.string.load_failure_des, code, error));
     }
 
     @Override

@@ -2,7 +2,7 @@ package com.nutrition.express.following;
 
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
-import com.nutrition.express.model.rest.RestCallBack;
+import com.nutrition.express.model.rest.RestCallback;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.FollowingBlog;
@@ -39,7 +39,7 @@ public class FollowingPresenter implements FollowingContract.FollowersPresenter,
     private void getFollowingBlog() {
         if (followingCall == null) {
             followingCall = service.getFollowing(defaultLimit, offset);
-            followingCall.enqueue(new RestCallBack<FollowingBlog>(this, "following"));
+            followingCall.enqueue(new RestCallback<FollowingBlog>(this, "following"));
         }
     }
 
@@ -68,16 +68,21 @@ public class FollowingPresenter implements FollowingContract.FollowersPresenter,
     }
 
     @Override
-    public void onFailure(String tag) {
+    public void onError(int code, String error, String tag) {
         if (view == null) {
             return;
         }
         followingCall = null;
-        if (offset > 0) {
-            view.showLoadingNextFailure();
-        } else {
-            view.showLoadingFailure();
+        view.onError(code, error);
+    }
+
+    @Override
+    public void onFailure(Throwable t, String tag) {
+        if (view == null) {
+            return;
         }
+        followingCall = null;
+        view.onFailure(t);
     }
 
 }

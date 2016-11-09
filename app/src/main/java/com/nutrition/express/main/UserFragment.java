@@ -71,6 +71,14 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
     }
 
     @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (presenter != null) {
+            presenter.onDetach();
+        }
+    }
+
+    @Override
     public void showMyInfo(UserInfo info) {
         loaded = true;
         likeTV.setText(Long.toString(info.getUser().getLikes()));
@@ -89,13 +97,13 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
     }
 
     @Override
-    public void showFailure() {
+    public void onFailure(Throwable t) {
         loaded = false;
     }
 
     @Override
-    public void setPresenter(UserContract.Presenter presenter) {
-
+    public void onError(int code, String error) {
+        loaded = false;
     }
 
     @Override

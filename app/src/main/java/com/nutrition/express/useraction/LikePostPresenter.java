@@ -2,7 +2,7 @@ package com.nutrition.express.useraction;
 
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
-import com.nutrition.express.model.rest.RestCallBack;
+import com.nutrition.express.model.rest.RestCallback;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 
@@ -26,7 +26,7 @@ public class LikePostPresenter implements LikePostContract.Presenter, ResponseLi
     public void like(long id, String reblogKey) {
         if (call == null) {
             call = userService.like(id, reblogKey);
-            call.enqueue(new RestCallBack<Void[]>(this, "like"));
+            call.enqueue(new RestCallback<Void[]>(this, "like"));
         }
     }
 
@@ -34,8 +34,13 @@ public class LikePostPresenter implements LikePostContract.Presenter, ResponseLi
     public void unlike(long id, String reblogKey) {
         if (call == null) {
             call = userService.unlike(id, reblogKey);
-            call.enqueue(new RestCallBack<Void[]>(this, "unlike"));
+            call.enqueue(new RestCallback<Void[]>(this, "unlike"));
         }
+    }
+
+    @Override
+    public void onAttach() {
+
     }
 
     @Override
@@ -60,7 +65,16 @@ public class LikePostPresenter implements LikePostContract.Presenter, ResponseLi
     }
 
     @Override
-    public void onFailure(String tag) {
+    public void onError(int code, String error, String tag) {
+       onFailure(tag);
+    }
+
+    @Override
+    public void onFailure(Throwable t, String tag) {
+        onFailure(tag);
+    }
+
+    private void onFailure(String tag) {
         if (null == view) {
             return;
         }

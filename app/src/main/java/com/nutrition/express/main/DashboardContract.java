@@ -16,10 +16,8 @@ public interface DashboardContract {
         void getNextDashboard();
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         void showDashboard(List<PostsItem> blogPosts, boolean hasNext);
-        void showLoadingFailure();
-        void showLoadingNextFailure();
     }
 
 }

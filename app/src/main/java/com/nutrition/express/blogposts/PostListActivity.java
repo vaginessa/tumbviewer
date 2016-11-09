@@ -136,16 +136,17 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
     }
 
     @Override
-    public void setPresenter(FollowBlogContract.Presenter presenter) {
-
-    }
-
-    @Override
     protected void onResume() {
         super.onResume();
         if (!granted) {
             requestStoragePermission();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        followBlogPresenter.onDetach();
     }
 
     public void requestStoragePermission() {

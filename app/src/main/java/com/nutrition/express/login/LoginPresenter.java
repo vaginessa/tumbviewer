@@ -124,7 +124,7 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
         @Override
         public void run() {
             if (view != null) {
-                view.showLoginFailure("get request token failed");
+                view.onError(0, "get request token failed");
             }
             requesting = false;
         }
@@ -144,7 +144,7 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
         @Override
         public void run() {
             if (view != null) {
-                view.showLoginFailure("get access token failed");
+                view.onError(0, "get access token failed");
             }
             requesting = false;
         }

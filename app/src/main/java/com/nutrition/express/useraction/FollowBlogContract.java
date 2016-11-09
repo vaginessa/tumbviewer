@@ -1,7 +1,6 @@
 package com.nutrition.express.useraction;
 
 import com.nutrition.express.common.BasePresenter;
-import com.nutrition.express.common.BaseView;
 
 /**
  * Created by huang on 11/7/16.
@@ -13,7 +12,7 @@ public interface FollowBlogContract {
         void unfollow(String url);
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View {
         void onFollow();
         void onUnfollow();
     }

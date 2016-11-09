@@ -13,9 +13,8 @@ public interface UserContract {
         void getMyInfo();
     }
 
-    interface View extends BaseView<Presenter> {
+    interface View extends BaseView {
         void showMyInfo(UserInfo info);
-        void showFailure();
     }
 
 }

@@ -100,17 +100,13 @@ public class LikesFragment extends Fragment
     }
 
     @Override
-    public void onLoadFailure() {
-        adapter.showLoadingFailure();
+    public void onFailure(Throwable t) {
+        adapter.showLoadingFailure(t);
     }
 
     @Override
-    public void onLoadNextFailure() {
-        adapter.showLoadingNextFailure();
+    public void onError(int code, String error) {
+        adapter.showLoadingFailure(getString(R.string.load_failure_des, code, error));
     }
 
-    @Override
-    public void setPresenter(LikesContract.LikesPresenter presenter) {
-
-    }
 }

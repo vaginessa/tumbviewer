@@ -2,7 +2,7 @@ package com.nutrition.express.useraction;
 
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
-import com.nutrition.express.model.rest.RestCallBack;
+import com.nutrition.express.model.rest.RestCallback;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 
@@ -25,7 +25,7 @@ public class FollowBlogPresenter implements FollowBlogContract.Presenter, Respon
     public void follow(String url) {
         if (call == null) {
             call = service.follow(url);
-            call.enqueue(new RestCallBack<Void>(this, "follow"));
+            call.enqueue(new RestCallback<Void>(this, "follow"));
         }
     }
 
@@ -33,7 +33,7 @@ public class FollowBlogPresenter implements FollowBlogContract.Presenter, Respon
     public void unfollow(String url) {
         if (call == null) {
             call = service.unfollow(url);
-            call.enqueue(new RestCallBack<Void>(this, "unfollow"));
+            call.enqueue(new RestCallback<Void>(this, "unfollow"));
         }
     }
 
@@ -45,9 +45,6 @@ public class FollowBlogPresenter implements FollowBlogContract.Presenter, Respon
     @Override
     public void onDetach() {
         view = null;
-        if (call != null) {
-            call.cancel();
-        }
     }
 
     @Override
@@ -67,7 +64,15 @@ public class FollowBlogPresenter implements FollowBlogContract.Presenter, Respon
     }
 
     @Override
-    public void onFailure(String tag) {
+    public void onError(int code, String error, String tag) {
+        if (view == null) {
+            return;
+        }
+        call = null;
+    }
+
+    @Override
+    public void onFailure(Throwable t, String tag) {
         if (view == null) {
             return;
         }

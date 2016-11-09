@@ -7,5 +7,6 @@ import com.nutrition.express.model.rest.bean.BaseBean;
  */
 public interface ResponseListener {
     void onResponse(BaseBean baseBean, String tag);
-    void onFailure(String tag);
+    void onError(int code, String error, String tag);
+    void onFailure(Throwable t, String tag);
 }

@@ -41,6 +41,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
     private HashMap<String, Integer> typeMap;
     private OnLoadListener loadListener;
     private List<Object> data;
+    private Object extra;
 
     private View.OnClickListener onRetryListener = new View.OnClickListener() {
         @Override
@@ -96,7 +97,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         if (position < data.size()) {
             holder.bindView(data.get(position));
         } else {
-            holder.bindView(null);
+            holder.bindView(extra);
             if (state == LOADING_NEXT) {
                 loadListener.loadNextPage();
             }
@@ -162,16 +163,13 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
     /**
      * 目前无数据，显示加载失败
      */
-    public void showLoadingFailure() {
-        state = LOADING_FAILURE;
-        notifyItemChanged(data.size());
-    }
-
-    /**
-     * 目前有数据，显示加载下一页失败
-     */
-    public void showLoadingNextFailure() {
-        state = LOADING_NEXT_FAILURE;
+    public void showLoadingFailure(Object error) {
+        this.extra = error;
+        if (data.size() > 0) {
+            state = LOADING_NEXT_FAILURE;
+        } else {
+            state = LOADING_FAILURE;
+        }
         notifyItemChanged(data.size());
     }
 
@@ -218,6 +216,12 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             @Override
             public CommonViewHolder createVH(View view) {
                 return new CommonViewHolder(view);
+            }
+        };
+        private CreateViewHolder errorCreator = new CreateViewHolder() {
+            @Override
+            public CommonViewHolder createVH(View view) {
+                return new ErrorViewHolder(view);
             }
         };
 
@@ -300,13 +304,13 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
                 loadingCreator = defaultCreator;
             }
             if (failureCreator == null) {
-                failureCreator = defaultCreator;
+                failureCreator = errorCreator;
             }
             if (nextCreator == null) {
                 nextCreator = defaultCreator;
             }
             if (nextFailureCreator == null) {
-                nextFailureCreator = defaultCreator;
+                nextFailureCreator = errorCreator;
             }
         }
 

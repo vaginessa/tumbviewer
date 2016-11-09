@@ -2,7 +2,7 @@ package com.nutrition.express.main;
 
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
-import com.nutrition.express.model.rest.RestCallBack;
+import com.nutrition.express.model.rest.RestCallback;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.UserInfo;
@@ -27,7 +27,7 @@ public class UserPresenter implements UserContract.Presenter, ResponseListener {
     public void getMyInfo() {
         if (call == null) {
             call = service.getInfo();
-            call.enqueue(new RestCallBack<UserInfo>(this, "info"));
+            call.enqueue(new RestCallback<UserInfo>(this, "info"));
         }
     }
 
@@ -51,11 +51,21 @@ public class UserPresenter implements UserContract.Presenter, ResponseListener {
     }
 
     @Override
-    public void onFailure(String tag) {
+    public void onError(int code, String error, String tag) {
         if (view == null) {
             return;
         }
         call = null;
-        view.showFailure();
+        view.onError(code, error);
     }
+
+    @Override
+    public void onFailure(Throwable t, String tag) {
+        if (view == null) {
+            return;
+        }
+        call = null;
+        view.onFailure(t);
+    }
+
 }

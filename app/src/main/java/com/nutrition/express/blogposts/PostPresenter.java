@@ -5,7 +5,7 @@ import android.text.TextUtils;
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.rest.ApiService.BlogService;
 import com.nutrition.express.model.rest.ResponseListener;
-import com.nutrition.express.model.rest.RestCallBack;
+import com.nutrition.express.model.rest.RestCallback;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.BlogPosts;
@@ -39,7 +39,7 @@ public class PostPresenter implements PostContract.Presenter, ResponseListener {
             para.put("offset", Integer.toString(offset));
             call = blogService.getBlogPosts(blogName, "",
                     Constants.CONSUMER_KEY, para);
-            call.enqueue(new RestCallBack<BlogPosts>(this, "posts"));
+            call.enqueue(new RestCallback<BlogPosts>(this, "posts"));
         }
     }
 
@@ -81,16 +81,17 @@ public class PostPresenter implements PostContract.Presenter, ResponseListener {
     }
 
     @Override
-    public void onFailure(String tag) {
+    public void onError(int code, String error, String tag) {
         if (view == null) {
             return;
         }
         call = null;
-        if (offset > 0) {
-            view.showLoadingNextFailure();
-        } else {
-            view.showLoadingFailure();
-        }
+        view.onError(code, error);
+    }
+
+    @Override
+    public void onFailure(Throwable t, String tag) {
+        view.onFailure(t);
     }
 
 }

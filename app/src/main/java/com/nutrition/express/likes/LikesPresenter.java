@@ -6,7 +6,7 @@ import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.rest.ApiService.BlogService;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
-import com.nutrition.express.model.rest.RestCallBack;
+import com.nutrition.express.model.rest.RestCallback;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.BlogLikes;
@@ -42,7 +42,7 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
                 userService = RestClient.getInstance().getUserService();
             }
             call = userService.getLikes(limit, offset);
-            call.enqueue(new RestCallBack<BlogLikes>(this, "likes"));
+            call.enqueue(new RestCallback<BlogLikes>(this, "likes"));
         }
     }
 
@@ -57,7 +57,7 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
             options.put("limit", "" + limit);
             options.put("offset", "" + offset);
             call = blogService.getBlogLikes(name, Constants.CONSUMER_KEY, options);
-            call.enqueue(new RestCallBack<BlogLikes>(this, "likes"));
+            call.enqueue(new RestCallback<BlogLikes>(this, "likes"));
         }
     }
 
@@ -107,16 +107,21 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
     }
 
     @Override
-    public void onFailure(String tag) {
+    public void onError(int code, String error, String tag) {
         if (view == null) {
             return;
         }
         call = null;
-        if (offset > 0) {
-            view.onLoadNextFailure();
-        } else {
-            view.onLoadFailure();
+        view.onError(code, error);
+    }
+
+    @Override
+    public void onFailure(Throwable t, String tag) {
+        if (view == null) {
+            return;
         }
+        call = null;
+        view.onFailure(t);
     }
 
 }
