@@ -58,6 +58,18 @@ public class ExpressApplication extends Application {
         }
     }
 
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        Fresco.getImagePipeline().clearMemoryCaches();
+    }
+
+    @Override
+    public void onTrimMemory(int level) {
+        super.onTrimMemory(level);
+        Fresco.getImagePipeline().clearMemoryCaches();
+    }
+
     public static ExpressApplication getApplication() {
         return application;
     }
