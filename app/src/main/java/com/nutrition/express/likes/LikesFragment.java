@@ -27,6 +27,7 @@ public class LikesFragment extends Fragment
         implements LikesContract.LikesView, CommonRVAdapter.OnLoadListener {
     private CommonRVAdapter adapter;
     private LikesContract.LikesPresenter presenter;
+    private String blogName = null;
 
     @Nullable
     @Override
@@ -43,16 +44,15 @@ public class LikesFragment extends Fragment
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        String name = null;
         presenter = new LikesPresenter(this);
         Bundle bundle = getArguments();
         if (bundle != null) {
-            name = bundle.getString("blog_name", null);
+            blogName = bundle.getString("blog_name", null);
         }
-        if (name == null) {
+        if (blogName == null) {
             presenter.getLikePosts();
         } else {
-            presenter.getLikePosts(name);
+            presenter.getLikePosts(blogName);
         }
     }
 
@@ -78,7 +78,11 @@ public class LikesFragment extends Fragment
 
     @Override
     public void retry() {
-        presenter.getLikePosts();
+        if (blogName == null) {
+            presenter.getLikePosts();
+        } else {
+            presenter.getLikePosts(blogName);
+        }
     }
 
     @Override

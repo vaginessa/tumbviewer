@@ -91,6 +91,10 @@ public class PostPresenter implements PostContract.Presenter, ResponseListener {
 
     @Override
     public void onFailure(Throwable t, String tag) {
+        if (view == null) {
+            return;
+        }
+        call = null;
         view.onFailure(t);
     }
 
