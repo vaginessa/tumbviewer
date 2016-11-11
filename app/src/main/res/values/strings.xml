@@ -38,4 +38,11 @@
     <string name="pic_saved_failure">保存出错</string>
     <string name="pic_save_all">保存全部</string>
 
+    <string name="settings_limit_info">每天限制请求数：%1$s \n每天剩余请求数：%2$s \n每小时限制请求数：%3$s \n每小时剩余请求数：%4$s </string>
+    <string name="settings_logout_title">退出账户</string>
+    <string name="settings_logout">退出</string>
+    <string name="settings_clear_cache">清空缓存</string>
+    <string name="settings_clear">清空</string>
+    <string name="settings_clear_ok">已清空缓存</string>
+
 </resources>

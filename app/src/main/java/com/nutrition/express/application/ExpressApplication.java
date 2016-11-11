@@ -35,6 +35,7 @@ public class ExpressApplication extends Application {
         imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
                 .setMainDiskCacheConfig(cacheConfig)
                 .setDownsampleEnabled(true)
+//                .setResizeAndRotateEnabledForNetwork(true)
                 .setBitmapsConfig(Bitmap.Config.RGB_565)
                 .build();
         Fresco.initialize(this, imagePipelineConfig);

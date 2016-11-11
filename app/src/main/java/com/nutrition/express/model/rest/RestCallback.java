@@ -4,11 +4,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.nutrition.express.BuildConfig;
+import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.ErrorBean;
 
 import java.io.IOException;
 
+import okhttp3.Headers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -42,6 +44,12 @@ public class RestCallback<T> implements Callback<BaseBean<T>> {
                 listener.onFailure(e, tag);
             }
         }
+        Headers headers = response.headers();
+        DataManager manager = DataManager.getInstance();
+        manager.setDayLimit(headers.get("X-RateLimit-PerDay-Limit"));
+        manager.setDayRemaining(headers.get("X-RateLimit-PerDay-Remaining"));
+        manager.setHourLimit(headers.get("X-RateLimit-PerHour-Limit"));
+        manager.setHourRemaining(headers.get("X-RateLimit-PerHour-Remaining"));
     }
 
     @Override

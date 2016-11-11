@@ -15,6 +15,7 @@ import com.nutrition.express.util.PreferencesUtils;
 public class DataManager {
     private String token;
     private String secret;
+    private String dayLimit, dayRemaining, hourLimit, hourRemaining;
 
     private static class Holder {
         private static DataManager holder = new DataManager();
@@ -70,6 +71,38 @@ public class DataManager {
             cookieSyncManager.startSync();
             cookieSyncManager.sync();
         }
+    }
+
+    public String getDayLimit() {
+        return dayLimit;
+    }
+
+    public String getDayRemaining() {
+        return dayRemaining;
+    }
+
+    public String getHourLimit() {
+        return hourLimit;
+    }
+
+    public String getHourRemaining() {
+        return hourRemaining;
+    }
+
+    public void setDayLimit(String dayLimit) {
+        this.dayLimit = dayLimit;
+    }
+
+    public void setDayRemaining(String dayRemaining) {
+        this.dayRemaining = dayRemaining;
+    }
+
+    public void setHourLimit(String hourLimit) {
+        this.hourLimit = hourLimit;
+    }
+
+    public void setHourRemaining(String hourRemaining) {
+        this.hourRemaining = hourRemaining;
     }
 
 }

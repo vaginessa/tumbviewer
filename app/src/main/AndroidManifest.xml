@@ -36,6 +36,8 @@
         <activity android:name=".videoplayer.VideoPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/VideoPlayerTheme" />
+        <activity android:name=".settings.SettingsActivity"
+            android:screenOrientation="portrait"/>
 
         <receiver android:name=".application.DownloadedReceiver">
             <intent-filter>

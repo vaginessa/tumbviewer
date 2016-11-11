@@ -20,6 +20,7 @@ import com.nutrition.express.following.FollowingActivity;
 import com.nutrition.express.likes.LikesActivity;
 import com.nutrition.express.model.rest.bean.BlogInfoItem;
 import com.nutrition.express.model.rest.bean.UserInfo;
+import com.nutrition.express.settings.SettingsActivity;
 import com.nutrition.express.util.FrescoUtils;
 
 import java.util.ArrayList;
@@ -118,6 +119,8 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
                 startActivity(intent);
                 break;
             case R.id.setting_layout:
+                Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(settingsIntent);
                 break;
         }
     }
