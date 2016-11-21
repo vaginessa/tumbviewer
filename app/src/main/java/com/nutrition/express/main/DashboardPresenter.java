@@ -32,7 +32,7 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
 
     private void getDashboardPosts() {
         if (call == null) {
-            HashMap<String, String> options = new HashMap<>(2);
+            HashMap<String, String> options = new HashMap<>(3);
             options.put("limit", "" + defaultLimit);
             options.put("offset", "" + offset);
             options.put("type", type);

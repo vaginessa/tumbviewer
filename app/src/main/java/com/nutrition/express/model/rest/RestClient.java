@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.rest.ApiService.BlogService;
+import com.nutrition.express.model.rest.ApiService.TaggedService;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.intercept.OAuth1SigningInterceptor;
 import com.orhanobut.logger.Logger;
@@ -75,4 +76,9 @@ public class RestClient {
     public UserService getUserService() {
         return retrofit.create(UserService.class);
     }
+
+    public TaggedService getTaggedService() {
+        return retrofit.create(TaggedService.class);
+    }
+
 }

@@ -98,7 +98,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             holder.bindView(data.get(position));
         } else {
             holder.bindView(extra);
-            if (state == LOADING_NEXT) {
+            if (state == LOADING_NEXT && loadListener != null) {
                 loadListener.loadNextPage();
             }
         }

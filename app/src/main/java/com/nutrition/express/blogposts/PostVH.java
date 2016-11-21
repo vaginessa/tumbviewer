@@ -169,7 +169,12 @@ public class PostVH extends CommonViewHolder<PostsItem>
         createPhotoView(1);
         SimpleDraweeView draweeView = contentViewCache.get(0);
         int w = calWidth(1);
-        int h = w * postsItem.getThumbnail_height() / postsItem.getThumbnail_width();
+        int h;
+        if (postsItem.getThumbnail_width() > 0) {
+            h = w * postsItem.getThumbnail_height() / postsItem.getThumbnail_width();
+        } else {
+            h = w / 2;
+        }
         addSimpleDraweeView(draweeView, w, h);
         setUri(draweeView, postsItem.getThumbnail_url());
     }

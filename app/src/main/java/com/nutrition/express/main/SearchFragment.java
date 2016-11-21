@@ -19,6 +19,7 @@ import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.helper.SearchHistoryHelper;
 import com.nutrition.express.blogposts.PostListActivity;
+import com.nutrition.express.taggedposts.TaggedActivity;
 
 /**
  * Created by huang on 11/2/16.
@@ -41,7 +42,8 @@ public class SearchFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                openPostsVideo(query);
+//                openBlogPosts(query);
+                openTaggedPosts(query);
                 return true;
             }
 
@@ -88,11 +90,19 @@ public class SearchFragment extends Fragment {
         loaded = true;
     }
 
-    private void openPostsVideo(String blogName) {
+    private void openBlogPosts(String blogName) {
         Intent intent = new Intent(getActivity(), PostListActivity.class);
         intent.putExtra("blog_name", blogName);
         startActivity(intent);
         historyHelper.add(blogName);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void openTaggedPosts(String tag) {
+        Intent intent = new Intent(getActivity(), TaggedActivity.class);
+        intent.putExtra("tag", tag);
+        startActivity(intent);
+        historyHelper.add(tag);
         adapter.notifyDataSetChanged();
     }
 
@@ -127,7 +137,8 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            openPostsVideo(name);
+//            openBlogPosts(name);
+            openTaggedPosts(name);
         }
 
         @Override

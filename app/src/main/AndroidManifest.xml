@@ -38,6 +38,8 @@
             android:theme="@style/VideoPlayerTheme" />
         <activity android:name=".settings.SettingsActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".taggedposts.TaggedActivity"
+            android:screenOrientation="portrait"/>
 
         <receiver android:name=".application.DownloadedReceiver">
             <intent-filter>

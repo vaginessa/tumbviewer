@@ -39,7 +39,7 @@ public class PostsItem {
     private int thumbnail_width;
     private int thumbnail_height;
     private String duration;
-    private List<PlayerItem> player;
+//    private List<PlayerItem> player;
     private String viedo_type;
 
     //-----------------------------------------------------------
@@ -48,6 +48,10 @@ public class PostsItem {
     private String photoset_layout;
     private List<PhotoItem> photos;
 
+    //-----------------------------------------------------------
+    //           tagged
+    //-----------------------------------------------------------
+    private long featured_timestamp;
     //-----------------------------------------------------------
     //            common
     //-----------------------------------------------------------
@@ -181,9 +185,9 @@ public class PostsItem {
         return duration;
     }
 
-    public List<PlayerItem> getPlayer() {
-        return player;
-    }
+//    public List<PlayerItem> getPlayer() {
+//        return player;
+//    }
 
     public String getViedo_type() {
         return viedo_type;
@@ -195,6 +199,10 @@ public class PostsItem {
 
     public List<PhotoItem> getPhotos() {
         return photos;
+    }
+
+    public long getFeatured_timestamp() {
+        return featured_timestamp;
     }
 
     public boolean isCan_like() {
