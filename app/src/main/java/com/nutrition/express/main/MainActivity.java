@@ -23,9 +23,11 @@ public class MainActivity extends AppCompatActivity {
         List<Fragment> list = new ArrayList<>();
         List<String> titles = new ArrayList<>();
 
-        list.add(new DashboardFragment());
+        final DashboardFragment videoFragment = new DashboardFragment();
+        final PhotoDashboardFragment photoFragment = new PhotoDashboardFragment();
+        list.add(videoFragment);
         titles.add(getString(R.string.page_video));
-        list.add(new PhotoDashboardFragment());
+        list.add(photoFragment);
         titles.add(getString(R.string.page_photo));
         list.add(new SearchFragment());
         titles.add(getString(R.string.page_search));
@@ -37,6 +39,26 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(new CommonPagerAdapter(getSupportFragmentManager(), list, titles));
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    videoFragment.scrollToTop();
+                } else if (tab.getPosition() == 1) {
+                    photoFragment.scrollToTop();
+                }
+            }
+        });
     }
 
 

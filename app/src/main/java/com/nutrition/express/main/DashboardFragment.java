@@ -25,6 +25,7 @@ import java.util.List;
 public class DashboardFragment extends Fragment
         implements DashboardContract.View, CommonRVAdapter.OnLoadListener {
     private DashboardPresenter presenter;
+    private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
 
@@ -40,7 +41,7 @@ public class DashboardFragment extends Fragment
                 presenter.refresh();
             }
         });
-        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
         adapter = getAdapter();
@@ -114,6 +115,10 @@ public class DashboardFragment extends Fragment
             presenter = new DashboardPresenter(this, getType());
         }
         presenter.getDashboard();
+    }
+
+    public void scrollToTop() {
+        recyclerView.scrollToPosition(0);
     }
 
 }
