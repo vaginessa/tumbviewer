@@ -1,8 +1,10 @@
 package com.nutrition.express.login;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -18,6 +20,9 @@ import com.nutrition.express.R;
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.data.bean.TumblrApp;
+
+import java.util.List;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.LoginView {
     private WebView webView;
@@ -32,6 +37,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
             finish();
             return;
         }
+        getWindow().setBackgroundDrawableResource(android.R.color.white);
         setContentView(R.layout.activity_web);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
@@ -103,6 +109,33 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     public void onError(int code, String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
         //// TODO: 10/18/16 show a failure view
+        showTumblrApps();
     }
+
+
+    private void showTumblrApps() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        List<TumblrApp> list = DataManager.getInstance().getTumblrAppList();
+        String[] keys = new String[list.size()];
+        int checkedItem = 0;
+        for (int i = 0; i < keys.length; i++) {
+            keys[i] = list.get(i).getApiKey();
+            if (list.get(i).isUsing()) {
+                checkedItem = i;
+            }
+        }
+        builder.setSingleChoiceItems(keys, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (DataManager.getInstance().setUsingTumblrApp(which)) {
+                    DataManager.getInstance().logout();
+                    loginPresenter.getRequestToken();
+                }
+                dialog.dismiss();
+            }
+        });
+        builder.show();
+    }
+
 
 }

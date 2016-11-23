@@ -17,33 +17,44 @@
             android:name=".main.MainActivity"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
-        <activity android:name=".blogposts.PostListActivity"
+        <activity
+            android:name=".blogposts.PostListActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".login.LoginActivity"
+        <activity
+            android:name=".login.LoginActivity"
+            android:theme="@style/AppTheme.Splash"
             android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".likes.LikesActivity"
+        <activity
+            android:name=".likes.LikesActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".following.FollowingActivity"
+        <activity
+            android:name=".following.FollowingActivity"
             android:screenOrientation="portrait" />
-        <activity android:name=".imageviewer.ImageViewerActivity"
+        <activity
+            android:name=".imageviewer.ImageViewerActivity"
             android:screenOrientation="portrait"
             android:theme="@style/ImageViewerTheme" />
-        <activity android:name=".videoplayer.VideoPlayerActivity"
+        <activity
+            android:name=".videoplayer.VideoPlayerActivity"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/VideoPlayerTheme" />
-        <activity android:name=".settings.SettingsActivity"
+        <activity
+            android:name=".settings.SettingsActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".taggedposts.TaggedActivity"
+        <activity
+            android:name=".taggedposts.TaggedActivity"
             android:screenOrientation="portrait"/>
-        <activity android:name=".register.RegisterActivity"
+        <activity
+            android:name=".register.RegisterActivity"
             android:screenOrientation="portrait"/>
 
-        <receiver android:name=".application.DownloadedReceiver">
+        <receiver
+            android:name=".application.DownloadedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>

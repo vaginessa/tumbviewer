@@ -101,9 +101,9 @@ public class DataManager {
     }
 
     public TumblrApp getUsingTumblrApp() {
-        if (using.isOutOfLimit()) {
-            nextUsing();
-        }
+//        if (using.isOutOfLimit()) {
+//            nextUsing();
+//        }
         return using;
     }
 
@@ -112,6 +112,7 @@ public class DataManager {
             using.setUsing(false);
             using = tumblrAppList.get(index);
             using.setUsing(true);
+            LocalPersistenceHelper.storeShortContent(TUMBLR_APP, tumblrAppList);
             return true;
         }
         return false;
@@ -139,11 +140,14 @@ public class DataManager {
         using.setHourLimit(hourLimit);
         using.setHourRemaining(hourRemaining);
         using.setHourReset(hourReset);
-        if (using.isOutOfLimit()) {
-            nextUsing();
-        }
+//        if (using.isOutOfLimit()) {
+//            nextUsing();
+//        }
     }
 
+    /**
+     * switch to other app need login again
+     */
     private void nextUsing() {
         for (TumblrApp app : tumblrAppList) {
             if (!app.isOutOfLimit()) {

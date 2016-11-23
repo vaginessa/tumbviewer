@@ -111,7 +111,7 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
             //need login again
             DataManager.getInstance().logout();
             Intent intent = new Intent(getActivity(), LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             getActivity().startActivity(intent);
         }
     }

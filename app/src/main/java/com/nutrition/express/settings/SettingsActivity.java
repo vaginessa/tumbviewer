@@ -138,6 +138,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                     DataManager.getInstance().logout();
                     gotoLogin();
                 }
+                dialog.dismiss();
             }
         });
         builder.show();
@@ -147,7 +148,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         Intent intent = new Intent(this, LoginActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
-        finish();
     }
 
     private void clearFrescoDiskCache() {

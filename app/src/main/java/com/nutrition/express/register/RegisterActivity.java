@@ -107,6 +107,7 @@ public class RegisterActivity extends AppCompatActivity {
                     //need login again
                     DataManager.getInstance().logout();
                     Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                 }
             }
