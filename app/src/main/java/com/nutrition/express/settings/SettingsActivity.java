@@ -124,10 +124,22 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         List<TumblrApp> list = DataManager.getInstance().getTumblrAppList();
         String[] keys = new String[list.size()];
+        int checkedItem = 0;
         for (int i = 0; i < keys.length; i++) {
             keys[i] = list.get(i).getApiKey();
+            if (list.get(i).isUsing()) {
+                checkedItem = i;
+            }
         }
-        builder.setItems(keys, null);
+        builder.setSingleChoiceItems(keys, checkedItem, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (DataManager.getInstance().setUsingTumblrApp(which)) {
+                    DataManager.getInstance().logout();
+                    gotoLogin();
+                }
+            }
+        });
         builder.show();
     }
 

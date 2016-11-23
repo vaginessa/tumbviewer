@@ -77,11 +77,13 @@ public class DashboardFragment extends Fragment
     @Override
     public void onFailure(Throwable t) {
         adapter.showLoadingFailure(t.getMessage());
+        refreshLayout.setRefreshing(false);
     }
 
     @Override
     public void onError(int code, String error) {
         adapter.showLoadingFailure(getString(R.string.load_failure_des, code, error));
+        refreshLayout.setRefreshing(false);
     }
 
     @Override

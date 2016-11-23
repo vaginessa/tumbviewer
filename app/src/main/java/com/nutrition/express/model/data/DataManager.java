@@ -107,6 +107,16 @@ public class DataManager {
         return using;
     }
 
+    public boolean setUsingTumblrApp(int index) {
+        if (index < tumblrAppList.size() && !tumblrAppList.get(index).isUsing()) {
+            using.setUsing(false);
+            using = tumblrAppList.get(index);
+            using.setUsing(true);
+            return true;
+        }
+        return false;
+    }
+
     public List<TumblrApp> getTumblrAppList() {
         return tumblrAppList;
     }
