@@ -45,11 +45,13 @@ public class RestCallback<T> implements Callback<BaseBean<T>> {
             }
         }
         Headers headers = response.headers();
-        DataManager manager = DataManager.getInstance();
-        manager.setDayLimit(headers.get("X-RateLimit-PerDay-Limit"));
-        manager.setDayRemaining(headers.get("X-RateLimit-PerDay-Remaining"));
-        manager.setHourLimit(headers.get("X-RateLimit-PerHour-Limit"));
-        manager.setHourRemaining(headers.get("X-RateLimit-PerHour-Remaining"));
+        DataManager.getInstance().updateTumblrAppInfo(
+                headers.get("X-RateLimit-PerDay-Limit"),
+                headers.get("X-RateLimit-PerDay-Remaining"),
+                headers.get("X-RateLimit-PerDay-Reset"),
+                headers.get("X-RateLimit-PerHour-Limit"),
+                headers.get("X-RateLimit-PerHour-Remaining"),
+                headers.get("X-RateLimit-PerHour-Reset"));
     }
 
     @Override

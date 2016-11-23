@@ -1,6 +1,9 @@
 package com.nutrition.express.model.helper;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
+import com.nutrition.express.BuildConfig;
 import com.nutrition.express.application.ExpressApplication;
 
 import java.io.BufferedReader;
@@ -85,6 +88,9 @@ public class LocalPersistenceHelper {
     public static <T> T getShortContent(String name, Type typeOfT) {
         File file = new File(ExpressApplication.getApplication().getFilesDir(), name);
         String content = getShortContent(file);
+        if (BuildConfig.DEBUG) {
+            Log.d("TAG", "getShortContent: " + content);
+        }
         Gson gson = new Gson();
         return gson.fromJson(content, typeOfT);
     }

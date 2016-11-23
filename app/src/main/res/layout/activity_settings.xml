@@ -14,15 +14,42 @@
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
         app:title="@string/page_user_setting"
         />
-
     <TextView
-        android:id="@+id/settings_limit_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_title"
+        android:textColor="@color/colorAccent"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        />
+    <TextView
+        android:id="@+id/settings_register"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
+        android:text="@string/settings_register"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"
-        android:lineSpacingMultiplier="1.5"
+        />
+    <TextView
+        android:id="@+id/settings_clear_cache"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/settings_clear_cache"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        />
+    <TextView
+        android:id="@+id/settings_tumblr_apps"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/settings_tumblr_apps"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
         />
 
 </LinearLayout>

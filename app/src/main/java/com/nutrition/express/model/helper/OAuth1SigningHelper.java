@@ -4,6 +4,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Base64;
 
+import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.data.bean.TumblrApp;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
@@ -15,8 +18,6 @@ import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import static com.nutrition.express.application.Constants.CONSUMER_KEY;
-import static com.nutrition.express.application.Constants.CONSUMER_SECRET;
 import static com.nutrition.express.application.Constants.REDIRECT_URI;
 
 /**
@@ -42,11 +43,13 @@ public final class OAuth1SigningHelper {
 
     private TreeMap<String, String> oauthMap = new TreeMap<>();
     private String signature;
+    private TumblrApp app;
 
     public OAuth1SigningHelper() {
         String timestamp = Long.toString(System.currentTimeMillis() / 1000);
         String nonce = timestamp;
-        oauthMap.put(OAUTH_CONSUMER_KEY, CONSUMER_KEY);
+        app = DataManager.getInstance().getUsingTumblrApp();
+        oauthMap.put(OAUTH_CONSUMER_KEY, app.getApiKey());
         oauthMap.put(OAUTH_NONCE, nonce);
         oauthMap.put(OAUTH_TIMESTAMP, timestamp);
         oauthMap.put(OAUTH_SIGNATURE_METHOD, SIGNATURE_METHOD);
@@ -56,7 +59,7 @@ public final class OAuth1SigningHelper {
     public String buildRequestHeader(@NonNull String method, @NonNull String url) {
         try {
             oauthMap.put(OAUTH_CALLBACK, REDIRECT_URI);
-            signature = getSignature(CONSUMER_SECRET + "&",
+            signature = getSignature(app.getApiSecret() + "&",
                     buildBaseString(method, url, oauthMap));
             oauthMap.put(OAUTH_SIGNATURE, signature);
             return getAuthString();
@@ -71,7 +74,7 @@ public final class OAuth1SigningHelper {
         try {
             oauthMap.put(OAUTH_TOKEN, token);
             oauthMap.put(OAUTH_VERIFIER, verifier);
-            signature = getSignature(CONSUMER_SECRET + "&" + secret,
+            signature = getSignature(app.getApiSecret() + "&" + secret,
                     buildBaseString(method, url, oauthMap));
             oauthMap.put(OAUTH_SIGNATURE, signature);
             return getAuthString();
@@ -89,7 +92,7 @@ public final class OAuth1SigningHelper {
             if (map != null && map.size() > 0) {
                 treeMap.putAll(map);
             }
-            signature = getSignature(CONSUMER_SECRET + "&" + secret,
+            signature = getSignature(app.getApiSecret() + "&" + secret,
                     buildBaseString(method, url, treeMap));
             oauthMap.put(OAUTH_SIGNATURE, signature);
             return getAuthString();

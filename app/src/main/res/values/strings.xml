@@ -38,11 +38,20 @@
     <string name="pic_saved_failure">保存出错</string>
     <string name="pic_save_all">保存全部</string>
 
-    <string name="settings_limit_info">每天限制请求数：%1$s \n每天剩余请求数：%2$s \n每小时限制请求数：%3$s \n每小时剩余请求数：%4$s </string>
+    <string name="settings_limit_info">每天限制请求数：%1$d \n每天剩余请求数：%2$d \n每小时限制请求数：%3$d \n每小时剩余请求数：%4$d </string>
     <string name="settings_logout_title">退出账户</string>
     <string name="settings_logout">退出</string>
     <string name="settings_clear_cache">清空缓存</string>
     <string name="settings_clear">清空</string>
     <string name="settings_clear_ok">已清空缓存</string>
+    <string name="settings_register">注册你的Tumblr应用</string>
+    <string name="settings_title">高级</string>
+    <string name="settings_tumblr_apps">你的tumblr apps</string>
+    <string name="settings_tumblr_limit">limit</string>
+
+    <string name="register_tumblr_app">添加tumblr app</string>
+    <string name="register_key_hint">api key</string>
+    <string name="register_secret_hint">api secret</string>
+    <string name="register_continue_copy">继续复制</string>
 
 </resources>

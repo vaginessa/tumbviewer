@@ -10,19 +10,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.nutrition.express.R;
 import com.nutrition.express.login.LoginActivity;
 import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.data.bean.TumblrApp;
+import com.nutrition.express.register.RegisterActivity;
+
+import java.util.List;
 
 /**
  * Created by huang on 11/11/16.
  */
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,15 +37,26 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        TextView limitInfo = (TextView) findViewById(R.id.settings_limit_info);
 
-        DataManager manager = DataManager.getInstance();
-        limitInfo.setText(getString(R.string.settings_limit_info,
-                manager.getDayLimit(),
-                manager.getDayRemaining(),
-                manager.getHourLimit(),
-                manager.getHourRemaining()
-        ));
+        findViewById(R.id.settings_register).setOnClickListener(this);
+        findViewById(R.id.settings_clear_cache).setOnClickListener(this);
+        findViewById(R.id.settings_tumblr_apps).setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.settings_register:
+                Intent intent = new Intent(this, RegisterActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.settings_clear_cache:
+                showClearCacheDialog();
+                break;
+            case R.id.settings_tumblr_apps:
+                showTumblrApps();
+                break;
+        }
     }
 
     @Override
@@ -56,8 +71,8 @@ public class SettingsActivity extends AppCompatActivity {
             case R.id.settings_logout:
                 showLogoutDialog();
                 return true;
-            case R.id.settings_clear_cache:
-                showClearCacheDialog();
+            case R.id.settings_tumblr_limit:
+                showTumblrLimitInfo();
                 return true;
             case android.R.id.home:
                 finish();
@@ -90,6 +105,29 @@ public class SettingsActivity extends AppCompatActivity {
         });
         builder.setNegativeButton(R.string.pic_cancel, null);
         builder.setTitle(R.string.settings_clear_cache);
+        builder.show();
+    }
+
+    private void showTumblrLimitInfo() {
+        TumblrApp app = DataManager.getInstance().getUsingTumblrApp();
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.settings_limit_info,
+                app.getDayLimit(),
+                app.getDayRemaining(),
+                app.getHourLimit(),
+                app.getHourRemaining()
+        ));
+        builder.show();
+    }
+
+    private void showTumblrApps() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        List<TumblrApp> list = DataManager.getInstance().getTumblrAppList();
+        String[] keys = new String[list.size()];
+        for (int i = 0; i < keys.length; i++) {
+            keys[i] = list.get(i).getApiKey();
+        }
+        builder.setItems(keys, null);
         builder.show();
     }
 

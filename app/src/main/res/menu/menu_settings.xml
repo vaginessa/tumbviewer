@@ -3,9 +3,6 @@
     <item android:id="@+id/settings_logout"
         android:title="@string/settings_logout_title"
         />
-
-    <item android:id="@+id/settings_clear_cache"
-        android:title="@string/settings_clear_cache"
-        />
-
+    <item android:id="@+id/settings_tumblr_limit"
+        android:title="@string/settings_tumblr_limit"/>
 </menu>

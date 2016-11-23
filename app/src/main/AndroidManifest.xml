@@ -40,6 +40,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".taggedposts.TaggedActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name=".register.RegisterActivity"
+            android:screenOrientation="portrait"/>
 
         <receiver android:name=".application.DownloadedReceiver">
             <intent-filter>

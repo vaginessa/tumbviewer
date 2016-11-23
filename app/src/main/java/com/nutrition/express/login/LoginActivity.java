@@ -7,8 +7,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.nutrition.express.R;
@@ -29,12 +32,14 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
             finish();
             return;
         }
-        setContentView(R.layout.activity_login);
+        setContentView(R.layout.activity_web);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         setTitle("Login");
 
-        webView = (WebView) findViewById(R.id.webView_login);
+        final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        webView = (WebView) findViewById(R.id.webView);
         webView.getSettings().setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient() {
             @Override
@@ -50,6 +55,17 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
                     return false;
                 }
                 return super.shouldOverrideUrlLoading(view, url);
+            }
+        });
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                if (newProgress == 100) {
+                    progressBar.setVisibility(View.GONE);
+                } else {
+                    progressBar.setProgress(newProgress);
+                }
             }
         });
         loginPresenter = new LoginPresenter(this);
