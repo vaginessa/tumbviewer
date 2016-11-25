@@ -156,7 +156,7 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
             if (view != null) {
                 view.showLoginSuccess();
                 //save access token, and token secret
-                PreferencesUtils.putDefaultString("access_token", oauthToken);
+                PreferencesUtils.putString("access_token", oauthToken);
                 DataManager.getInstance().loginSuccess(oauthToken, oauthTokenSecret);
             }
             requesting = false;

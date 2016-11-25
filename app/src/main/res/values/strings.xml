@@ -47,11 +47,14 @@
     <string name="settings_register">注册你的Tumblr应用</string>
     <string name="settings_title">高级</string>
     <string name="settings_tumblr_apps">你的tumblr apps</string>
-    <string name="settings_tumblr_limit">limit</string>
+    <string name="settings_tumblr_limit">请求统计</string>
 
     <string name="register_tumblr_app">添加tumblr app</string>
     <string name="register_key_hint">api key</string>
     <string name="register_secret_hint">api secret</string>
     <string name="register_continue_copy">继续复制</string>
 
+    <string name="guide_description">Tumblr对于第三方APP有请求限制，每个小时限制请求1000次，每天限制请求5000次，推荐注册你自己的Tumblr应用，把你的api key和api secret添加到应用</string>
+    <string name="guide_to_register">前去注册</string>
+    <string name="guide_to_main">跳过</string>
 </resources>

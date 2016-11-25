@@ -35,8 +35,8 @@ public class DataManager {
     }
 
     private DataManager() {
-        token = PreferencesUtils.getDefaultString("access_token");
-        secret = PreferencesUtils.getDefaultString("access_secret");
+        token = PreferencesUtils.getString("access_token");
+        secret = PreferencesUtils.getString("access_secret");
         tumblrAppList = LocalPersistenceHelper.getShortContent(TUMBLR_APP,
                 new TypeToken<ArrayList<TumblrApp>>(){}.getType());
         if (tumblrAppList == null || tumblrAppList.size() == 0) {
@@ -68,8 +68,8 @@ public class DataManager {
     public void loginSuccess(String token, String secret) {
         this.token = token;
         this.secret = secret;
-        PreferencesUtils.putDefaultString("access_token", token);
-        PreferencesUtils.putDefaultString("access_secret", secret);
+        PreferencesUtils.putString("access_token", token);
+        PreferencesUtils.putString("access_secret", secret);
     }
 
     public boolean isLogin() {
@@ -79,8 +79,8 @@ public class DataManager {
     public void logout() {
         token = null;
         secret = null;
-        PreferencesUtils.putDefaultString("access_token", null);
-        PreferencesUtils.putDefaultString("access_secret", null);
+        PreferencesUtils.putString("access_token", null);
+        PreferencesUtils.putString("access_secret", null);
 //        clearCookies();
     }
 

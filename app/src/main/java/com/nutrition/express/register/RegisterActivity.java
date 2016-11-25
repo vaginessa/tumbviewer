@@ -21,6 +21,7 @@ import android.widget.Toast;
 
 import com.nutrition.express.R;
 import com.nutrition.express.login.LoginActivity;
+import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
 
 /**
@@ -29,17 +30,20 @@ import com.nutrition.express.model.data.DataManager;
 
 public class RegisterActivity extends AppCompatActivity {
     private String key, secret;
+    private boolean isGuide;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
+        isGuide = getIntent().getBooleanExtra("is_guide", false);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         setTitle("Register");
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null) {
+        if (actionBar != null && !isGuide) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
 
@@ -71,6 +75,9 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_register, menu);
+        if (isGuide) {
+            menu.findItem(R.id.tumblr_main).setVisible(true);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -81,6 +88,11 @@ public class RegisterActivity extends AppCompatActivity {
                 showSettingAppDialog();
                 break;
             case android.R.id.home:
+                finish();
+                break;
+            case R.id.tumblr_main:
+                Intent intent = new Intent(this, MainActivity.class);
+                startActivity(intent);
                 finish();
                 break;
             default:

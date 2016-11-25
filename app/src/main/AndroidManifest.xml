@@ -15,6 +15,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".main.MainActivity"
+            android:launchMode="singleTask"
             android:windowSoftInputMode="adjustResize"
             android:screenOrientation="portrait" />
         <activity

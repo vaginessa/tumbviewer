@@ -21,6 +21,8 @@ import com.nutrition.express.application.Constants;
 import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.data.bean.TumblrApp;
+import com.nutrition.express.register.RegisterActivity;
+import com.nutrition.express.util.PreferencesUtils;
 
 import java.util.List;
 
@@ -32,9 +34,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (DataManager.getInstance().isLogin()) {
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
+            gotoMainActivity();
             return;
         }
         getWindow().setBackgroundDrawableResource(android.R.color.white);
@@ -94,9 +94,12 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     @Override
     public void showLoginSuccess() {
         Toast.makeText(this, "登录成功", Toast.LENGTH_LONG).show();
-        Intent intent = new Intent(this, MainActivity.class);
-        startActivity(intent);
-        finish();
+        if (PreferencesUtils.getBoolean("is_first_login", true) ) {
+            PreferencesUtils.putBoolean("is_first_login", false);
+            guideToRegisterTumblrApp();
+        } else {
+            gotoMainActivity();
+        }
     }
 
     @Override
@@ -110,6 +113,19 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
         //// TODO: 10/18/16 show a failure view
         showTumblrApps();
+    }
+
+    private void gotoMainActivity() {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void gotoRegisterActivity() {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        intent.putExtra("is_guide", true);
+        startActivity(intent);
+        finish();
     }
 
 
@@ -137,5 +153,22 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
         builder.show();
     }
 
+    private void guideToRegisterTumblrApp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.guide_description);
+        builder.setPositiveButton(R.string.guide_to_register, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                gotoRegisterActivity();
+            }
+        });
+        builder.setNeutralButton(R.string.guide_to_main, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                gotoMainActivity();
+            }
+        });
+        builder.show();
+    }
 
 }

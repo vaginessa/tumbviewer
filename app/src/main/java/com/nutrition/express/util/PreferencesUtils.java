@@ -10,7 +10,7 @@ import com.nutrition.express.application.ExpressApplication;
  */
 
 public class PreferencesUtils {
-    public static void putDefaultString(String key, String value) {
+    public static void putString(String key, String value) {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(ExpressApplication.getApplication());
         SharedPreferences.Editor editor = prefs.edit();
@@ -18,10 +18,24 @@ public class PreferencesUtils {
         editor.apply();
     }
 
-    public static String getDefaultString(String key) {
+    public static String getString(String key) {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(ExpressApplication.getApplication());
         return prefs.getString(key, "");
+    }
+
+    public static void putBoolean(String key, boolean value) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(ExpressApplication.getApplication());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putBoolean(key, value);
+        editor.apply();
+    }
+
+    public static boolean getBoolean(String key, boolean val) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(ExpressApplication.getApplication());
+        return prefs.getBoolean(key, val);
     }
 
 }
