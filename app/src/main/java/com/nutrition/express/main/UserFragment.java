@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.nutrition.express.R;
+import com.nutrition.express.blogposts.PostListActivity;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.following.FollowingActivity;
@@ -141,12 +142,13 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
         presenter.getMyInfo();
     }
 
-    private class BlogVH extends CommonViewHolder<BlogInfoItem> {
+    private class BlogVH extends CommonViewHolder<BlogInfoItem> implements View.OnClickListener {
         private SimpleDraweeView avatarView;
         private TextView titleTV, nameTV;
 
         public BlogVH(View itemView) {
             super(itemView);
+            itemView.setOnClickListener(this);
             avatarView = (SimpleDraweeView) itemView.findViewById(R.id.blog_avatar);
             titleTV = (TextView) itemView.findViewById(R.id.blog_title);
             nameTV = (TextView) itemView.findViewById(R.id.blog_name);
@@ -157,6 +159,13 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
             titleTV.setText(infoItem.getTitle());
             nameTV.setText(infoItem.getName());
             FrescoUtils.setTumblrAvatarUri(avatarView, infoItem.getName(), 128);
+        }
+
+        @Override
+        public void onClick(View v) {
+            Intent intent = new Intent(getActivity(), PostListActivity.class);
+            intent.putExtra("blog_name", nameTV.getText().toString());
+            startActivity(intent);
         }
     }
 

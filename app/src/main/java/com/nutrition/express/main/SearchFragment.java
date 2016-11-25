@@ -42,8 +42,8 @@ public class SearchFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                openBlogPosts(query);
-                openTaggedPosts(query);
+                openBlogPosts(query);
+//                openTaggedPosts(query);
                 return true;
             }
 
@@ -137,8 +137,8 @@ public class SearchFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-//            openBlogPosts(name);
-            openTaggedPosts(name);
+            openBlogPosts(name);
+//            openTaggedPosts(name);
         }
 
         @Override

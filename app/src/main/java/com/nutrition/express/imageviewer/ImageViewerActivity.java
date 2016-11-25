@@ -1,11 +1,14 @@
 package com.nutrition.express.imageviewer;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
@@ -27,6 +30,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.nutrition.express.R;
 import com.nutrition.express.imageviewer.zoomable.ZoomableDraweeView;
+import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.util.FileUtils;
 import com.nutrition.express.util.FrescoUtils;
 
@@ -245,10 +249,22 @@ public class ImageViewerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.save:
-                FrescoUtils.save(photoUris.get(viewPager.getCurrentItem()), ACTION);
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    LocalBroadcastManager.getInstance(this)
+                            .sendBroadcast(new Intent(MainActivity.STORAGE_PERMISSION));
+                } else {
+                    FrescoUtils.save(photoUris.get(viewPager.getCurrentItem()), ACTION);
+                }
                 break;
             case R.id.save_all:
-                FrescoUtils.saveAll(photoUris, ACTION);
+                if (ContextCompat.checkSelfPermission(this,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    LocalBroadcastManager.getInstance(this)
+                            .sendBroadcast(new Intent(MainActivity.STORAGE_PERMISSION));
+                } else {
+                    FrescoUtils.saveAll(photoUris, ACTION);
+                }
                 break;
             default:
                 return super.onOptionsItemSelected(item);

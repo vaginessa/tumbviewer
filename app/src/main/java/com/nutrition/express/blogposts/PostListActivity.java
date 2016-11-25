@@ -1,16 +1,11 @@
 package com.nutrition.express.blogposts;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.nutrition.express.R;
-import com.nutrition.express.likes.LikesFragment;
 import com.nutrition.express.common.CommonPagerAdapter;
+import com.nutrition.express.likes.LikesFragment;
 import com.nutrition.express.useraction.FollowBlogContract;
 import com.nutrition.express.useraction.FollowBlogPresenter;
 
@@ -31,7 +26,6 @@ import java.util.List;
  * Created by huang on 5/16/16.
  */
 public class PostListActivity extends AppCompatActivity implements FollowBlogContract.View {
-    private boolean granted = false;
     private MenuItem followItem;
     private FollowBlogPresenter followBlogPresenter;
     private boolean followed = false;
@@ -136,40 +130,9 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        if (!granted) {
-            requestStoragePermission();
-        }
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         followBlogPresenter.onDetach();
     }
 
-    public void requestStoragePermission() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
-        } else {
-            granted = true;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        switch (requestCode) {
-            case 1:
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    granted = true;
-                }
-                break;
-            default:
-                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        }
-    }
 }

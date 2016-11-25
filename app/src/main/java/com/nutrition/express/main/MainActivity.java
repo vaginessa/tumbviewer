@@ -1,8 +1,18 @@
 package com.nutrition.express.main;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
@@ -14,6 +24,7 @@ import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
+    public static final String STORAGE_PERMISSION = "WRITE_EXTERNAL_STORAGE";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +70,42 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(receiver, new IntentFilter(STORAGE_PERMISSION));
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(receiver);
+    }
 
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            requestStoragePermission();
+        }
+    };
+
+    public void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
 }
