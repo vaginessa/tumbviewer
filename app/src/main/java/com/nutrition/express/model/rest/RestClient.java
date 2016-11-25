@@ -49,7 +49,7 @@ public class RestClient {
             }
         };
         HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(logger);
-        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
         okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new OAuth1SigningInterceptor())
                 .addInterceptor(interceptor)

@@ -13,6 +13,7 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.nutrition.express.BuildConfig;
 import com.nutrition.express.model.rest.RestClient;
+import com.squareup.leakcanary.LeakCanary;
 
 import static android.content.ContentValues.TAG;
 
@@ -28,6 +29,11 @@ public class ExpressApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            return;
+        }
+        LeakCanary.install(this);
+
         application = this;
         DiskCacheConfig cacheConfig = DiskCacheConfig.newBuilder(this)
                 .setMaxCacheSize(300 * 1024 * 1024)

@@ -13,9 +13,9 @@ public interface LikePostContract {
     }
 
     interface View {
-        void onLike();
+        void onLike(long id);
         void onLikeFailure();
-        void onUnlike();
+        void onUnlike(long id);
         void onUnlikeFailure();
     }
 }

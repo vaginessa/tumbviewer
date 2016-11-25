@@ -16,6 +16,7 @@ public class LikePostPresenter implements LikePostContract.Presenter, ResponseLi
     private LikePostContract.View view;
     private UserService userService;
     private Call<BaseBean<Void[]>> call;
+    private long id;
 
     public LikePostPresenter(LikePostContract.View view) {
         this.view = view;
@@ -25,6 +26,7 @@ public class LikePostPresenter implements LikePostContract.Presenter, ResponseLi
     @Override
     public void like(long id, String reblogKey) {
         if (call == null) {
+            this.id = id;
             call = userService.like(id, reblogKey);
             call.enqueue(new RestCallback<Void[]>(this, "like"));
         }
@@ -33,6 +35,7 @@ public class LikePostPresenter implements LikePostContract.Presenter, ResponseLi
     @Override
     public void unlike(long id, String reblogKey) {
         if (call == null) {
+            this.id = id;
             call = userService.unlike(id, reblogKey);
             call.enqueue(new RestCallback<Void[]>(this, "unlike"));
         }
@@ -56,10 +59,10 @@ public class LikePostPresenter implements LikePostContract.Presenter, ResponseLi
         call = null;
         switch (tag) {
             case "like":
-                view.onLike();
+                view.onLike(id);
                 break;
             case "unlike":
-                view.onUnlike();
+                view.onUnlike(id);
                 break;
         }
     }

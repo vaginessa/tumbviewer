@@ -310,9 +310,11 @@ public class PostVH extends CommonViewHolder<PostsItem>
     }
 
     @Override
-    public void onLike() {
-        likeView.setSelected(true);
-        postsItem.setLiked(true);
+    public void onLike(long id) {
+        if (postsItem.getId() == id) {
+            likeView.setSelected(true);
+            postsItem.setLiked(true);
+        }
     }
 
     @Override
@@ -320,9 +322,11 @@ public class PostVH extends CommonViewHolder<PostsItem>
     }
 
     @Override
-    public void onUnlike() {
-        likeView.setSelected(false);
-        postsItem.setLiked(false);
+    public void onUnlike(long id) {
+        if (postsItem.getId() == id) {
+            likeView.setSelected(false);
+            postsItem.setLiked(false);
+        }
     }
 
     @Override
