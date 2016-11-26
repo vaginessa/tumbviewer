@@ -1,0 +1,60 @@
+<resources>
+    <string name="app_name">烫</string>
+    <string name="search_hint">输入博客名</string>
+    <string name="no_video">无视频</string>
+    <string name="no_data">无数据</string>
+    <string name="load_failed">加载失败</string>
+    <string name="blog_follow">关注</string>
+    <string name="blog_unfollow">取消关注</string>
+    <string name="load_failure_des">%1$d \n %2$s</string>
+
+    <string name="page_main">主页</string>
+    <string name="page_video">视频</string>
+    <string name="page_photo">图片</string>
+    <string name="page_search">搜索</string>
+    <string name="page_user">我的</string>
+    <string name="page_user_account">账户</string>
+    <string name="page_user_blog">博客</string>
+    <string name="page_user_like">喜欢</string>
+    <string name="page_user_following">关注</string>
+    <string name="page_user_setting">设置</string>
+
+    <string name="source_title">来源：%1$s</string>
+    <string name="note_count_description">%1$d 条热度 / 时长 %2$s</string>
+    <string name="note_count">%1$d 条热度</string>
+    <string name="update_des">%1$s 更新</string>
+
+    <string name="video_play">播放</string>
+    <string name="video_view_image">查看缩略图</string>
+    <string name="video_download">下载</string>
+    <string name="video_copy_url">复制链接</string>
+    <string name="video_exist">视频已存在</string>
+
+    <string name="pic_save">保存</string>
+    <string name="pic_cancel">取消</string>
+    <string name="pic_title">保存该图片?</string>
+    <string name="pic_not_found">图片不存在</string>
+    <string name="pic_saved">已保存</string>
+    <string name="pic_saved_failure">保存出错</string>
+    <string name="pic_save_all">保存全部</string>
+
+    <string name="settings_limit_info">每天限制请求数：%1$d \n每天剩余请求数：%2$d \n每小时限制请求数：%3$d \n每小时剩余请求数：%4$d </string>
+    <string name="settings_logout_title">退出账户</string>
+    <string name="settings_logout">退出</string>
+    <string name="settings_clear_cache">清空缓存</string>
+    <string name="settings_clear">清空</string>
+    <string name="settings_clear_ok">已清空缓存</string>
+    <string name="settings_register">注册你的Tumblr应用</string>
+    <string name="settings_title">高级</string>
+    <string name="settings_tumblr_apps">你的tumblr apps</string>
+    <string name="settings_tumblr_limit">请求统计</string>
+
+    <string name="register_tumblr_app">添加tumblr app</string>
+    <string name="register_key_hint">api key</string>
+    <string name="register_secret_hint">api secret</string>
+    <string name="register_continue_copy">继续复制</string>
+
+    <string name="guide_description">Tumblr对于第三方APP有请求限制，每个小时限制请求1000次，每天限制请求5000次，推荐注册你自己的Tumblr应用，把你的api key和api secret添加到应用</string>
+    <string name="guide_to_register">前去注册</string>
+    <string name="guide_to_main">跳过</string>
+</resources>
