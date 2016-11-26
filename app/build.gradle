@@ -9,7 +9,7 @@ android {
     buildToolsVersion "25.0.1"
 
     defaultConfig {
-        applicationId "com.nutrition.express"
+        applicationId "com.nutrition.humblr"
         minSdkVersion 16
         targetSdkVersion 24
         versionCode 11
