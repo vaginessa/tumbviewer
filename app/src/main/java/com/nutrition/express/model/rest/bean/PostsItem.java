@@ -39,8 +39,9 @@ public class PostsItem {
     private int thumbnail_width;
     private int thumbnail_height;
     private String duration;
+    private String permalink_url;
 //    private List<PlayerItem> player;
-    private String viedo_type;
+    private String video_type;
 
     //-----------------------------------------------------------
     //            photo
@@ -185,12 +186,16 @@ public class PostsItem {
         return duration;
     }
 
+    public String getPermalink_url() {
+        return permalink_url;
+    }
+
 //    public List<PlayerItem> getPlayer() {
 //        return player;
 //    }
 
-    public String getViedo_type() {
-        return viedo_type;
+    public String getVideo_type() {
+        return video_type;
     }
 
     public String getPhotoset_layout() {

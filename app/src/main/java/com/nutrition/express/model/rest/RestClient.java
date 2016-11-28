@@ -3,6 +3,8 @@ package com.nutrition.express.model.rest;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.rest.ApiService.BlogService;
 import com.nutrition.express.model.rest.ApiService.TaggedService;
@@ -48,19 +50,22 @@ public class RestClient {
                 }
             }
         };
-        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor(logger);
-        interceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(logger);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new OAuth1SigningInterceptor())
-                .addInterceptor(interceptor)
+                .addInterceptor(loggingInterceptor)
                 .cache(cache)
                 .readTimeout(60, TimeUnit.SECONDS)
                 .writeTimeout(60, TimeUnit.SECONDS)
                 .build();
+        Gson gson = new GsonBuilder()
+                .setLenient()
+                .create();
 
         retrofit = new Retrofit.Builder()
                 .baseUrl(Constants.BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(okHttpClient)
                 .build();
     }

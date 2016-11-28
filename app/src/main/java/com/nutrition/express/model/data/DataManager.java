@@ -81,7 +81,7 @@ public class DataManager {
         secret = null;
         PreferencesUtils.putString("access_token", null);
         PreferencesUtils.putString("access_secret", null);
-//        clearCookies();
+        clearCookies();
     }
 
     private void clearCookies() {

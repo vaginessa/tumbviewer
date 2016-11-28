@@ -1,5 +1,6 @@
 package com.nutrition.express.blogposts;
 
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -97,17 +98,20 @@ public class PostVH extends CommonViewHolder<PostsItem>
         switch (postsItem.getType()) {
             case "video":
                 setVideoContent();
-                noteCountView.setText(context.getString(
-                        R.string.note_count_description,
-                        postsItem.getNote_count(),
-                        formatTime(postsItem.getDuration())));
                 break;
             case "photo":
                 setPhotoContent();
-                noteCountView.setText(context.getString(
-                        R.string.note_count,
-                        postsItem.getNote_count()));
                 break;
+        }
+        if (TextUtils.isEmpty(postsItem.getDuration())) {
+            noteCountView.setText(context.getString(
+                    R.string.note_count,
+                    postsItem.getNote_count()));
+        } else {
+            noteCountView.setText(context.getString(
+                    R.string.note_count_description,
+                    postsItem.getNote_count(),
+                    formatTime(postsItem.getDuration())));
         }
         setTrailContent();
         if (postsItem.isLiked()) {
@@ -263,7 +267,7 @@ public class PostVH extends CommonViewHolder<PostsItem>
         Uri uri = url == null ? Uri.EMPTY : Uri.parse(url);
         DraweeController controller = Fresco.newDraweeControllerBuilder()
                 .setOldController(view.getController())
-//                .setTapToRetryEnabled(true)
+                .setTapToRetryEnabled(true)
                 .setAutoPlayAnimations(true)
                 .setUri(uri)
                 .build();
@@ -298,7 +302,28 @@ public class PostVH extends CommonViewHolder<PostsItem>
             }
         } else {
             if ("video".equals(postsItem.getType())) {
-                openBottomSheet();
+                if (TextUtils.isEmpty(postsItem.getVideo_type())) {
+                    return;
+                }
+                switch (postsItem.getVideo_type()) {
+                    case "tumblr":
+                        openBottomSheet();
+                        break;
+//                    case "vine":
+//                    case "youtube":
+//                    case "instagram":
+                    default:
+                        if (TextUtils.isEmpty(postsItem.getPermalink_url())) {
+                            break;
+                        }
+                        Intent intent = new Intent(Intent.ACTION_VIEW,
+                                Uri.parse(postsItem.getPermalink_url()));
+                        try {
+                            context.startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                        }
+                        break;
+                }
             } else {
                 Integer tag = (Integer) v.getTag();
                 Intent intent = new Intent(context, ImageViewerActivity.class);
