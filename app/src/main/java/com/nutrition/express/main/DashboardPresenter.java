@@ -6,8 +6,10 @@ import com.nutrition.express.model.rest.RestCallback;
 import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.BlogPosts;
+import com.nutrition.express.model.rest.bean.PostsItem;
 
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 
@@ -21,6 +23,7 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
     private Call<BaseBean<BlogPosts>> call;
     private int defaultLimit = 20;
     private int offset = 0;
+    private long lastTimestamp = System.currentTimeMillis();
     private boolean hasNext = true, reset = false;
     private String type;
 
@@ -75,17 +78,24 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
             return;
         }
         call = null;
-        BlogPosts posts = (BlogPosts) baseBean.getResponse();
-        offset += posts.getList().size();
-        if (posts.getList().size() < defaultLimit) {
+        List<PostsItem> postsItems = ((BlogPosts) baseBean.getResponse()).getList();
+        offset += postsItems.size();
+        if (postsItems.size() < defaultLimit) {
             hasNext = false;
         }
         if (reset) {
             reset = false;
-            view.resetData(posts.getList(), hasNext);
+            view.resetData(postsItems, hasNext);
         } else {
-            view.showDashboard(posts.getList(), hasNext);
+            postsItems = removeDuplicate(postsItems);
+            if (postsItems.size() > 0) {
+                view.showDashboard(postsItems, hasNext);
+            } else {
+                getNextDashboard();
+                return;
+            }
         }
+        lastTimestamp = postsItems.get(postsItems.size() - 1).getTimestamp();
     }
 
     @Override
@@ -104,6 +114,19 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
         }
         call = null;
         view.onFailure(t);
+    }
+
+    private List<PostsItem> removeDuplicate(List<PostsItem> postsItems) {
+        int i = 0;
+        for (; i < postsItems.size(); i++) {
+            if (lastTimestamp > postsItems.get(i).getTimestamp()) {
+                break;
+            }
+        }
+        if (i > 0 && i < postsItems.size()) {
+            postsItems = postsItems.subList(i, postsItems.size());
+        }
+        return postsItems;
     }
 
 }
