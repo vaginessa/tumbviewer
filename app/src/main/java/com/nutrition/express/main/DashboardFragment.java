@@ -6,10 +6,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.nutrition.express.R;
 import com.nutrition.express.blogposts.PostVH;
 import com.nutrition.express.common.CommonRVAdapter;
@@ -28,6 +30,18 @@ public class DashboardFragment extends Fragment
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
     private SwipeRefreshLayout refreshLayout;
+    private RecyclerView.OnScrollListener onScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            if (newState == RecyclerView.SCROLL_STATE_IDLE ||
+                    newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                Fresco.getImagePipeline().resume();
+            } else {
+                Fresco.getImagePipeline().pause();
+            }
+            Log.d("onScrollStateChanged", "" + newState);
+        }
+    };
 
     @Nullable
     @Override
@@ -46,6 +60,7 @@ public class DashboardFragment extends Fragment
 
         adapter = getAdapter();
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(onScrollListener);
         return view;
     }
 
@@ -61,6 +76,7 @@ public class DashboardFragment extends Fragment
         if (presenter != null) {
             presenter.onDetach();
         }
+        recyclerView.removeOnScrollListener(onScrollListener);
     }
 
     @Override
