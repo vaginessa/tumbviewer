@@ -60,9 +60,9 @@ public final class OAuth1SigningHelper {
         try {
             oauthMap.put(OAUTH_CALLBACK, REDIRECT_URI);
             signature = getSignature(app.getApiSecret() + "&",
-                    buildBaseString(method, url, oauthMap));
+                    buildBaseString(method, url, getEncodedOauthMap(oauthMap)));
             oauthMap.put(OAUTH_SIGNATURE, signature);
-            return getAuthString();
+            return getAuthString(oauthMap);
         } catch (UnsupportedEncodingException e) {
             return "";
         }
@@ -75,9 +75,9 @@ public final class OAuth1SigningHelper {
             oauthMap.put(OAUTH_TOKEN, token);
             oauthMap.put(OAUTH_VERIFIER, verifier);
             signature = getSignature(app.getApiSecret() + "&" + secret,
-                    buildBaseString(method, url, oauthMap));
+                    buildBaseString(method, url, getEncodedOauthMap(oauthMap)));
             oauthMap.put(OAUTH_SIGNATURE, signature);
-            return getAuthString();
+            return getAuthString(oauthMap);
         } catch (UnsupportedEncodingException e) {
             return "";
         }
@@ -95,13 +95,24 @@ public final class OAuth1SigningHelper {
             signature = getSignature(app.getApiSecret() + "&" + secret,
                     buildBaseString(method, url, treeMap));
             oauthMap.put(OAUTH_SIGNATURE, signature);
-            return getAuthString();
+            return getAuthString(oauthMap);
         } catch (UnsupportedEncodingException e) {
             return "";
         }
     }
 
-    private String getAuthString() throws UnsupportedEncodingException {
+    private TreeMap<String, String> getEncodedOauthMap(TreeMap<String, String> oauthMap)
+            throws UnsupportedEncodingException {
+        TreeMap<String, String> treeMap = new TreeMap<>();
+        for (Map.Entry<String, String> entry : oauthMap.entrySet()) {
+            treeMap.put(URLEncoder.encode(entry.getKey(), ENC),
+                    URLEncoder.encode(entry.getValue(), ENC));
+        }
+        return treeMap;
+    }
+
+    private String getAuthString(TreeMap<String, String> oauthMap)
+            throws UnsupportedEncodingException {
         StringBuilder builder = new StringBuilder();
         builder.append("OAuth ");
         for (Map.Entry<String, String> entry : oauthMap.entrySet()) {
@@ -118,9 +129,9 @@ public final class OAuth1SigningHelper {
             throws UnsupportedEncodingException{
         StringBuilder paraBuilder = new StringBuilder();
         for (Map.Entry<String, String> entry : baseMap.entrySet()) {
-            paraBuilder.append(URLEncoder.encode(entry.getKey(), ENC));
+            paraBuilder.append(entry.getKey());
             paraBuilder.append("=");
-            paraBuilder.append(URLEncoder.encode(entry.getValue(), ENC));
+            paraBuilder.append(entry.getValue());
             paraBuilder.append("&");
         }
         paraBuilder.deleteCharAt(paraBuilder.length() - 1);
