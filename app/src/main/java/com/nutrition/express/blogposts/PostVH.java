@@ -34,6 +34,7 @@ import com.nutrition.express.imageviewer.ImageViewerActivity;
 import com.nutrition.express.model.rest.bean.PhotoItem;
 import com.nutrition.express.model.rest.bean.PostsItem;
 import com.nutrition.express.model.rest.bean.TrailItem;
+import com.nutrition.express.reblog.ReblogActivity;
 import com.nutrition.express.useraction.LikePostContract;
 import com.nutrition.express.useraction.LikePostPresenter;
 import com.nutrition.express.util.FrescoUtils;
@@ -54,7 +55,7 @@ public class PostVH extends CommonViewHolder<PostsItem>
     private Context context;
     private SimpleDraweeView avatarView;
     private TextView nameView, timeView, sourceView, noteCountView;
-    private ImageView likeView;
+    private ImageView likeView, reblogView;
     private FlexboxLayout contentLayout;
     private LinearLayout trailLayout;
     private ArrayList<SimpleDraweeView> contentViewCache = new ArrayList<>();
@@ -77,6 +78,8 @@ public class PostVH extends CommonViewHolder<PostsItem>
         contentLayout = (FlexboxLayout) itemView.findViewById(R.id.post_content);
         trailLayout = (LinearLayout) itemView.findViewById(R.id.post_trail);
         noteCountView = (TextView) itemView.findViewById(R.id.note_count);
+        reblogView = (ImageView) itemView.findViewById(R.id.post_reblog);
+        reblogView.setOnClickListener(this);
         likeView = (ImageView) itemView.findViewById(R.id.post_like);
         likeView.setOnClickListener(this);
         dividerWidth = (int) Utils.dp2Pixels(context, 4);
@@ -118,6 +121,11 @@ public class PostVH extends CommonViewHolder<PostsItem>
             likeView.setSelected(true);
         } else {
             likeView.setSelected(false);
+        }
+        if (postsItem.isCan_reblog()) {
+            reblogView.setVisibility(View.VISIBLE);
+        } else {
+            reblogView.setVisibility(View.GONE);
         }
     }
 
@@ -291,6 +299,12 @@ public class PostVH extends CommonViewHolder<PostsItem>
             openBlog(postsItem.getSource_title());
         } else if (v.getId() == R.id.trail_layout) {
             openBlog((String) v.getTag());
+        } else if (v.getId() == R.id.post_reblog) {
+            Intent intent = new Intent(context, ReblogActivity.class);
+            intent.putExtra("id", String.valueOf(postsItem.getId()));
+            intent.putExtra("reblog_key", postsItem.getReblog_key());
+            intent.putExtra("type", postsItem.getType());
+            context.startActivity(intent);
         } else if (v.getId() == R.id.post_like) {
             if (presenter == null) {
                 presenter = new LikePostPresenter(this);

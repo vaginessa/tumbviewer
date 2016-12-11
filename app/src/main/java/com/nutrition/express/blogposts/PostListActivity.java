@@ -61,7 +61,7 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
         likesFragment.setArguments(bundle);
 
         list.add(postListFragment);
-        titles.add(getString(R.string.page_user_blog));
+        titles.add(getString(R.string.blog_post));
         list.add(likesFragment);
         titles.add(getString(R.string.page_user_like));
 

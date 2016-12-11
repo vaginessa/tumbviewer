@@ -10,6 +10,7 @@ import com.nutrition.express.application.Constants;
 import com.nutrition.express.application.ExpressApplication;
 import com.nutrition.express.model.data.bean.TumblrApp;
 import com.nutrition.express.model.helper.LocalPersistenceHelper;
+import com.nutrition.express.model.rest.bean.UserInfoItem;
 import com.nutrition.express.util.PreferencesUtils;
 
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ public class DataManager {
     private String secret;
     private List<TumblrApp> tumblrAppList;
     private TumblrApp using;
+    private UserInfoItem users;
 
     private static class Holder {
         private static DataManager holder = new DataManager();
@@ -156,6 +158,14 @@ public class DataManager {
                 using.setUsing(true);
             }
         }
+    }
+
+    public UserInfoItem getUsers() {
+        return users;
+    }
+
+    public void setUsers(UserInfoItem users) {
+        this.users = users;
     }
 
 }

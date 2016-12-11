@@ -4,9 +4,10 @@
     <string name="no_video">No video</string>
     <string name="no_data">No data</string>
     <string name="load_failed">Loading failed</string>
+    <string name="load_failure_des">%1$d \n %2$s</string>
     <string name="blog_follow">FOLLOW</string>
     <string name="blog_unfollow">UNFOLLOW</string>
-    <string name="load_failure_des">%1$d \n %2$s</string>
+    <string name="blog_post">POSTS</string>
 
     <string name="page_main">main</string>
     <string name="page_video">video</string>
@@ -57,4 +58,9 @@
     <string name="guide_description">To third tumblr app, request limit to 1000 per-hour, and 5000 per-day. You can register your tumblr app, and add your app\'s api_key/api_secret to expand request</string>
     <string name="guide_to_register">Goto register</string>
     <string name="guide_to_main">Skip</string>
+
+    <string name="reblog_post">POST</string>
+    <string name="reblog_failure">Something wrong, please retry!</string>
+    <string name="reblog_success">Have posted!</string>
+    <string name="reblog_comment_hint">Write something, if you like</string>
 </resources>

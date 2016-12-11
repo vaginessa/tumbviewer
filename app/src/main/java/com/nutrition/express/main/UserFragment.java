@@ -98,6 +98,7 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
                 });
         builder.setData(new ArrayList<Object>(info.getUser().getBlogs()));
         recyclerView.setAdapter(builder.build());
+        DataManager.getInstance().setUsers(info.getUser());
     }
 
     @Override

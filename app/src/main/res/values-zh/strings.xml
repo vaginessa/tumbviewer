@@ -57,4 +57,9 @@
     <string name="guide_description">Tumblr对于第三方APP有请求限制，每个小时限制请求1000次，每天限制请求5000次，推荐注册你自己的Tumblr应用，把你的api key和api secret添加到应用</string>
     <string name="guide_to_register">前去注册</string>
     <string name="guide_to_main">跳过</string>
+    <string name="reblog_failure">出错了，请重试！</string>
+    <string name="reblog_success">已转发</string>
+    <string name="reblog_comment_hint">愿意的话，可以添加你的内容。</string>
+    <string name="blog_post">博客</string>
+    <string name="reblog_post">发布</string>
 </resources>

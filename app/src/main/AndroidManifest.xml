@@ -53,7 +53,11 @@
         <activity
             android:name=".register.RegisterActivity"
             android:screenOrientation="portrait"/>
-
+        <activity
+            android:name=".reblog.ReblogActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize"
+            />
         <receiver
             android:name=".application.DownloadedReceiver">
             <intent-filter>

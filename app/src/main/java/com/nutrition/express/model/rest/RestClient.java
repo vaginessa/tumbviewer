@@ -7,6 +7,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.rest.ApiService.BlogService;
+import com.nutrition.express.model.rest.ApiService.ReblogService;
 import com.nutrition.express.model.rest.ApiService.TaggedService;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.intercept.OAuth1SigningInterceptor;
@@ -86,4 +87,7 @@ public class RestClient {
         return retrofit.create(TaggedService.class);
     }
 
+    public ReblogService getReblogService() {
+        return retrofit.create(ReblogService.class);
+    }
 }
