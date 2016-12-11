@@ -22,6 +22,7 @@ public class BlogInfoItem {
     private boolean is_blocked_from_primary;
     private boolean subscribed;
     private boolean can_subscribe;
+    private boolean admin;
 
     public String getTitle() {
         return title;
@@ -93,5 +94,9 @@ public class BlogInfoItem {
 
     public boolean isCan_subscribe() {
         return can_subscribe;
+    }
+
+    public boolean isAdmin() {
+        return admin;
     }
 }

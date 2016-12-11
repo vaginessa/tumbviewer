@@ -72,19 +72,16 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
         viewPager.setAdapter(pagerAdapter);
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.setOnTabSelectedListener(
+        tabLayout.addOnTabSelectedListener(
                 new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
                     @Override
                     public void onTabReselected(TabLayout.Tab tab) {
-                        super.onTabReselected(tab);
-                        if (tab.getPosition() == viewPager.getCurrentItem()) {
-                            //hack code;
-                            PostListFragment fragment = (PostListFragment) getSupportFragmentManager()
-                                    .findFragmentByTag("android:switcher:" + R.id.viewPager + ":"
-                                            + viewPager.getCurrentItem());
-                            if (fragment != null) {
-                                fragment.scrollToTop();
-                            }
+                        //hack code;
+                        PostListFragment fragment = (PostListFragment) getSupportFragmentManager()
+                                .findFragmentByTag("android:switcher:" + R.id.viewPager + ":"
+                                        + viewPager.getCurrentItem());
+                        if (fragment != null) {
+                            fragment.scrollToTop();
                         }
                     }
                 });
@@ -94,8 +91,15 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_blog, menu);
-        followItem = menu.findItem(R.id.blog_follow);
+        boolean isAdmin = false;
+        Intent intent = getIntent();
+        if (intent != null) {
+            isAdmin = intent.getBooleanExtra("is_admin", false);
+        }
+        if (!isAdmin) {
+            getMenuInflater().inflate(R.menu.menu_blog, menu);
+            followItem = menu.findItem(R.id.blog_follow);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -119,14 +123,18 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
 
     @Override
     public void onFollow() {
-        followItem.setTitle(R.string.blog_unfollow);
-        followed = true;
+        if (followItem != null) {
+            followItem.setTitle(R.string.blog_unfollow);
+            followed = true;
+        }
     }
 
     @Override
     public void onUnfollow() {
-        followItem.setTitle(R.string.blog_follow);
-        followed = false;
+        if (followItem != null) {
+            followItem.setTitle(R.string.blog_follow);
+            followed = false;
+        }
     }
 
     @Override
@@ -135,4 +143,9 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
         followBlogPresenter.onDetach();
     }
 
+    public void hideFollowItem() {
+        if (followItem != null) {
+            followItem.setVisible(false);
+        }
+    }
 }

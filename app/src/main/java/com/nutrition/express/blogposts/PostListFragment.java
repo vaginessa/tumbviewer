@@ -84,6 +84,11 @@ public class PostListFragment extends Fragment
     }
 
     @Override
+    public void hideFollowItem() {
+        postListActivity.hideFollowItem();
+    }
+
+    @Override
     public void onFailure(Throwable t) {
         adapter.showLoadingFailure(t.getMessage());
     }

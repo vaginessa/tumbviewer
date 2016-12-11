@@ -75,7 +75,9 @@ public class PostPresenter implements PostContract.Presenter, ResponseListener {
         }
         view.showData(postsItems.toArray(), hasNext);
 
-        if (blogPosts.getBlogInfo().isFollowed()) {
+        if (blogPosts.getBlogInfo().isAdmin()) {
+            view.hideFollowItem();
+        } else if (blogPosts.getBlogInfo().isFollowed()) {
             view.onFollowed();
         }
     }

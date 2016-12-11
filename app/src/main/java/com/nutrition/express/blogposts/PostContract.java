@@ -15,5 +15,6 @@ public interface PostContract {
     interface View extends BaseView {
         void showData(Object[] items, boolean hasNext);
         void onFollowed();
+        void hideFollowItem();
     }
 }

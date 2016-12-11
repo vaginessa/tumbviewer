@@ -166,6 +166,7 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
         public void onClick(View v) {
             Intent intent = new Intent(getActivity(), PostListActivity.class);
             intent.putExtra("blog_name", nameTV.getText().toString());
+            intent.putExtra("is_admin", true);
             startActivity(intent);
         }
     }
