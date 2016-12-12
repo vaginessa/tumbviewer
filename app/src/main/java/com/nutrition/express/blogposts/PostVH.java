@@ -2,11 +2,14 @@ package com.nutrition.express.blogposts;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -15,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -35,6 +39,7 @@ import com.nutrition.express.model.rest.bean.PhotoItem;
 import com.nutrition.express.model.rest.bean.PostsItem;
 import com.nutrition.express.model.rest.bean.TrailItem;
 import com.nutrition.express.reblog.ReblogActivity;
+import com.nutrition.express.useraction.DeletePostPresenter;
 import com.nutrition.express.useraction.LikePostContract;
 import com.nutrition.express.useraction.LikePostPresenter;
 import com.nutrition.express.util.FrescoUtils;
@@ -55,7 +60,8 @@ public class PostVH extends CommonViewHolder<PostsItem>
     private Context context;
     private SimpleDraweeView avatarView;
     private TextView nameView, timeView, sourceView, noteCountView;
-    private ImageView likeView, reblogView;
+    private ImageView likeView, reblogView, deleteView;
+    private ViewStub deleteStub;
     private FlexboxLayout contentLayout;
     private LinearLayout trailLayout;
     private ArrayList<SimpleDraweeView> contentViewCache = new ArrayList<>();
@@ -83,6 +89,7 @@ public class PostVH extends CommonViewHolder<PostsItem>
         likeView = (ImageView) itemView.findViewById(R.id.post_like);
         likeView.setOnClickListener(this);
         dividerWidth = (int) Utils.dp2Pixels(context, 4);
+        deleteStub = (ViewStub) itemView.findViewById(R.id.stub_delete_forever);
     }
 
     @Override
@@ -131,6 +138,14 @@ public class PostVH extends CommonViewHolder<PostsItem>
             reblogView.setVisibility(View.VISIBLE);
         } else {
             reblogView.setVisibility(View.GONE);
+        }
+        if (postsItem.isAdmin()) {
+            if (deleteView == null) {
+                deleteView = (ImageView) deleteStub.inflate();
+                deleteView.setOnClickListener(this);
+            }
+        } else if (deleteView != null) {
+            deleteView.setVisibility(View.GONE);
         }
     }
 
@@ -298,19 +313,20 @@ public class PostVH extends CommonViewHolder<PostsItem>
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.post_header) {
+        int id = v.getId();
+        if (id == R.id.post_header) {
             openBlog(postsItem.getBlog_name());
-        } else if (v.getId() == R.id.post_source) {
+        } else if (id == R.id.post_source) {
             openBlog(postsItem.getSource_title());
-        } else if (v.getId() == R.id.trail_layout) {
+        } else if (id == R.id.trail_layout) {
             openBlog((String) v.getTag());
-        } else if (v.getId() == R.id.post_reblog) {
+        } else if (id == R.id.post_reblog) {
             Intent intent = new Intent(context, ReblogActivity.class);
             intent.putExtra("id", String.valueOf(postsItem.getId()));
             intent.putExtra("reblog_key", postsItem.getReblog_key());
             intent.putExtra("type", postsItem.getType());
             context.startActivity(intent);
-        } else if (v.getId() == R.id.post_like) {
+        } else if (id == R.id.post_like) {
             if (presenter == null) {
                 presenter = new LikePostPresenter(this);
             }
@@ -319,6 +335,8 @@ public class PostVH extends CommonViewHolder<PostsItem>
             } else {
                 presenter.like(postsItem.getId(), postsItem.getReblog_key());
             }
+        } else if (id == R.id.post_delete) {
+            showDeleteDailog();
         } else {
             if ("video".equals(postsItem.getType())) {
                 if (TextUtils.isEmpty(postsItem.getVideo_type())) {
@@ -391,6 +409,23 @@ public class PostVH extends CommonViewHolder<PostsItem>
         Intent intent = new Intent(itemView.getContext(), PostListActivity.class);
         intent.putExtra("blog_name", blogName);
         itemView.getContext().startActivity(intent);
+    }
+
+    private void showDeleteDailog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(DeletePostPresenter.ACTION_DELETE_POST);
+                intent.putExtra("name", postsItem.getBlog_name());
+                intent.putExtra("id", String.valueOf(postsItem.getId()));
+                intent.putExtra("position", getAdapterPosition());
+                LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+            }
+        });
+        builder.setNegativeButton(R.string.pic_cancel, null);
+        builder.setTitle(R.string.delete_title);
+        builder.show();
     }
 
 }

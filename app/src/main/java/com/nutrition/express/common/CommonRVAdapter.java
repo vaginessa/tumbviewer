@@ -155,6 +155,11 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         }
     }
 
+    public void remove(int position) {
+        data.remove(position);
+        notifyItemRemoved(position);
+    }
+
     public void resetData(Object[] data, boolean autoLoadingNext ) {
         this.data.clear();
         append(data, autoLoadingNext);

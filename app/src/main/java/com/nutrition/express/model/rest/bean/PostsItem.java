@@ -61,6 +61,7 @@ public class PostsItem {
     private boolean can_send_in_message;
     private boolean can_reply;
     private boolean display_avatar;
+    private transient boolean admin;
 
     public String getBlog_name() {
         return blog_name;
@@ -228,5 +229,13 @@ public class PostsItem {
 
     public boolean isDisplay_avatar() {
         return display_avatar;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 }

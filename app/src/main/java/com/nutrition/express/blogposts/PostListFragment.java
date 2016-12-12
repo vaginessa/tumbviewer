@@ -1,9 +1,13 @@
 package com.nutrition.express.blogposts;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,17 +18,21 @@ import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.useraction.DeletePostContract;
+import com.nutrition.express.useraction.DeletePostPresenter;
 
 /**
  * Created by huang on 5/26/16.
  */
 public class PostListFragment extends Fragment
-        implements CommonRVAdapter.OnLoadListener, PostContract.View {
+        implements CommonRVAdapter.OnLoadListener, PostContract.View, DeletePostContract.View {
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
     private String blogName;
     private boolean loaded = false;
     private PostPresenter presenter;
+    private DeletePostPresenter deletePostPresenter;
+    private DeleteReceiver deleteReceiver;
     private PostListActivity postListActivity;
 
     @Override
@@ -70,6 +78,12 @@ public class PostListFragment extends Fragment
         if (presenter != null) {
             presenter.onDetach();
         }
+        if (deletePostPresenter != null) {
+            deletePostPresenter.onDetach();
+        }
+        if (deleteReceiver != null) {
+            LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(deleteReceiver);
+        }
     }
 
     @Override
@@ -83,9 +97,15 @@ public class PostListFragment extends Fragment
         postListActivity.onFollow();
     }
 
+    /**
+     * It means showing the user's posts list.
+     */
     @Override
     public void hideFollowItem() {
         postListActivity.hideFollowItem();
+        deleteReceiver = new DeleteReceiver();
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(deleteReceiver,
+                new IntentFilter(DeletePostPresenter.ACTION_DELETE_POST));
     }
 
     @Override
@@ -130,6 +150,24 @@ public class PostListFragment extends Fragment
 
     public void scrollToTop() {
         recyclerView.scrollToPosition(0);
+    }
+
+    @Override
+    public void onDeletePostSuccess(int position) {
+        adapter.remove(position);
+    }
+
+    private class DeleteReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (deletePostPresenter == null) {
+                deletePostPresenter = new DeletePostPresenter(PostListFragment.this);
+            }
+            String name = intent.getStringExtra("name");
+            String id = intent.getStringExtra("id");
+            int position = intent.getIntExtra("position", 0);
+            deletePostPresenter.deletePost(name, id, position);
+        }
     }
 
 }

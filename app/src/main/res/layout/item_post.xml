@@ -84,8 +84,10 @@
             android:id="@+id/note_count"
             android:layout_width="0dp"
             android:layout_weight="1"
-            android:layout_height="wrap_content"
-            android:padding="8dp"
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:gravity="center_vertical"
             android:textSize="@dimen/cn_text_size_body"
             />
 
@@ -107,6 +109,13 @@
             android:layout_gravity="center"
             app:srcCompat="@drawable/selector_like"
             android:background="?attr/selectableItemBackgroundBorderless"
+            />
+        <ViewStub
+            android:id="@+id/stub_delete_forever"
+            android:inflatedId="@id/post_delete"
+            android:layout="@layout/item_delete_forever"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             />
     </LinearLayout>
 

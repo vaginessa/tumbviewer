@@ -63,4 +63,7 @@
     <string name="reblog_failure">Something wrong, please retry!</string>
     <string name="reblog_success">Have posted!</string>
     <string name="reblog_comment_hint">Write something, if you like</string>
+
+    <string name="delete_positive">Delete</string>
+    <string name="delete_title">Delete this post?</string>
 </resources>

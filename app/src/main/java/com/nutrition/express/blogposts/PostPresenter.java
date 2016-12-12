@@ -65,21 +65,22 @@ public class PostPresenter implements PostContract.Presenter, ResponseListener {
         if (blogPosts.getList().size() < limit || offset >= blogPosts.getCount()) {
             hasNext = false;
         }
+        boolean isAdmin = blogPosts.getBlogInfo().isAdmin();
+        if (isAdmin) {
+            view.hideFollowItem();
+        } else if (blogPosts.getBlogInfo().isFollowed()) {
+            view.onFollowed();
+        }
         //trim to only show videos and photos
         ArrayList<PostsItem> postsItems = new ArrayList<>(blogPosts.getList().size());
         for (PostsItem item: blogPosts.getList()) {
             if (TextUtils.equals(item.getType(), "video") ||
                     TextUtils.equals(item.getType(), "photo")) {
                 postsItems.add(item);
+                item.setAdmin(isAdmin);
             }
         }
         view.showData(postsItems.toArray(), hasNext);
-
-        if (blogPosts.getBlogInfo().isAdmin()) {
-            view.hideFollowItem();
-        } else if (blogPosts.getBlogInfo().isFollowed()) {
-            view.onFollowed();
-        }
     }
 
     @Override

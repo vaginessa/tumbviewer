@@ -8,7 +8,10 @@ import com.nutrition.express.model.rest.bean.BlogPosts;
 import java.util.HashMap;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
 import retrofit2.http.QueryMap;
@@ -28,4 +31,9 @@ public interface BlogService {
     Call<BaseBean<BlogPosts>> getBlogPosts(@Path("id") String id, @Path("type") String type,
                                            @Query("api_key") String key,
                                            @QueryMap HashMap<String, String> hashMap);
+
+    @FormUrlEncoded
+    @POST("/v2/blog/{id}/post/delete")
+    Call<BaseBean<Void>> deletePost(@Path("id") String id, @Field("id") String postId);
+
 }
