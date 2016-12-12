@@ -117,10 +117,15 @@ public class PostVH extends CommonViewHolder<PostsItem>
                     formatTime(postsItem.getDuration())));
         }
         setTrailContent();
-        if (postsItem.isLiked()) {
-            likeView.setSelected(true);
+        if (postsItem.isCan_like()) {
+            likeView.setVisibility(View.VISIBLE);
+            if (postsItem.isLiked()) {
+                likeView.setSelected(true);
+            } else {
+                likeView.setSelected(false);
+            }
         } else {
-            likeView.setSelected(false);
+            likeView.setVisibility(View.GONE);
         }
         if (postsItem.isCan_reblog()) {
             reblogView.setVisibility(View.VISIBLE);
