@@ -5,12 +5,13 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
@@ -27,6 +28,19 @@ public class ReblogActivity extends AppCompatActivity implements ReblogContract.
     private ReblogPresenter presenter;
 
     private EditText commentET;
+    private ProgressBar progressBar;
+    private ImageView postView;
+    private View.OnClickListener onPostListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            postView.setVisibility(View.GONE);
+            progressBar.setVisibility(View.VISIBLE);
+            if (presenter == null) {
+                presenter = new ReblogPresenter(ReblogActivity.this);
+            }
+            presenter.reblog(name, id, key, type, commentET.getText().toString());
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +52,10 @@ public class ReblogActivity extends AppCompatActivity implements ReblogContract.
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+        progressBar = (ProgressBar) toolbar.findViewById(R.id.progressBar);
+        postView = (ImageView) toolbar.findViewById(R.id.post);
+        postView.setOnClickListener(onPostListener);
+
         commentET = (EditText) findViewById(R.id.comment);
 
         List<BlogInfoItem> blogInfoItems = DataManager.getInstance().getUsers().getBlogs();
@@ -74,20 +92,8 @@ public class ReblogActivity extends AppCompatActivity implements ReblogContract.
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_reblog, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.post) {
-            if (presenter == null) {
-                presenter = new ReblogPresenter(this);
-            }
-            presenter.reblog(name, id, key, type, commentET.getText().toString());
-            return true;
-        } else if (item.getItemId() == android.R.id.home) {
+        if (item.getItemId() == android.R.id.home) {
             finish();
             return true;
         } else {
@@ -98,11 +104,15 @@ public class ReblogActivity extends AppCompatActivity implements ReblogContract.
     @Override
     public void onFailure(Throwable t) {
         Toast.makeText(this, R.string.reblog_failure, Toast.LENGTH_SHORT).show();
+        postView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onError(int code, String error) {
         Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+        postView.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.GONE);
     }
 
     @Override
