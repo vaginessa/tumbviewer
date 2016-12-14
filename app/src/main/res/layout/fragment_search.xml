@@ -13,6 +13,16 @@
         app:queryHint="@string/search_hint"
         />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:text="@string/search_reference_suggestion"
+        />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/blog_list"
         android:layout_width="match_parent"

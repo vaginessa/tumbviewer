@@ -66,4 +66,6 @@
 
     <string name="delete_positive">Delete</string>
     <string name="delete_title">Delete this post?</string>
+
+    <string name="search_reference_suggestion">Reference blog</string>
 </resources>

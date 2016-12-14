@@ -14,7 +14,9 @@ import com.nutrition.express.model.rest.bean.UserInfoItem;
 import com.nutrition.express.util.PreferencesUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by huang on 10/18/16.
@@ -27,6 +29,10 @@ public class DataManager {
     private List<TumblrApp> tumblrAppList;
     private TumblrApp using;
     private UserInfoItem users;
+
+    private List<Object> referenceBlog = new ArrayList<>();
+    private Set<Object> referenceBlogSet = new HashSet<>();
+    private Set<Object> followingSet = new HashSet<>();
 
     private static class Holder {
         private static DataManager holder = new DataManager();
@@ -166,6 +172,22 @@ public class DataManager {
 
     public void setUsers(UserInfoItem users) {
         this.users = users;
+    }
+
+    public List<Object> getReferenceBlog() {
+        return referenceBlog;
+    }
+
+    public void addReferenceBlog(String blog) {
+        if (!followingSet.contains(blog)) {
+            if (referenceBlogSet.add(blog)) {
+                referenceBlog.add(blog);
+            }
+        }
+    }
+
+    public void addFollowingBlog(String blog) {
+        followingSet.add(blog);
     }
 
 }

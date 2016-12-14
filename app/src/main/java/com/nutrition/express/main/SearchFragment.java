@@ -14,12 +14,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.nutrition.express.R;
+import com.nutrition.express.blogposts.PostListActivity;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
+import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.helper.SearchHistoryHelper;
-import com.nutrition.express.blogposts.PostListActivity;
 import com.nutrition.express.taggedposts.TaggedActivity;
+import com.nutrition.express.util.FrescoUtils;
 
 /**
  * Created by huang on 11/2/16.
@@ -30,6 +33,7 @@ public class SearchFragment extends Fragment {
     private SearchHistoryHelper historyHelper;
     private CommonRVAdapter adapter;
     private boolean loaded = false;
+    private DataManager dataManager = DataManager.getInstance();
 
     @Nullable
     @Override
@@ -60,6 +64,10 @@ public class SearchFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isResumed()) {
             showSearchHistory();
+            if (adapter.getItemCount() < dataManager.getReferenceBlog().size()) {
+                adapter.notifyItemRangeInserted(adapter.getItemCount(),
+                        dataManager.getReferenceBlog().size() - adapter.getItemCount());
+            }
         }
     }
 
@@ -78,13 +86,15 @@ public class SearchFragment extends Fragment {
         historyHelper = new SearchHistoryHelper();
 
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.setData(historyHelper.getHistories());
-        builder.addItemType(String.class, R.layout.item_text, new CommonRVAdapter.CreateViewHolder() {
-            @Override
-            public CommonViewHolder createVH(View view) {
-                return new BaseVH(view);
-            }
-        });
+//        builder.setData(historyHelper.getHistories());
+        builder.setData(dataManager.getReferenceBlog());
+        builder.addItemType(String.class, R.layout.item_search_refer_blog,
+                new CommonRVAdapter.CreateViewHolder() {
+                    @Override
+                    public CommonViewHolder createVH(View view) {
+                        return new BaseVH(view);
+                    }
+                });
         adapter = builder.build();
         recyclerView.setAdapter(adapter);
         loaded = true;
@@ -122,17 +132,22 @@ public class SearchFragment extends Fragment {
     public class BaseVH extends CommonViewHolder<String>
             implements View.OnClickListener, View.OnLongClickListener {
         String name;
+        TextView textView;
+        SimpleDraweeView avatarView;
 
         public BaseVH(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener(this);
+//            itemView.setOnLongClickListener(this);
+            textView = (TextView) itemView.findViewById(R.id.blog_name);
+            avatarView = (SimpleDraweeView) itemView.findViewById(R.id.blog_avatar);
         }
 
         @Override
         public void bindView(String object) {
-            ((TextView) itemView).setText(object);
             name = object;
+            textView.setText(name);
+            FrescoUtils.setTumblrAvatarUri(avatarView, name, 128);
         }
 
         @Override

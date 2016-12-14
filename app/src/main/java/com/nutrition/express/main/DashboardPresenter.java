@@ -1,5 +1,8 @@
 package com.nutrition.express.main;
 
+import android.text.TextUtils;
+
+import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
 import com.nutrition.express.model.rest.RestCallback;
@@ -7,6 +10,7 @@ import com.nutrition.express.model.rest.RestClient;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.BlogPosts;
 import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.model.rest.bean.TrailItem;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +30,7 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
     private long lastTimestamp = System.currentTimeMillis();
     private boolean hasNext = true, reset = false;
     private String type;
+    private DataManager dataManager = DataManager.getInstance();
 
     public DashboardPresenter(DashboardContract.View view, String type) {
         this.view = view;
@@ -96,6 +101,17 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
             }
         }
         lastTimestamp = postsItems.get(postsItems.size() - 1).getTimestamp();
+        for (PostsItem item : postsItems) {
+            dataManager.addFollowingBlog(item.getBlog_name());
+            if (!TextUtils.isEmpty(item.getSource_title())) {
+                dataManager.addReferenceBlog(item.getSource_title());
+            }
+            for (TrailItem trailItem : item.getTrail()) {
+                if (!TextUtils.isEmpty(trailItem.getBlog().getName())) {
+                    dataManager.addReferenceBlog(trailItem.getBlog().getName());
+                }
+            }
+        }
     }
 
     @Override
