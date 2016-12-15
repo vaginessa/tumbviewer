@@ -87,6 +87,11 @@ public class DataManager {
     public void logout() {
         token = null;
         secret = null;
+        users = null;
+        referenceBlog.clear();
+        referenceBlogSet.clear();
+        followingSet.clear();
+
         PreferencesUtils.putString("access_token", null);
         PreferencesUtils.putString("access_secret", null);
         clearCookies();

@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.nutrition.express.R;
 import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.bean.BlogInfoItem;
+import com.nutrition.express.model.rest.bean.UserInfoItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,10 +59,13 @@ public class ReblogActivity extends AppCompatActivity implements ReblogContract.
 
         commentET = (EditText) findViewById(R.id.comment);
 
-        List<BlogInfoItem> blogInfoItems = DataManager.getInstance().getUsers().getBlogs();
         List<String> names = new ArrayList<>();
-        for (BlogInfoItem item : blogInfoItems) {
-            names.add(item.getName());
+        UserInfoItem userInfoItem = DataManager.getInstance().getUsers();
+        if (userInfoItem != null) {
+            List<BlogInfoItem> blogInfoItems = userInfoItem.getBlogs();
+            for (BlogInfoItem item : blogInfoItems) {
+                names.add(item.getName());
+            }
         }
         if (names.size() > 0) {
             name = names.get(0);
