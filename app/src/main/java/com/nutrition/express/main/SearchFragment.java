@@ -20,7 +20,6 @@ import com.nutrition.express.blogposts.PostListActivity;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.data.DataManager;
-import com.nutrition.express.model.helper.SearchHistoryHelper;
 import com.nutrition.express.taggedposts.TaggedActivity;
 import com.nutrition.express.util.FrescoUtils;
 
@@ -30,10 +29,11 @@ import com.nutrition.express.util.FrescoUtils;
 
 public class SearchFragment extends Fragment {
     private RecyclerView recyclerView;
-    private SearchHistoryHelper historyHelper;
+//    private SearchHistoryHelper historyHelper;
     private CommonRVAdapter adapter;
     private boolean loaded = false;
     private DataManager dataManager = DataManager.getInstance();
+    private int referSize = 0;
 
     @Nullable
     @Override
@@ -64,9 +64,10 @@ public class SearchFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && isResumed()) {
             showSearchHistory();
-            if (adapter.getItemCount() < dataManager.getReferenceBlog().size()) {
-                adapter.notifyItemRangeInserted(adapter.getItemCount(),
-                        dataManager.getReferenceBlog().size() - adapter.getItemCount());
+            if (referSize < dataManager.getReferenceBlog().size()) {
+                adapter.notifyItemRangeInserted(referSize,
+                        dataManager.getReferenceBlog().size() - referSize);
+                referSize = dataManager.getReferenceBlog().size();
             }
         }
     }
@@ -83,7 +84,8 @@ public class SearchFragment extends Fragment {
         if (loaded) {
             return;
         }
-        historyHelper = new SearchHistoryHelper();
+//        historyHelper = new SearchHistoryHelper();
+        referSize = dataManager.getReferenceBlog().size();
 
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
 //        builder.setData(historyHelper.getHistories());
@@ -104,7 +106,7 @@ public class SearchFragment extends Fragment {
         Intent intent = new Intent(getActivity(), PostListActivity.class);
         intent.putExtra("blog_name", blogName);
         startActivity(intent);
-        historyHelper.add(blogName);
+//        historyHelper.add(blogName);
         adapter.notifyDataSetChanged();
     }
 
@@ -112,7 +114,7 @@ public class SearchFragment extends Fragment {
         Intent intent = new Intent(getActivity(), TaggedActivity.class);
         intent.putExtra("tag", tag);
         startActivity(intent);
-        historyHelper.add(tag);
+//        historyHelper.add(tag);
         adapter.notifyDataSetChanged();
     }
 
@@ -122,7 +124,7 @@ public class SearchFragment extends Fragment {
         builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                historyHelper.remove(text);
+//                historyHelper.remove(text);
                 adapter.notifyItemRemoved(position);
             }
         });
