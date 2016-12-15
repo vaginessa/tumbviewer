@@ -38,8 +38,12 @@ public class ExpressApplication extends Application {
         DiskCacheConfig cacheConfig = DiskCacheConfig.newBuilder(this)
                 .setMaxCacheSize(300 * 1024 * 1024)
                 .build();
+        DiskCacheConfig smallCacheConfig = DiskCacheConfig.newBuilder(this)
+                .setMaxCacheSize(10 * 1024 * 1024)
+                .build();
         imagePipelineConfig = ImagePipelineConfig.newBuilder(this)
                 .setMainDiskCacheConfig(cacheConfig)
+                .setSmallImageDiskCacheConfig(smallCacheConfig)
                 .setDownsampleEnabled(true)
 //                .setResizeAndRotateEnabledForNetwork(true)
                 .setBitmapsConfig(Bitmap.Config.RGB_565)

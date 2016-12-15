@@ -9,10 +9,12 @@ import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.BaseDataSubscriber;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.core.ImagePipeline;
 import com.facebook.imagepipeline.memory.PooledByteBuffer;
 import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.application.ExpressApplication;
 
@@ -32,7 +34,15 @@ public class FrescoUtils {
         if (size > 0 && size <= 512) {
             url +=  size;
         }
-        view.setImageURI(Uri.parse(url));
+        ImageRequest imageRequest = ImageRequestBuilder
+                .newBuilderWithSource(Uri.parse(url))
+                .setCacheChoice(ImageRequest.CacheChoice.SMALL)
+                .build();
+        DraweeController controller = Fresco.newDraweeControllerBuilder()
+                .setOldController(view.getController())
+                .setImageRequest(imageRequest)
+                .build();
+        view.setController(controller);
     }
 
     public static void save(Uri uri, String action) {
