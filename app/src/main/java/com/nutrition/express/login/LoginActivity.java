@@ -22,7 +22,6 @@ import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.data.bean.TumblrApp;
 import com.nutrition.express.register.RegisterActivity;
-import com.nutrition.express.util.PreferencesUtils;
 
 import java.util.List;
 
@@ -94,12 +93,14 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     @Override
     public void showLoginSuccess() {
         Toast.makeText(this, "登录成功", Toast.LENGTH_LONG).show();
-        if (PreferencesUtils.getBoolean("is_first_login", true) ) {
-            PreferencesUtils.putBoolean("is_first_login", false);
-            guideToRegisterTumblrApp();
-        } else {
-            gotoMainActivity();
-        }
+//        if (PreferencesUtils.getBoolean("is_first_login", true) ) {
+//            PreferencesUtils.putBoolean("is_first_login", false);
+//            guideToRegisterTumblrApp();
+//        } else {
+//            gotoMainActivity();
+//        }
+        //not guide to register app for now
+        gotoMainActivity();
     }
 
     @Override
