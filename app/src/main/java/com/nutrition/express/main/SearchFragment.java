@@ -65,8 +65,12 @@ public class SearchFragment extends Fragment {
         if (isVisibleToUser && isResumed()) {
             showSearchHistory();
             if (referSize < dataManager.getReferenceBlog().size()) {
-                adapter.notifyItemRangeInserted(referSize,
-                        dataManager.getReferenceBlog().size() - referSize);
+                if (referSize > 0) {
+                    adapter.notifyItemRangeInserted(referSize,
+                            dataManager.getReferenceBlog().size() - referSize);
+                } else {
+                    adapter.notifyDataSetChanged();
+                }
                 referSize = dataManager.getReferenceBlog().size();
             }
         }
