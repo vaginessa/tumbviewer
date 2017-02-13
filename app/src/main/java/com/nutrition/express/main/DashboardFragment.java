@@ -61,6 +61,9 @@ public class DashboardFragment extends Fragment
         adapter = getAdapter();
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(onScrollListener);
+
+        presenter = new DashboardPresenter(this, getType());
+
         return view;
     }
 

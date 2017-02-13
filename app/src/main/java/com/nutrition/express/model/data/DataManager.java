@@ -5,15 +5,18 @@ import android.text.TextUtils;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 
+import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.application.ExpressApplication;
+import com.nutrition.express.model.data.bean.TumblrAccount;
 import com.nutrition.express.model.data.bean.TumblrApp;
 import com.nutrition.express.model.helper.LocalPersistenceHelper;
 import com.nutrition.express.model.rest.bean.UserInfoItem;
 import com.nutrition.express.util.PreferencesUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,10 +27,14 @@ import java.util.Set;
 
 public class DataManager {
     private static final String TUMBLR_APP = "tumblr_app";
-    private String token;
-    private String secret;
-    private List<TumblrApp> tumblrAppList;
-    private TumblrApp using;
+    private static final String TUMBLR_ACCOUNT = "tumblr_account";
+
+    private List<TumblrAccount> tumblrAccountList;
+    private TumblrAccount positiveAccount;
+
+    private transient long dayLimit, dayRemaining, dayReset;
+    private transient long hourLimit, hourRemaining, hourReset;
+
     private UserInfoItem users;
 
     private List<Object> referenceBlog = new ArrayList<>();
@@ -43,61 +50,131 @@ public class DataManager {
     }
 
     private DataManager() {
-        token = PreferencesUtils.getString("access_token");
-        secret = PreferencesUtils.getString("access_secret");
-        tumblrAppList = LocalPersistenceHelper.getShortContent(TUMBLR_APP,
-                new TypeToken<ArrayList<TumblrApp>>(){}.getType());
-        if (tumblrAppList == null || tumblrAppList.size() == 0) {
-            tumblrAppList = new ArrayList<>();
-            using = new TumblrApp(Constants.CONSUMER_KEY, Constants.CONSUMER_SECRET);
-            using.setUsing(true);
-            tumblrAppList.add(using);
-        } else {
-            for (TumblrApp app : tumblrAppList) {
-                if (app.isUsing()) {
-                    using = app;
+        loadTumblrAccounts();
+        checkAccounts();
+    }
+
+    private void loadTumblrAccounts() {
+        tumblrAccountList = LocalPersistenceHelper.getShortContent(TUMBLR_ACCOUNT,
+                new TypeToken<ArrayList<TumblrAccount>>(){}.getType());
+        if (tumblrAccountList == null) {
+            tumblrAccountList = new ArrayList<>();
+            //check for updating from version 0.9.3
+            String token = PreferencesUtils.getString("access_token");
+            String secret = PreferencesUtils.getString("access_secret");
+            if (!TextUtils.isEmpty(token)) {
+                List<TumblrApp> tumblrAppList = LocalPersistenceHelper.getShortContent(TUMBLR_APP,
+                        new TypeToken<ArrayList<TumblrApp>>(){}.getType());
+                if (tumblrAppList == null || tumblrAppList.size() == 0) {
+                    addAccount(Constants.CONSUMER_KEY, Constants.CONSUMER_SECRET, token, secret);
+                } else {
+                    for (TumblrApp app : tumblrAppList) {
+                        if (app.isUsing()) {
+                            addAccount(app.getApiKey(), app.getApiSecret(), token, secret);
+                        }
+                    }
                 }
-            }
-            if (using == null) {
-                using = tumblrAppList.get(0);
-                using.setUsing(true);
+
+                PreferencesUtils.putString("access_token", null);
+                PreferencesUtils.putString("access_secret", null);
             }
         }
     }
 
-    public String getToken() {
-        return token;
+    private void checkAccounts() {
+        for (TumblrAccount account : tumblrAccountList) {
+            if (account.isUsing()) {
+                positiveAccount = account;
+            }
+        }
+        if (positiveAccount == null && tumblrAccountList.size() > 0) {
+            positiveAccount = tumblrAccountList.get(0);
+            positiveAccount.setUsing(true);
+            LocalPersistenceHelper.storeShortContent(TUMBLR_ACCOUNT, tumblrAccountList);
+        }
     }
 
-    public String getSecret() {
-        return secret;
-    }
-
-    public void loginSuccess(String token, String secret) {
-        this.token = token;
-        this.secret = secret;
-        PreferencesUtils.putString("access_token", token);
-        PreferencesUtils.putString("access_secret", secret);
+    public TumblrAccount getPositiveAccount() {
+        return positiveAccount;
     }
 
     public boolean isLogin() {
-        return !TextUtils.isEmpty(token) && !TextUtils.isEmpty(secret);
+        return positiveAccount != null;
     }
 
-    public void logout() {
-        token = null;
-        secret = null;
-        users = null;
-        referenceBlog.clear();
-        referenceBlogSet.clear();
-        followingSet.clear();
-
-        PreferencesUtils.putString("access_token", null);
-        PreferencesUtils.putString("access_secret", null);
-        clearCookies();
+    public List<TumblrAccount> getTumblrAccounts() {
+        return tumblrAccountList;
     }
 
-    private void clearCookies() {
+    public TumblrAccount addAccount(String apiKey, String apiSecret, String token, String secret) {
+        TumblrAccount account = new TumblrAccount(apiKey, apiSecret, token, secret);
+        if (positiveAccount == null) {
+            positiveAccount = account;
+            positiveAccount.setUsing(true);
+        }
+        tumblrAccountList.add(account);
+        LocalPersistenceHelper.storeShortContent(TUMBLR_ACCOUNT, tumblrAccountList);
+        return account;
+    }
+
+    public void removeAccount(TumblrAccount account) {
+        tumblrAccountList.remove(account);
+        if (account == positiveAccount) {
+            positiveAccount = null;
+            checkAccounts();
+        }
+        LocalPersistenceHelper.storeShortContent(TUMBLR_ACCOUNT, tumblrAccountList);
+    }
+
+    public void switchToAccount(TumblrAccount account) {
+        for (TumblrAccount tumblrAccount : tumblrAccountList) {
+            if (TextUtils.equals(tumblrAccount.getToken(), account.getToken())) {
+                if (positiveAccount != null) {
+                    positiveAccount.setUsing(false);
+                }
+                positiveAccount = tumblrAccount;
+                positiveAccount.setUsing(true);
+                break;
+            }
+        }
+        LocalPersistenceHelper.storeShortContent(TUMBLR_ACCOUNT, tumblrAccountList);
+    }
+
+    /**
+     * search account that its name equals to the positive account's name;
+     * @return
+     */
+    public boolean switchToNextRoute() {
+        if (TextUtils.isEmpty(positiveAccount.getName())) {
+            return false;
+        }
+        List<TumblrAccount> list = new ArrayList<>();
+        for (TumblrAccount account : tumblrAccountList) {
+            if (positiveAccount.getName().equals(account.getName())) {
+                list.add(account);
+            }
+        }
+        positiveAccount.setLimitExceeded(true);
+        if (list.size() > 1) {
+            for (TumblrAccount account : list) {
+                if (account != positiveAccount && !account.isLimitExceeded()) {
+                    switchToAccount(account);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public int getAccountCount() {
+        HashSet<String> set = new HashSet<>();
+        for (TumblrAccount tumblrAccount : tumblrAccountList) {
+            set.add(tumblrAccount.getName());
+        }
+        return set.size();
+    }
+
+    public void clearCookies() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
             CookieManager.getInstance().removeAllCookies(null);
             CookieManager.getInstance().flush();
@@ -113,62 +190,61 @@ public class DataManager {
         }
     }
 
-    public TumblrApp getUsingTumblrApp() {
-//        if (using.isOutOfLimit()) {
-//            nextUsing();
-//        }
-        return using;
-    }
-
-    public boolean setUsingTumblrApp(int index) {
-        if (index < tumblrAppList.size() && !tumblrAppList.get(index).isUsing()) {
-            using.setUsing(false);
-            using = tumblrAppList.get(index);
-            using.setUsing(true);
-            LocalPersistenceHelper.storeShortContent(TUMBLR_APP, tumblrAppList);
-            return true;
+    public TumblrApp getTumblrApp() {
+        List<TumblrApp> tumblrAppList = LocalPersistenceHelper
+                .getShortContent(TUMBLR_APP, new TypeToken<ArrayList<TumblrApp>>(){}.getType());
+        if (tumblrAppList != null && tumblrAppList.size() > 0) {
+            return tumblrAppList.get(0);
         }
-        return false;
+        return null;
     }
 
-    public List<TumblrApp> getTumblrAppList() {
-        return tumblrAppList;
-    }
-
-    public void addTumblrApp(String key, String secret) {
-        if (using != null) {
-            using.setUsing(false);
-        }
-        using = new TumblrApp(key, secret);
-        using.setUsing(true);
-        tumblrAppList.add(using);
+    public void saveTumblrApp(String key, String secret) {
+        List<TumblrApp> tumblrAppList = new ArrayList<>();
+        tumblrAppList.add(new TumblrApp(key, secret));
         LocalPersistenceHelper.storeShortContent(TUMBLR_APP, tumblrAppList);
+    }
+
+    public HashMap<String, String> getDefaultTumplrApps() {
+        return new Gson().fromJson(Constants.API_KEYS,
+                new TypeToken<HashMap<String, String>>(){}.getType());
     }
 
     public void updateTumblrAppInfo(String dayLimit, String dayRemaining, String dayReset,
                                     String hourLimit, String hourRemaining, String hourReset) {
-        using.setDayLimit(dayLimit);
-        using.setDayRemaining(dayRemaining);
-        using.setDayReset(dayReset);
-        using.setHourLimit(hourLimit);
-        using.setHourRemaining(hourRemaining);
-        using.setHourReset(hourReset);
-//        if (using.isOutOfLimit()) {
-//            nextUsing();
-//        }
+        try {
+            this.dayLimit = Long.valueOf(dayLimit);
+            this.dayRemaining = Long.valueOf(dayRemaining);
+            this.dayReset = Long.valueOf(dayReset);
+            this.hourLimit = Long.valueOf(hourLimit);
+            this.hourRemaining = Long.valueOf(hourRemaining);
+            this.hourReset = Long.valueOf(hourReset);
+        } catch (NumberFormatException e) {
+        }
     }
 
-    /**
-     * switch to other app need login again
-     */
-    private void nextUsing() {
-        for (TumblrApp app : tumblrAppList) {
-            if (!app.isOutOfLimit()) {
-                using.setUsing(false);
-                using = app;
-                using.setUsing(true);
-            }
-        }
+    public long getDayLimit() {
+        return dayLimit;
+    }
+
+    public long getDayRemaining() {
+        return dayRemaining;
+    }
+
+    public long getDayReset() {
+        return dayReset;
+    }
+
+    public long getHourLimit() {
+        return hourLimit;
+    }
+
+    public long getHourRemaining() {
+        return hourRemaining;
+    }
+
+    public long getHourReset() {
+        return hourReset;
     }
 
     public UserInfoItem getUsers() {
@@ -177,6 +253,10 @@ public class DataManager {
 
     public void setUsers(UserInfoItem users) {
         this.users = users;
+        if (positiveAccount != null && TextUtils.isEmpty(positiveAccount.getName())) {
+            positiveAccount.setName(users.getName());
+            LocalPersistenceHelper.storeShortContent(TUMBLR_ACCOUNT, tumblrAccountList);
+        }
     }
 
     public List<Object> getReferenceBlog() {
@@ -193,6 +273,22 @@ public class DataManager {
 
     public void addFollowingBlog(String blog) {
         followingSet.add(blog);
+    }
+
+    public void clearReferenceBlog() {
+        referenceBlog.clear();
+        referenceBlogSet.clear();
+        followingSet.clear();
+    }
+
+    private boolean test_error_429 = true;
+
+    public void setTest_error_429(boolean test_error_429) {
+        this.test_error_429 = test_error_429;
+    }
+
+    public boolean isTest_error_429() {
+        return test_error_429;
     }
 
 }

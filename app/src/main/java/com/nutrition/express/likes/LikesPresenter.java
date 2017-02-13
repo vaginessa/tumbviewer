@@ -2,7 +2,6 @@ package com.nutrition.express.likes;
 
 import android.text.TextUtils;
 
-import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.ApiService.BlogService;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
@@ -56,8 +55,7 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
             HashMap<String, String> options = new HashMap<>(2);
             options.put("limit", "" + limit);
             options.put("offset", "" + offset);
-            call = blogService.getBlogLikes(name,
-                    DataManager.getInstance().getUsingTumblrApp().getApiKey(), options);
+            call = blogService.getBlogLikes(name, options);
             call.enqueue(new RestCallback<BlogLikes>(this, "likes"));
         }
     }

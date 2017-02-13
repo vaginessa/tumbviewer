@@ -1,9 +1,14 @@
 package com.nutrition.express.model.rest;
 
+import android.content.Intent;
+import android.support.v4.content.LocalBroadcastManager;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.nutrition.express.BuildConfig;
+import com.nutrition.express.application.ExpressApplication;
+import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.ErrorBean;
@@ -39,7 +44,7 @@ public class RestCallback<T> implements Callback<BaseBean<T>> {
             try {
                 ErrorBean errorBean = new Gson().fromJson(response.errorBody().string(),
                         new TypeToken<ErrorBean>(){}.getType());
-                listener.onError(errorBean.getMeta().getStatus(), errorBean.getMeta().getMsg(), tag);
+                handleError(errorBean);
             } catch (IOException | JsonSyntaxException e) {
                 listener.onFailure(e, tag);
             }
@@ -59,7 +64,44 @@ public class RestCallback<T> implements Callback<BaseBean<T>> {
         if (BuildConfig.DEBUG) {
             t.printStackTrace();
         }
-        listener.onFailure(t, tag);
+        if (t.getMessage().equals("Canceled")) {
+            listener.onError(0, "Failed, touch to retry", tag);
+        } else {
+            listener.onFailure(t, tag);
+        }
+    }
+
+    private void handleError(ErrorBean errorBean) {
+        synchronized (RestCallback.class) {
+            if (errorBean.getMeta().getStatus() == 401) {
+                RestClient.getInstance().cancelAllCall();
+                //Unauthorized, need login again
+                DataManager dataManager = DataManager.getInstance();
+                dataManager.removeAccount(dataManager.getPositiveAccount());
+                if (dataManager.switchToNextRoute()) {
+                    listener.onError(401, "Failed, touch to retry", tag);
+                } else {
+                    LocalBroadcastManager broadcastManager = LocalBroadcastManager
+                            .getInstance(ExpressApplication.getApplication());
+                    Intent intent = new Intent(MainActivity.ERROR_401);
+                    broadcastManager.sendBroadcast(intent);
+                }
+            } else if (errorBean.getMeta().getStatus() == 429) {
+                RestClient.getInstance().cancelAllCall();
+                //429 request limit exceeded
+                DataManager dataManager = DataManager.getInstance();
+                if (dataManager.switchToNextRoute()) {
+                    listener.onError(429, "Failed, touch to retry", tag);
+                } else {
+                    LocalBroadcastManager broadcastManager = LocalBroadcastManager
+                            .getInstance(ExpressApplication.getApplication());
+                    Intent intent = new Intent(MainActivity.ERROR_429);
+                    broadcastManager.sendBroadcast(intent);
+                }
+            } else {
+                listener.onError(errorBean.getMeta().getStatus(), errorBean.getMeta().getMsg(), tag);
+            }
+        }
     }
 
 }

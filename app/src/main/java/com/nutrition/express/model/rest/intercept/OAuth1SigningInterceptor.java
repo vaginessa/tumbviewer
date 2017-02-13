@@ -17,7 +17,10 @@
 package com.nutrition.express.model.rest.intercept;
 
 
+import android.text.TextUtils;
+
 import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.data.bean.TumblrAccount;
 import com.nutrition.express.model.helper.OAuth1SigningHelper;
 
 import java.io.IOException;
@@ -36,7 +39,8 @@ public final class OAuth1SigningInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        if (DataManager.getInstance().isLogin()) {
+        String auth = request.header("Authorization");
+        if (DataManager.getInstance().isLogin() && TextUtils.isEmpty(auth)) {
             request = signRequest(request);
         }
         return chain.proceed(request);
@@ -71,10 +75,13 @@ public final class OAuth1SigningInterceptor implements Interceptor {
             parameters.put(key, value);
         }
 
-        DataManager dataManager = DataManager.getInstance();
-        String auth = new OAuth1SigningHelper()
+        TumblrAccount account = DataManager.getInstance().getPositiveAccount();
+        if (account == null) {
+            return request;
+        }
+        String auth = new OAuth1SigningHelper(account.getApiKey(), account.getApiSecret())
                 .buildAuthHeader(request.method(), baseUrl,
-                        dataManager.getToken(), dataManager.getSecret(), parameters);
+                        account.getToken(), account.getSecret(), parameters);
 
         return request.newBuilder().header("Authorization", auth).build();
     }

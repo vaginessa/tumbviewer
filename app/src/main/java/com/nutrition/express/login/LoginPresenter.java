@@ -1,16 +1,20 @@
 package com.nutrition.express.login;
 
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.data.bean.TumblrAccount;
+import com.nutrition.express.model.data.bean.TumblrApp;
 import com.nutrition.express.model.helper.OAuth1SigningHelper;
 import com.nutrition.express.model.rest.RestClient;
-import com.nutrition.express.util.PreferencesUtils;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -32,17 +36,73 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
     private OkHttpClient okHttpClient;
     private boolean requesting = false;
     private String oauthToken, oauthTokenSecret;
+    private int type;
+    private TumblrApp tumblrApp;
 
-    public LoginPresenter(LoginContract.LoginView view) {
+    public LoginPresenter(LoginContract.LoginView view, int type) {
         this.view = view;
+        this.type = type;
         okHttpClient = RestClient.getInstance().getOkHttpClient();
+        tumblrApp = getApiKey(type);
+    }
+
+    private TumblrApp getApiKey(int type) {
+        if (type == LoginActivity.NEW_ACCOUNT || type == LoginActivity.NORMAL ||
+                type == LoginActivity.ROUTE_SWITCH) {
+            return selectUnusedTumblrApp(DataManager.getInstance().getDefaultTumplrApps());
+        } else if (type == LoginActivity.NEW_ROUTE) {
+            TumblrApp tumblrApp= DataManager.getInstance().getTumblrApp();
+            if (tumblrApp == null) {
+                return selectUnusedTumblrApp(DataManager.getInstance().getDefaultTumplrApps());
+            } else {
+                return tumblrApp;
+            }
+        }
+        return new TumblrApp(Constants.CONSUMER_KEY, Constants.CONSUMER_SECRET);
+    }
+
+    /**
+     * get tumblr app key for positive account, just route switching.
+     *
+     * @param map
+     */
+    private TumblrApp selectUnusedTumblrApp(HashMap<String, String> map) {
+        List<TumblrAccount> accounts = DataManager.getInstance().getTumblrAccounts();
+        if (accounts.size() < map.size()) {
+            for (TumblrAccount account : accounts) {
+                map.remove(account.getApiKey());
+            }
+        } else {
+            TumblrAccount positiveAccount = DataManager.getInstance().getPositiveAccount();
+            if (positiveAccount != null) {
+                if (TextUtils.isEmpty(positiveAccount.getName())) {
+                    map.remove(positiveAccount.getApiKey());
+                } else {
+                    for (TumblrAccount account : accounts) {
+                        if (positiveAccount.getName().equals(account.getName())) {
+                            map.remove(account.getApiKey());
+                        }
+                    }
+                }
+            }
+        }
+
+        if (map.size() > 0) {
+            List<String> list = new ArrayList<>(map.keySet());
+            int randomIndex = (int) (System.currentTimeMillis() / 1000) % list.size();
+            String key = list.get(randomIndex);
+            return new TumblrApp(key, map.get(key));
+        } else {
+            view.onError(-1, "Request limit exceeded, see you tomorrow");
+            return null;
+        }
     }
 
     @Override
     public void getRequestToken() {
-        if (!requesting) {
+        if (!requesting && tumblrApp != null) {
             requesting = true;
-            String auth = new OAuth1SigningHelper()
+            String auth = new OAuth1SigningHelper(tumblrApp.getApiKey(), tumblrApp.getApiSecret())
                     .buildRequestHeader("POST", Constants.REQUEST_TOKEN_URL);
             Request request = new Request.Builder()
                     .url(Constants.REQUEST_TOKEN_URL)
@@ -77,7 +137,7 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
     public void getAccessToken(String oauthVerifier) {
         if (!requesting) {
             requesting = true;
-            String auth = new OAuth1SigningHelper()
+            String auth = new OAuth1SigningHelper(tumblrApp.getApiKey(), tumblrApp.getApiSecret())
                     .buildAccessHeader("POST", Constants.ACCESS_TOKEN_URL,
                             oauthToken, oauthVerifier, oauthTokenSecret);
             Request request = new Request.Builder()
@@ -155,9 +215,12 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
         public void run() {
             if (view != null) {
                 view.showLoginSuccess();
-                //save access token, and token secret
-                PreferencesUtils.putString("access_token", oauthToken);
-                DataManager.getInstance().loginSuccess(oauthToken, oauthTokenSecret);
+                DataManager dataManager = DataManager.getInstance();
+                TumblrAccount tumblrAccount = dataManager.addAccount(
+                        tumblrApp.getApiKey(), tumblrApp.getApiSecret(), oauthToken, oauthTokenSecret);
+                if (type == LoginActivity.NEW_ROUTE || type == LoginActivity.ROUTE_SWITCH) {
+                    dataManager.switchToAccount(tumblrAccount);
+                }
             }
             requesting = false;
         }

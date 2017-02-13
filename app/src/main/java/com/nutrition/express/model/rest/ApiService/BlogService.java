@@ -24,12 +24,12 @@ public interface BlogService {
     Call<BaseBean<BlogInfo>> getBlogInfo(@Path("id") String id, @Query("api_key") String key);
 
     @GET("/v2/blog/{id}/likes")
-    Call<BaseBean<BlogLikes>> getBlogLikes(@Path("id") String id, @Query("api_key") String key,
-                                 @QueryMap HashMap<String, String> hashMap);
+    Call<BaseBean<BlogLikes>> getBlogLikes(@Path("id") String id,
+                                           @QueryMap HashMap<String, String> hashMap);
 
     @GET("/v2/blog/{id}/posts/{type}")
-    Call<BaseBean<BlogPosts>> getBlogPosts(@Path("id") String id, @Path("type") String type,
-                                           @Query("api_key") String key,
+    Call<BaseBean<BlogPosts>> getBlogPosts(@Path("id") String id,
+                                           @Path("type") String type,
                                            @QueryMap HashMap<String, String> hashMap);
 
     @FormUrlEncoded

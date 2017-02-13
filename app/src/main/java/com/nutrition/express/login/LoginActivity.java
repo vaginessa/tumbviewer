@@ -1,14 +1,14 @@
 package com.nutrition.express.login;
 
-import android.content.DialogInterface;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -20,27 +20,50 @@ import com.nutrition.express.R;
 import com.nutrition.express.application.Constants;
 import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
-import com.nutrition.express.model.data.bean.TumblrApp;
-import com.nutrition.express.register.RegisterActivity;
-
-import java.util.List;
 
 public class LoginActivity extends AppCompatActivity implements LoginContract.LoginView {
+
+    public static final int NORMAL = 0;
+    public static final int NEW_ACCOUNT = 1;   //using default tumblr app
+    public static final int NEW_ROUTE = 2;    //using user's tumblr app
+    public static final int ROUTE_SWITCH = 3; //using default tumblr app
+
+    private int type = NORMAL; //login type;
+
+    private ProgressDialog progressDialog;
+
     private WebView webView;
     private LoginPresenter loginPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (DataManager.getInstance().isLogin()) {
+        Intent intent = getIntent();
+        if (intent != null) {
+            type = intent.getIntExtra("type", NORMAL);
+        }
+        DataManager dataManager = DataManager.getInstance();
+        if ((type == NORMAL) && dataManager.isLogin()) {
             gotoMainActivity();
             return;
         }
+        if (type == NEW_ROUTE || type == ROUTE_SWITCH) {
+            //if there are two different accounts, then clear cookies;
+            if (dataManager.getAccountCount() > 1) {
+                dataManager.clearCookies();
+            }
+        } else if (type == NEW_ACCOUNT) {
+            dataManager.clearCookies();
+        }
+
         getWindow().setBackgroundDrawableResource(android.R.color.white);
         setContentView(R.layout.activity_web);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         setTitle("Login");
+        if ((type == NEW_ACCOUNT) && getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
@@ -73,8 +96,17 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
                 }
             }
         });
-        loginPresenter = new LoginPresenter(this);
+        loginPresenter = new LoginPresenter(this, type);
         loginPresenter.getRequestToken();
+        progressDialog = ProgressDialog.show(this, null, null);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -88,88 +120,44 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     @Override
     public void loadUrl(String url) {
         webView.loadUrl(url);
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
     }
 
     @Override
     public void showLoginSuccess() {
         Toast.makeText(this, "登录成功", Toast.LENGTH_LONG).show();
-//        if (PreferencesUtils.getBoolean("is_first_login", true) ) {
-//            PreferencesUtils.putBoolean("is_first_login", false);
-//            guideToRegisterTumblrApp();
-//        } else {
-//            gotoMainActivity();
-//        }
-        //not guide to register app for now
-        gotoMainActivity();
+        if (type == NEW_ACCOUNT) {
+            setResult(RESULT_OK);
+            finish();
+        } else {
+            gotoMainActivity();
+        }
     }
 
     @Override
     public void onFailure(Throwable t) {
         Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
         //// TODO: 10/18/16 show a failure view
     }
 
     @Override
     public void onError(int code, String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        if (progressDialog != null) {
+            progressDialog.dismiss();
+        }
         //// TODO: 10/18/16 show a failure view
-        showTumblrApps();
     }
 
     private void gotoMainActivity() {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
-    }
-
-    private void gotoRegisterActivity() {
-        Intent intent = new Intent(this, RegisterActivity.class);
-        intent.putExtra("is_guide", true);
-        startActivity(intent);
-        finish();
-    }
-
-
-    private void showTumblrApps() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        List<TumblrApp> list = DataManager.getInstance().getTumblrAppList();
-        String[] keys = new String[list.size()];
-        int checkedItem = 0;
-        for (int i = 0; i < keys.length; i++) {
-            keys[i] = list.get(i).getApiKey();
-            if (list.get(i).isUsing()) {
-                checkedItem = i;
-            }
-        }
-        builder.setSingleChoiceItems(keys, checkedItem, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (DataManager.getInstance().setUsingTumblrApp(which)) {
-                    DataManager.getInstance().logout();
-                    loginPresenter.getRequestToken();
-                }
-                dialog.dismiss();
-            }
-        });
-        builder.show();
-    }
-
-    private void guideToRegisterTumblrApp() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(R.string.guide_description);
-        builder.setPositiveButton(R.string.guide_to_register, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                gotoRegisterActivity();
-            }
-        });
-        builder.setNeutralButton(R.string.guide_to_main, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                gotoMainActivity();
-            }
-        });
-        builder.show();
     }
 
 }

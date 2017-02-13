@@ -2,7 +2,6 @@ package com.nutrition.express.blogposts;
 
 import android.text.TextUtils;
 
-import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.ApiService.BlogService;
 import com.nutrition.express.model.rest.ResponseListener;
 import com.nutrition.express.model.rest.RestCallback;
@@ -37,8 +36,7 @@ public class PostPresenter implements PostContract.Presenter, ResponseListener {
             HashMap<String, String> para = new HashMap<>();
             para.put("limit", Integer.toString(limit));
             para.put("offset", Integer.toString(offset));
-            call = blogService.getBlogPosts(blogName, "",
-                    DataManager.getInstance().getUsingTumblrApp().getApiKey(), para);
+            call = blogService.getBlogPosts(blogName, "", para);
             call.enqueue(new RestCallback<BlogPosts>(this, "posts"));
         }
     }

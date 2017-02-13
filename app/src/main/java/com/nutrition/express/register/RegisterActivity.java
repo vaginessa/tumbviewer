@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.nutrition.express.R;
 import com.nutrition.express.login.LoginActivity;
-import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
 
 /**
@@ -30,21 +29,21 @@ import com.nutrition.express.model.data.DataManager;
 
 public class RegisterActivity extends AppCompatActivity {
     private String key, secret;
-    private boolean isGuide;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web);
 
-        isGuide = getIntent().getBooleanExtra("is_guide", false);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         setTitle("Register");
         ActionBar actionBar = getSupportActionBar();
-        if (actionBar != null && !isGuide) {
+        if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
+        }
+        if (DataManager.getInstance().getAccountCount() > 1) {
+            DataManager.getInstance().clearCookies();
         }
 
         final ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -75,9 +74,6 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_register, menu);
-        if (isGuide) {
-            menu.findItem(R.id.tumblr_main).setVisible(true);
-        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -88,11 +84,6 @@ public class RegisterActivity extends AppCompatActivity {
                 showSettingAppDialog();
                 break;
             case android.R.id.home:
-                finish();
-                break;
-            case R.id.tumblr_main:
-                Intent intent = new Intent(this, MainActivity.class);
-                startActivity(intent);
                 finish();
                 break;
             default:
@@ -113,14 +104,13 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 if (keyEditText.getText().length() > 0 && secretEditText.getText().length() > 0) {
-                    DataManager.getInstance().addTumblrApp(keyEditText.getText().toString(),
+                    DataManager.getInstance().saveTumblrApp(keyEditText.getText().toString(),
                             secretEditText.getText().toString());
                     Toast.makeText(RegisterActivity.this, R.string.pic_saved, Toast.LENGTH_SHORT).show();
-                    //need login again
-                    DataManager.getInstance().logout();
                     Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
-                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("type", LoginActivity.NEW_ROUTE);
                     startActivity(intent);
+                    finish();
                 }
             }
         });

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Humblr</string>
+    <string name="app_name">Tumbviewer</string>
     <string name="search_hint">Input blog name</string>
     <string name="no_video">No video</string>
     <string name="no_data">No data</string>
@@ -39,25 +39,25 @@
     <string name="pic_saved_failure">Save Error</string>
     <string name="pic_save_all">Save all</string>
 
-    <string name="settings_limit_info">Request limit per-day：%1$d \nRequest remaining per-day：%2$d \nRequest limit per-hour：%3$d \nRequest remaining per-hour：%4$d </string>
-    <string name="settings_logout_title">Sign out</string>
-    <string name="settings_logout">Yes</string>
-    <string name="settings_clear_cache">Clear cahce</string>
+    <string name="settings_limit_info">Request limit per-day：%1$d \nRequest remaining per-day：%2$d \nRequest day-reset left：%3$s \nRequest limit per-hour：%4$d \nRequest remaining per-hour：%5$d \nRequest hour-reset left：%6$s</string>
+    <string name="settings_delete_account">Delete account %1$s ?</string>
+    <string name="settings_clear_cache">Clear cache</string>
     <string name="settings_clear">Clear</string>
     <string name="settings_clear_ok">Cleared</string>
     <string name="settings_register">Register your tumblr app</string>
-    <string name="settings_title">Advanced</string>
+    <string name="settings_advance">Advanced</string>
     <string name="settings_tumblr_apps">Your tumblr apps</string>
     <string name="settings_tumblr_limit">Request statistics</string>
+    <string name="settings_accounts_header">Accounts</string>
+    <string name="settings_accounts_title">Account %1$d</string>
+    <string name="settings_accounts_add">Add account</string>
+    <string name="settings_accounts_switch">Switch to account \"%1$s\" ?</string>
+    <string name="settings_switch">switch</string>
 
     <string name="register_tumblr_app">Add tumblr app</string>
     <string name="register_key_hint">Api key</string>
     <string name="register_secret_hint">Api secret</string>
     <string name="register_continue_copy">Continue copy</string>
-
-    <string name="guide_description">To third tumblr app, request limit to 1000 per-hour, and 5000 per-day. You can register your tumblr app, and add your app\'s api_key/api_secret to expand request</string>
-    <string name="guide_to_register">Goto register</string>
-    <string name="guide_to_main">Skip</string>
 
     <string name="reblog_post">POST</string>
     <string name="reblog_failure">Something wrong, please retry!</string>

@@ -56,6 +56,8 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
+        loaded = false;
+        referSize = 0;
         return view;
     }
 

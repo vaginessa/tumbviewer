@@ -2,11 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/tumblr_app"
+        app:showAsAction="never"
         android:title="@string/register_tumblr_app"/>
-
-    <item android:id="@+id/tumblr_main"
-        android:title="@string/guide_to_main"
-        app:showAsAction="always"
-        android:visible="false"
-        />
 </menu>

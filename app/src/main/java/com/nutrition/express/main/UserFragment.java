@@ -19,7 +19,6 @@ import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.following.FollowingActivity;
 import com.nutrition.express.likes.LikesActivity;
-import com.nutrition.express.login.LoginActivity;
 import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.bean.BlogInfoItem;
 import com.nutrition.express.model.rest.bean.UserInfo;
@@ -55,6 +54,9 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
         followingLayout.setOnClickListener(this);
         settingLayout = (RelativeLayout) view.findViewById(R.id.setting_layout);
         settingLayout.setOnClickListener(this);
+
+        presenter = new UserPresenter(this);
+        loaded = false;
         return view;
     }
 
@@ -109,13 +111,6 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
     @Override
     public void onError(int code, String error) {
         loaded = false;
-        if (code == 401) {
-            //need login again
-            DataManager.getInstance().logout();
-            Intent intent = new Intent(getActivity(), LoginActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            getActivity().startActivity(intent);
-        }
     }
 
     @Override

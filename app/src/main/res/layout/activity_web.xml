@@ -22,6 +22,7 @@
         android:layout_height="1dp"
         android:max="100"
         android:progress="0"
+        android:progressDrawable="@drawable/progress_horizontal"
         style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         />
 

@@ -7,19 +7,33 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.facebook.drawee.view.SimpleDraweeView;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.nutrition.express.R;
+import com.nutrition.express.common.CommonRVAdapter;
+import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.login.LoginActivity;
+import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
-import com.nutrition.express.model.data.bean.TumblrApp;
+import com.nutrition.express.model.data.bean.TumblrAccount;
 import com.nutrition.express.register.RegisterActivity;
+import com.nutrition.express.util.FrescoUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +41,10 @@ import java.util.List;
  */
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
+    private static final int REQUEST_LOGIN = 1;
+    private CommonRVAdapter adapter;
+    List<Object> accounts;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,7 +58,27 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
         findViewById(R.id.settings_register).setOnClickListener(this);
         findViewById(R.id.settings_clear_cache).setOnClickListener(this);
-        findViewById(R.id.settings_tumblr_apps).setOnClickListener(this);
+        findViewById(R.id.settings_add_account).setOnClickListener(this);
+
+        List<TumblrAccount> tumblrAccounts = DataManager.getInstance().getTumblrAccounts();
+        accounts = new ArrayList<>(tumblrAccounts.size());
+        accounts.addAll(tumblrAccounts);
+
+        adapter = CommonRVAdapter.newBuilder()
+                .addItemType(TumblrAccount.class, R.layout.item_settings_account,
+                        new CommonRVAdapter.CreateViewHolder() {
+                            @Override
+                            public CommonViewHolder createVH(View view) {
+                                return new AccountVH(view);
+                            }
+                        })
+                .setData(accounts)
+                .build();
+
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.settings_accounts);
+        recyclerView.setNestedScrollingEnabled(false);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
     }
 
     @Override
@@ -53,9 +91,19 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
             case R.id.settings_clear_cache:
                 showClearCacheDialog();
                 break;
-            case R.id.settings_tumblr_apps:
-                showTumblrApps();
+            case R.id.settings_add_account:
+                Intent loginIntent = new Intent(this, LoginActivity.class);
+                loginIntent.putExtra("type", LoginActivity.NEW_ACCOUNT);
+                startActivityForResult(loginIntent, REQUEST_LOGIN);
                 break;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_LOGIN && resultCode == RESULT_OK) {
+            updateAccountsContent();
         }
     }
 
@@ -68,9 +116,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.settings_logout:
-                showLogoutDialog();
-                return true;
             case R.id.settings_tumblr_limit:
                 showTumblrLimitInfo();
                 return true;
@@ -81,17 +126,27 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         return super.onOptionsItemSelected(item);
     }
 
-    private void showLogoutDialog() {
+    private void updateAccountsContent() {
+        accounts.clear();
+        accounts.addAll(DataManager.getInstance().getTumblrAccounts());
+        adapter.notifyDataSetChanged();
+    }
+
+    private void showDeleteAccountDialog(final TumblrAccount account, String accountName) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setPositiveButton(R.string.settings_logout, new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                DataManager.getInstance().logout();
-                gotoLogin();
+                DataManager dataManager = DataManager.getInstance();
+                dataManager.removeAccount(account);
+                updateAccountsContent();
+                if (!dataManager.isLogin()) {
+                    gotoLogin();
+                }
             }
         });
         builder.setNegativeButton(R.string.pic_cancel, null);
-        builder.setTitle(R.string.settings_logout_title);
+        builder.setTitle(getResources().getString(R.string.settings_delete_account, accountName));
         builder.show();
     }
 
@@ -109,38 +164,16 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void showTumblrLimitInfo() {
-        TumblrApp app = DataManager.getInstance().getUsingTumblrApp();
+        DataManager dataManager = DataManager.getInstance();
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(getString(R.string.settings_limit_info,
-                app.getDayLimit(),
-                app.getDayRemaining(),
-                app.getHourLimit(),
-                app.getHourRemaining()
+                dataManager.getDayLimit(),
+                dataManager.getDayRemaining(),
+                DateUtils.formatElapsedTime(dataManager.getDayReset()),
+                dataManager.getHourLimit(),
+                dataManager.getHourRemaining(),
+                DateUtils.formatElapsedTime(dataManager.getHourReset())
         ));
-        builder.show();
-    }
-
-    private void showTumblrApps() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        List<TumblrApp> list = DataManager.getInstance().getTumblrAppList();
-        String[] keys = new String[list.size()];
-        int checkedItem = 0;
-        for (int i = 0; i < keys.length; i++) {
-            keys[i] = list.get(i).getApiKey();
-            if (list.get(i).isUsing()) {
-                checkedItem = i;
-            }
-        }
-        builder.setSingleChoiceItems(keys, checkedItem, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                if (DataManager.getInstance().setUsingTumblrApp(which)) {
-                    DataManager.getInstance().logout();
-                    gotoLogin();
-                }
-                dialog.dismiss();
-            }
-        });
         builder.show();
     }
 
@@ -153,6 +186,86 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     private void clearFrescoDiskCache() {
         Fresco.getImagePipeline().clearDiskCaches();
         Toast.makeText(this, R.string.settings_clear_ok, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showRoute() {
+
+    }
+
+    private void switchToAccount(TumblrAccount account) {
+        DataManager.getInstance().switchToAccount(account);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void showSwitchDialog(final TumblrAccount account, String accountName) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setPositiveButton(R.string.settings_switch, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                switchToAccount(account);
+            }
+        });
+        builder.setNegativeButton(R.string.pic_cancel, null);
+        builder.setTitle(getResources().getString(R.string.settings_accounts_switch, accountName));
+        builder.show();
+    }
+
+    /**
+     *
+     * */
+    private class AccountVH extends CommonViewHolder<TumblrAccount>
+            implements View.OnClickListener, View.OnLongClickListener {
+        private ImageView checkedView;
+        private TextView nameView, keyView;
+        private SimpleDraweeView avatarView;
+        private TumblrAccount account;
+
+        public AccountVH(View itemView) {
+            super(itemView);
+            checkedView = (ImageView) itemView.findViewById(R.id.account_checked);
+            nameView = (TextView) itemView.findViewById(R.id.account_name);
+            keyView = (TextView) itemView.findViewById(R.id.account_key);
+            avatarView = (SimpleDraweeView) itemView.findViewById(R.id.account_avatar);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        @Override
+        public void bindView(TumblrAccount account) {
+            this.account = account;
+            if (account.isUsing()) {
+                checkedView.setVisibility(View.VISIBLE);
+            } else {
+                checkedView.setVisibility(View.GONE);
+            }
+            if (!TextUtils.isEmpty(account.getName())) {
+                nameView.setText(account.getName());
+                FrescoUtils.setTumblrAvatarUri(avatarView, account.getName(), 128);
+            } else {
+                nameView.setText(getResources().getString(R.string.settings_accounts_title,
+                        getAdapterPosition() + 1));
+                ImageRequest imageRequest = ImageRequestBuilder
+                        .newBuilderWithResourceId(R.mipmap.ic_account_default).build();
+                avatarView.setImageURI(imageRequest.getSourceUri());
+            }
+            keyView.setText(account.getApiKey());
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (account.isUsing()) {
+                showRoute();
+            } else {
+                showSwitchDialog(account, nameView.getText().toString());
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            showDeleteAccountDialog(account, nameView.getText().toString());
+            return true;
+        }
     }
 
 }

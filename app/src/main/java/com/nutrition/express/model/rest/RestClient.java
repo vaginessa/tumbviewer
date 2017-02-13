@@ -52,7 +52,7 @@ public class RestClient {
             }
         };
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(logger);
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
         okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new OAuth1SigningInterceptor())
                 .addInterceptor(loggingInterceptor)
@@ -69,6 +69,10 @@ public class RestClient {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .client(okHttpClient)
                 .build();
+    }
+
+    public void cancelAllCall() {
+        okHttpClient.dispatcher().cancelAll();
     }
 
     public OkHttpClient getOkHttpClient() {
