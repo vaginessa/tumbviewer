@@ -13,6 +13,7 @@ import com.nutrition.express.model.data.bean.TumblrAccount;
 import com.nutrition.express.model.data.bean.TumblrApp;
 import com.nutrition.express.model.helper.LocalPersistenceHelper;
 import com.nutrition.express.model.rest.bean.UserInfoItem;
+import com.nutrition.express.settings.SettingsActivity;
 import com.nutrition.express.util.PreferencesUtils;
 
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class DataManager {
 
     private transient long dayLimit, dayRemaining, dayReset;
     private transient long hourLimit, hourRemaining, hourReset;
+    private boolean isSimpleMode;
 
     private UserInfoItem users;
 
@@ -281,14 +283,12 @@ public class DataManager {
         followingSet.clear();
     }
 
-    private boolean test_error_429 = true;
-
-    public void setTest_error_429(boolean test_error_429) {
-        this.test_error_429 = test_error_429;
+    public boolean isSimpleMode() {
+        return isSimpleMode;
     }
 
-    public boolean isTest_error_429() {
-        return test_error_429;
+    public void refreshData() {
+        isSimpleMode = PreferencesUtils.getBoolean(SettingsActivity.VIDEO_SIMPLE_MODE, false);
     }
 
 }

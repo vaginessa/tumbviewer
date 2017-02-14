@@ -35,6 +35,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.application.ExpressApplication;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.imageviewer.ImageViewerActivity;
+import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.bean.PhotoItem;
 import com.nutrition.express.model.rest.bean.PostsItem;
 import com.nutrition.express.model.rest.bean.TrailItem;
@@ -72,6 +73,8 @@ public class PostVH extends CommonViewHolder<PostsItem>
     private PostsItem postsItem;
     private LikePostPresenter presenter;
 
+    private boolean isSimpleMode;
+
     public PostVH(View itemView) {
         super(itemView);
         context = itemView.getContext();
@@ -90,6 +93,11 @@ public class PostVH extends CommonViewHolder<PostsItem>
         likeView.setOnClickListener(this);
         dividerWidth = (int) Utils.dp2Pixels(context, 4);
         deleteStub = (ViewStub) itemView.findViewById(R.id.stub_delete_forever);
+
+        isSimpleMode = DataManager.getInstance().isSimpleMode();
+        if (isSimpleMode) {
+            trailLayout.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -123,7 +131,9 @@ public class PostVH extends CommonViewHolder<PostsItem>
                     postsItem.getNote_count(),
                     formatTime(postsItem.getDuration())));
         }
-        setTrailContent();
+        if (!isSimpleMode) {
+            setTrailContent();
+        }
         if (postsItem.isCan_like()) {
             likeView.setVisibility(View.VISIBLE);
             if (postsItem.isLiked()) {

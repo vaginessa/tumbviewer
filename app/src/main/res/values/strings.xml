@@ -46,6 +46,9 @@
     <string name="settings_clear_ok">Cleared</string>
     <string name="settings_register">Register your tumblr app</string>
     <string name="settings_advance">Advanced</string>
+    <string name="settings_option">Option</string>
+    <string name="settings_option_simple_title">Simple mode</string>
+    <string name="settings_option_simple_des">Show less details in post view</string>
     <string name="settings_tumblr_apps">Your tumblr apps</string>
     <string name="settings_tumblr_limit">Request statistics</string>
     <string name="settings_accounts_header">Accounts</string>

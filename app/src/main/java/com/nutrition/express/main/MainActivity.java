@@ -76,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(ERROR_429);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
 
+        DataManager.getInstance().refreshData();
+
         titles.add(getString(R.string.page_video));
         titles.add(getString(R.string.page_photo));
         titles.add(getString(R.string.page_search));

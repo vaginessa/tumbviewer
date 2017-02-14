@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatCheckBox;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -15,6 +16,7 @@ import android.text.format.DateUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +34,7 @@ import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.data.bean.TumblrAccount;
 import com.nutrition.express.register.RegisterActivity;
 import com.nutrition.express.util.FrescoUtils;
+import com.nutrition.express.util.PreferencesUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,9 +44,13 @@ import java.util.List;
  */
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
+    public static final String VIDEO_SIMPLE_MODE = "video_simple_mode";
+
     private static final int REQUEST_LOGIN = 1;
     private CommonRVAdapter adapter;
     List<Object> accounts;
+
+    private AppCompatCheckBox simpleCheckBox;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,6 +66,15 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.settings_register).setOnClickListener(this);
         findViewById(R.id.settings_clear_cache).setOnClickListener(this);
         findViewById(R.id.settings_add_account).setOnClickListener(this);
+        findViewById(R.id.settings_option_simple).setOnClickListener(this);
+        simpleCheckBox = (AppCompatCheckBox) findViewById(R.id.settings_option_simple_checkbox);
+        simpleCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                PreferencesUtils.putBoolean(VIDEO_SIMPLE_MODE, isChecked);
+            }
+        });
+        simpleCheckBox.setChecked(PreferencesUtils.getBoolean(VIDEO_SIMPLE_MODE, false));
 
         List<TumblrAccount> tumblrAccounts = DataManager.getInstance().getTumblrAccounts();
         accounts = new ArrayList<>(tumblrAccounts.size());
@@ -95,6 +111,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 Intent loginIntent = new Intent(this, LoginActivity.class);
                 loginIntent.putExtra("type", LoginActivity.NEW_ACCOUNT);
                 startActivityForResult(loginIntent, REQUEST_LOGIN);
+                break;
+            case R.id.settings_option_simple:
+                simpleCheckBox.setChecked(!simpleCheckBox.isChecked());
+                PreferencesUtils.putBoolean(VIDEO_SIMPLE_MODE, simpleCheckBox.isChecked());
                 break;
         }
     }
