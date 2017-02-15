@@ -69,4 +69,5 @@
     <string name="settings_option">选项</string>
     <string name="settings_option_simple_des">在列表视图中显示更少信息</string>
     <string name="settings_option_simple_title">精简模式</string>
+    <string name="load_finish">结束</string>
 </resources>

@@ -35,6 +35,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
 
     private int state = LOADING_FINISH;
 
+    private boolean isFinishViewEnabled = false;
     //保存了layout_id与MultiType键值对
     private SparseArray<MultiType> typeArray;
     //保存了数据类型名称与layout_id的键值对
@@ -59,6 +60,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
     };
 
     private CommonRVAdapter(Builder builder) {
+        isFinishViewEnabled = builder.isFinishViewEnabled;
         typeArray = builder.typeArray;
         typeMap = builder.typeMap;
         loadListener = builder.loadListener;
@@ -123,7 +125,11 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         } else if (state == LOADING_FINISH) {
             state = EMPTY;
         }
-        return state == LOADING_FINISH ? data.size() : data.size() + 1;
+        if (isFinishViewEnabled) {
+            return data.size() + 1;
+        } else {
+            return state == LOADING_FINISH ? data.size() : data.size() + 1;
+        }
     }
 
     /**
@@ -212,11 +218,14 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         private int failureView = 0;
         private int nextView = 0;
         private int nextFailureView = 0;
+        private int finishView = 0;
         private CreateViewHolder emptyCreator = null;
         private CreateViewHolder loadingCreator = null;
         private CreateViewHolder failureCreator = null;
         private CreateViewHolder nextCreator = null;
         private CreateViewHolder nextFailureCreator = null;
+        private CreateViewHolder finishCreator = null;
+        private boolean isFinishViewEnabled = false;
         private OnLoadListener loadListener;
         private List<Object> data;
         private SparseArray<MultiType> typeArray = new SparseArray<>();
@@ -242,31 +251,51 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         public Builder setEmptyView(@LayoutRes int emptyView,
                                     @Nullable CreateViewHolder creator) {
             this.emptyView = emptyView;
+            this.emptyCreator = creator;
             return this;
         }
 
         public Builder setLoadingView(@LayoutRes int loadingView,
                                       @Nullable CreateViewHolder creator) {
             this.loadingView = loadingView;
+            this.loadingCreator = creator;
             return this;
         }
 
         public Builder setFailureView(@LayoutRes int failureView,
                                       @Nullable CreateViewHolder creator) {
             this.failureView = failureView;
+            this.failureCreator = creator;
             return this;
         }
 
         public Builder setNextView(@LayoutRes int nextView,
                                    @Nullable CreateViewHolder creator) {
             this.nextView = nextView;
+            this.nextCreator = creator;
             return this;
         }
 
         public Builder setNextFailureView(@LayoutRes int nextFailureView,
                                           @Nullable CreateViewHolder creator) {
             this.nextFailureView = nextFailureView;
+            this.nextFailureCreator = creator;
             return this;
+        }
+
+        public Builder setFinishView(@LayoutRes int finishView,
+                                     @Nullable CreateViewHolder creator) {
+            this.finishView = finishView;
+            this.finishCreator = creator;
+            return this;
+        }
+
+        /**
+         * set true to show finish view when loading finished;
+         * @param finishViewEnabled
+         */
+        public void setFinishViewEnabled(boolean finishViewEnabled) {
+            isFinishViewEnabled = finishViewEnabled;
         }
 
         public Builder setLoadListener(OnLoadListener loadListener) {
@@ -307,6 +336,9 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             if (nextFailureView <= 0) {
                 nextFailureView = R.layout.item_loading_failure;
             }
+            if (finishView <= 0) {
+                finishView = R.layout.item_finish;
+            }
             if (emptyCreator == null) {
                 emptyCreator = defaultCreator;
             }
@@ -322,6 +354,9 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             if (nextFailureCreator == null) {
                 nextFailureCreator = errorCreator;
             }
+            if (finishCreator == null) {
+                finishCreator = defaultCreator;
+            }
         }
 
         private void addStateType() {
@@ -331,6 +366,7 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             typeArray.put(LOADING_FAILURE, new MultiType(failureView, failureCreator));
             typeArray.put(LOADING_NEXT, new MultiType(nextView, nextCreator));
             typeArray.put(LOADING_NEXT_FAILURE, new MultiType(nextFailureView, nextFailureCreator));
+            typeArray.put(LOADING_FINISH, new MultiType(finishView, finishCreator));
         }
     }
 
