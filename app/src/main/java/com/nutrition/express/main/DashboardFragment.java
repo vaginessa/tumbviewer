@@ -142,4 +142,10 @@ public class DashboardFragment extends Fragment
         recyclerView.scrollToPosition(0);
     }
 
+    public void refreshData() {
+        adapter = getAdapter();
+        recyclerView.setAdapter(adapter);
+        presenter.refresh();
+    }
+
 }

@@ -38,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
 
     private DashboardFragment videoFragment;
     private PhotoDashboardFragment photoFragment;
+    private SearchFragment searchFragment;
+    private UserFragment userFragment;
 
     private List<Fragment> list = new ArrayList<>();
     private List<String> titles = new ArrayList<>();
@@ -82,29 +84,37 @@ public class MainActivity extends AppCompatActivity {
         titles.add(getString(R.string.page_photo));
         titles.add(getString(R.string.page_search));
         titles.add(getString(R.string.page_user));
-        loadData();
+        videoFragment = new DashboardFragment();
+        photoFragment = new PhotoDashboardFragment();
+        searchFragment = new SearchFragment();
+        userFragment = new UserFragment();
+        list.clear();
+        list.add(videoFragment);
+        list.add(photoFragment);
+        list.add(searchFragment);
+        list.add(userFragment);
+        viewPager.setAdapter(new CommonPagerAdapter(getSupportFragmentManager(), list, titles));
+
+        positiveAccount = DataManager.getInstance().getPositiveAccount();
     }
 
-    public void loadData() {
+    public void refreshData() {
         //reset the referable blog
         DataManager.getInstance().clearReferenceBlog();
 
         positiveAccount = DataManager.getInstance().getPositiveAccount();
 
-        videoFragment = new DashboardFragment();
-        photoFragment = new PhotoDashboardFragment();
-        list.clear();
-        list.add(videoFragment);
-        list.add(photoFragment);
-        list.add(new SearchFragment());
-        list.add(new UserFragment());
-        viewPager.setAdapter(new CommonPagerAdapter(getSupportFragmentManager(), list, titles));
+        videoFragment.refreshData();
+        photoFragment.refreshData();
+        searchFragment.refreshData();
+        userFragment.refreshData();
+        viewPager.setCurrentItem(0);
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        loadData();
+        refreshData();
     }
 
     @Override
@@ -113,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         DataManager dataManager = DataManager.getInstance();
         if (positiveAccount != dataManager.getPositiveAccount()) {
             if (dataManager.isLogin()) {
-                loadData();
+                refreshData();
             } else {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);

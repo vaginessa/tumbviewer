@@ -138,6 +138,10 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
         presenter.getMyInfo();
     }
 
+    public void refreshData() {
+        loaded = false;
+    }
+
     private class BlogVH extends CommonViewHolder<BlogInfoItem> implements View.OnClickListener {
         private SimpleDraweeView avatarView;
         private TextView titleTV, nameTV;

@@ -137,6 +137,11 @@ public class SearchFragment extends Fragment {
         builder.create().show();
     }
 
+    public void refreshData() {
+        loaded = false;
+        referSize = 0;
+    }
+
     public class BaseVH extends CommonViewHolder<String>
             implements View.OnClickListener, View.OnLongClickListener {
         String name;
