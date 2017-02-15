@@ -84,7 +84,11 @@ public class DashboardFragment extends Fragment
 
     @Override
     public void showDashboard(List<PostsItem> blogPosts, boolean hasNext) {
-        adapter.append(blogPosts.toArray(), hasNext);
+        if (blogPosts != null) {
+            adapter.append(blogPosts.toArray(), hasNext);
+        } else {
+            adapter.append(null, hasNext);
+        }
     }
 
     @Override

@@ -141,6 +141,9 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
         }
         if (i > 0 && i < postsItems.size()) {
             postsItems = postsItems.subList(i, postsItems.size());
+//        } else if (i >= postsItems.size()) {
+//            postsItems.clear();
+            //this case is complicated, don't clear, just show them.
         }
         return postsItems;
     }
