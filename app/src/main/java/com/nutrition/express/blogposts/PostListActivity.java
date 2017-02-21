@@ -55,7 +55,7 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
 
         Bundle bundle = new Bundle();
         bundle.putString("blog_name", blogName);
-        PostListFragment postListFragment = new PostListFragment();
+        final PostListFragment postListFragment = new PostListFragment();
         postListFragment.setArguments(bundle);
         LikesFragment likesFragment = new LikesFragment();
         likesFragment.setArguments(bundle);
@@ -72,19 +72,22 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
         viewPager.setAdapter(pagerAdapter);
         final TabLayout tabLayout = (TabLayout) findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager);
-        tabLayout.addOnTabSelectedListener(
-                new TabLayout.ViewPagerOnTabSelectedListener(viewPager) {
-                    @Override
-                    public void onTabReselected(TabLayout.Tab tab) {
-                        //hack code;
-                        PostListFragment fragment = (PostListFragment) getSupportFragmentManager()
-                                .findFragmentByTag("android:switcher:" + R.id.viewPager + ":"
-                                        + viewPager.getCurrentItem());
-                        if (fragment != null) {
-                            fragment.scrollToTop();
-                        }
-                    }
-                });
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+                if (tab.getPosition() == 0) {
+                    postListFragment.scrollToTop();
+                }
+            }
+        });
 
         followBlogPresenter = new FollowBlogPresenter(this);
     }
