@@ -72,4 +72,8 @@
     <string name="delete_title">Delete this post?</string>
 
     <string name="search_reference_suggestion">Reference blog</string>
+
+    <string name="download_toolbar_title">Download</string>
+    <string name="download_video_title">Video</string>
+    <string name="download_photo_title">Photo</string>
 </resources>

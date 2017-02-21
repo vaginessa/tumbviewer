@@ -9,7 +9,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -17,6 +16,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.blogposts.PostListActivity;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
+import com.nutrition.express.download.DownloadManagerActivity;
 import com.nutrition.express.following.FollowingActivity;
 import com.nutrition.express.likes.LikesActivity;
 import com.nutrition.express.model.data.DataManager;
@@ -37,7 +37,6 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
 
     private TextView likeTV, followingTV;
     private RecyclerView recyclerView;
-    private RelativeLayout likeLayout, followingLayout, settingLayout;
 
     @Nullable
     @Override
@@ -48,12 +47,10 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
         followingTV = (TextView) view.findViewById(R.id.following_text);
         recyclerView = (RecyclerView) view.findViewById(R.id.user_blog_list);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        likeLayout = (RelativeLayout) view.findViewById(R.id.like_layout);
-        likeLayout.setOnClickListener(this);
-        followingLayout = (RelativeLayout) view.findViewById(R.id.following_layout);
-        followingLayout.setOnClickListener(this);
-        settingLayout = (RelativeLayout) view.findViewById(R.id.setting_layout);
-        settingLayout.setOnClickListener(this);
+        view.findViewById(R.id.like_layout).setOnClickListener(this);
+        view.findViewById(R.id.following_layout).setOnClickListener(this);
+        view.findViewById(R.id.setting_layout).setOnClickListener(this);
+        view.findViewById(R.id.download_layout).setOnClickListener(this);
 
         presenter = new UserPresenter(this);
         loaded = false;
@@ -127,6 +124,10 @@ public class UserFragment extends Fragment implements UserContract.View, View.On
             case R.id.setting_layout:
                 Intent settingsIntent = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(settingsIntent);
+                break;
+            case R.id.download_layout:
+                Intent downloadIntent = new Intent(getActivity(), DownloadManagerActivity.class);
+                startActivity(downloadIntent);
                 break;
         }
     }
