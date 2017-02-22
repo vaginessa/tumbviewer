@@ -6,16 +6,16 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.nutrition.express.R;
-import com.nutrition.express.common.ExoPlayerInstance;
 import com.nutrition.express.common.CommonExoPlayerView;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
+import com.nutrition.express.common.ExoPlayerInstance;
 import com.nutrition.express.util.FileUtils;
 
 import java.io.File;
@@ -38,12 +38,14 @@ public class VideoFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         playerInstance = new ExoPlayerInstance(context);
+        videoInfos = new ArrayList<>();
         File videoDir = FileUtils.getVideoDir();
         File[] files = videoDir.listFiles();
-        videoInfos = new ArrayList<>(files.length);
-        for (File file : videoDir.listFiles()) {
-            if (file.getName().endsWith(".mp4")) {
-                videoInfos.add(new LocalVideo(file));
+        if (files != null && files.length > 0) {
+            for (File file : videoDir.listFiles()) {
+                if (file.getName().endsWith(".mp4")) {
+                    videoInfos.add(new LocalVideo(file));
+                }
             }
         }
     }
@@ -73,13 +75,13 @@ public class VideoFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-            }
-        });
-        recyclerView.setRecyclerListener(new RecyclerView.RecyclerListener() {
-            @Override
-            public void onViewRecycled(RecyclerView.ViewHolder holder) {
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE ||
+                        newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    Fresco.getImagePipeline().resume();
+                } else {
+                    Fresco.getImagePipeline().pause();
+                }
             }
         });
         return view;
@@ -102,7 +104,6 @@ public class VideoFragment extends Fragment {
         @Override
         public void bindView(LocalVideo localVideo) {
             playerView.bindLocalVideo(localVideo);
-            Log.d("bindView", "---");
         }
 
         @Override
@@ -116,7 +117,6 @@ public class VideoFragment extends Fragment {
                 playerView.connect();
                 currentPlayView = playerView;
             }
-            Log.d("onItemClick", "-");
         }
     }
 

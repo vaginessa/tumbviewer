@@ -245,4 +245,9 @@ public class ZoomableDraweeView extends DraweeView<GenericDraweeHierarchy>
             mViewBounds,
             mImageBounds);
   }
+
+  public void reset() {
+      mZoomableController.getTransform().reset();
+  }
+
 }
