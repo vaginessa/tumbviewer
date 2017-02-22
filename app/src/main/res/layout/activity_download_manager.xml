@@ -21,7 +21,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:title="@string/download_toolbar_title"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                 />
         </android.support.design.widget.CollapsingToolbarLayout>
         <android.support.design.widget.TabLayout

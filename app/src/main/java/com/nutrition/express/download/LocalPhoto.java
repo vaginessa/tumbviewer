@@ -10,11 +10,13 @@ import java.io.File;
  */
 
 public class LocalPhoto {
+    private File file;
     private Uri uri;
     private int width;
     private int height;
 
     public LocalPhoto(File file) {
+        this.file = file;
         uri = Uri.fromFile(file);
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -25,6 +27,10 @@ public class LocalPhoto {
 
     public boolean isValid() {
         return width != -1 && height != -1;
+    }
+
+    public File getFile() {
+        return file;
     }
 
     public Uri getUri() {

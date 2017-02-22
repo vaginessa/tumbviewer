@@ -2,14 +2,19 @@ package com.nutrition.express.download;
 
 import android.app.ActivityOptions;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -36,6 +41,12 @@ public class PhotoFragment extends Fragment {
     private CommonRVAdapter adapter;
 
     private List<Object> photos;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -87,22 +98,35 @@ public class PhotoFragment extends Fragment {
     }
 
     @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser && draweeView != null) {
-            draweeView.setImageURI(curentPhoto.getUri());
-        }
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_download_photo, menu);
+        super.onCreateOptionsMenu(menu, inflater);
     }
 
-    private SimpleDraweeView draweeView;
-    private LocalPhoto curentPhoto;
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.delete_photo) {
+            FileUtils.deleteFile(FileUtils.getImageDir());
+            onAllPhotosDeleted();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
 
     public void scrollToTop() {
         recyclerView.scrollToPosition(0);
     }
 
+    public void onAllPhotosDeleted() {
+        adapter.resetData(null, false);
+    }
+
+    public void onPhotoDeleted(int pos) {
+        adapter.remove(pos);
+    }
+
     private final class PhotoViewHolder extends CommonViewHolder<LocalPhoto>
-            implements View.OnClickListener{
+            implements View.OnClickListener, View.OnLongClickListener {
         private SimpleDraweeView photoView;
 
         private LocalPhoto photo;
@@ -111,6 +135,7 @@ public class PhotoFragment extends Fragment {
             super(itemView);
             photoView = (SimpleDraweeView) itemView.findViewById(R.id.photoView);
             photoView.setOnClickListener(this);
+            photoView.setOnLongClickListener(this);
         }
 
         @Override
@@ -141,8 +166,22 @@ public class PhotoFragment extends Fragment {
                 intent.putExtra("photo_source", photo.getUri());
                 startActivity(intent);
             }
-            draweeView = photoView;
-            curentPhoto = photo;
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    FileUtils.deleteFile(photo.getFile());
+                    onPhotoDeleted(getAdapterPosition());
+                }
+            });
+            builder.setNegativeButton(R.string.pic_cancel, null);
+            builder.setTitle(R.string.download_delete_title);
+            builder.show();
+            return true;
         }
     }
 

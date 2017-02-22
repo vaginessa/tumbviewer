@@ -1,12 +1,17 @@
 package com.nutrition.express.download;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -33,6 +38,12 @@ public class VideoFragment extends Fragment {
     private CommonExoPlayerView currentPlayView;
 
     private List<Object> videoInfos;
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public void onAttach(Context context) {
@@ -87,22 +98,51 @@ public class VideoFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_download_video, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.delete_video) {
+            FileUtils.deleteFile(FileUtils.getVideoDir());
+            onAllVideosDeleted();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     public void scrollToTop() {
         recyclerView.scrollToPosition(0);
     }
 
-    private class VideoViewHolder extends CommonViewHolder<LocalVideo> implements View.OnClickListener {
+    public void onAllVideosDeleted() {
+        adapter.resetData(null, false);
+    }
+
+    public void onVideoDeleted(int pos) {
+        adapter.remove(pos);
+    }
+
+    private class VideoViewHolder extends CommonViewHolder<LocalVideo>
+            implements View.OnClickListener, View.OnLongClickListener {
         private CommonExoPlayerView playerView;
+
+        private LocalVideo video;
 
         private VideoViewHolder(View itemView) {
             super(itemView);
             playerView = (CommonExoPlayerView) itemView;
             playerView.setPlayerInstance(playerInstance);
-            itemView.setOnClickListener(this);
+            playerView.setOnClickListener(this);
+            playerView.setOnLongClickListener(this);
         }
 
         @Override
         public void bindView(LocalVideo localVideo) {
+            video = localVideo;
             playerView.bindLocalVideo(localVideo);
         }
 
@@ -117,6 +157,22 @@ public class VideoFragment extends Fragment {
                 playerView.connect();
                 currentPlayView = playerView;
             }
+        }
+
+        @Override
+        public boolean onLongClick(View v) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    FileUtils.deleteFile(video.getFile());
+                    onVideoDeleted(getAdapterPosition());
+                }
+            });
+            builder.setNegativeButton(R.string.pic_cancel, null);
+            builder.setTitle(R.string.download_delete_title);
+            builder.show();
+            return true;
         }
     }
 

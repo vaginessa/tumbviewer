@@ -1,7 +1,10 @@
 package com.nutrition.express.util;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+
+import com.nutrition.express.application.ExpressApplication;
 
 import java.io.File;
 
@@ -56,6 +59,36 @@ public class FileUtils {
             name = uri.toString();
         }
         return new File(FileUtils.getVideoDir(), name);
+    }
+
+    public static void deleteFile(File file) {
+        if (file.isDirectory()) {
+            deleteDirFile(file);
+        } else {
+            if (file.delete()) {
+                scanMedia(file);
+            }
+        }
+    }
+
+    private static void deleteDirFile(File dir) {
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory()) {
+                deleteDirFile(file);
+            } else {
+                if (file.delete()) {
+                    scanMedia(file);
+                }
+            }
+        }
+        dir.delete();
+    }
+
+    private static void scanMedia(File f) {
+        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
+        Uri contentUri = Uri.fromFile(f);
+        mediaScanIntent.setData(contentUri);
+        ExpressApplication.getApplication().sendBroadcast(mediaScanIntent);
     }
 
 }

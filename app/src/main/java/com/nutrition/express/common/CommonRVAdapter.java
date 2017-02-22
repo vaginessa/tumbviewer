@@ -153,11 +153,12 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             if (this.data.size() > 0) {
                 //all data has been loaded
                 state = LOADING_FINISH;
+                notifyItemChanged(this.data.size());
             } else {
                 //no data, show empty view
                 state = EMPTY;
+                notifyDataSetChanged();
             }
-            notifyItemChanged(this.data.size());
         }
     }
 

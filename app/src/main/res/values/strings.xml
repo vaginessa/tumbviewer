@@ -76,4 +76,7 @@
     <string name="download_toolbar_title">Download</string>
     <string name="download_video_title">Video</string>
     <string name="download_photo_title">Photo</string>
+    <string name="download_video_delete">Delete all videos</string>
+    <string name="download_photo_delete">Delete all photos</string>
+    <string name="download_delete_title">Delete ?</string>
 </resources>

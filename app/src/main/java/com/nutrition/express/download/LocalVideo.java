@@ -13,11 +13,13 @@ import java.io.File;
  */
 
 public class LocalVideo {
+    private File file;
     private Uri uri;
     private int width;
     private int height;
 
     public LocalVideo(File file) {
+        this.file = file;
         uri = Uri.fromFile(file);
         MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         retriever.setDataSource(file.getPath());
@@ -27,6 +29,10 @@ public class LocalVideo {
         height = width * videoHeight / videoWidth;
         retriever.release();
         Log.d("LocalVideo", videoWidth + "-" + videoHeight + ":" + width + "-" + height);
+    }
+
+    public File getFile() {
+        return file;
     }
 
     public Uri getUri() {
