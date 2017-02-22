@@ -51,17 +51,13 @@ public class PhotoFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        photos = new ArrayList<>();
-        File photoDir = FileUtils.getImageDir();
-        File[] files = photoDir.listFiles();
-        if (files != null && files.length > 0) {
-            LocalPhoto tmp;
-            for (File file : photoDir.listFiles()) {
-                tmp = new LocalPhoto(file);
-                if (tmp.isValid()) {
-                    photos.add(new LocalPhoto(file));
-                }
-            }
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (isVisibleToUser && adapter == null) {
+            init();
         }
     }
 
@@ -72,17 +68,7 @@ public class PhotoFragment extends Fragment {
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(
                 new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
-        adapter = CommonRVAdapter.newBuilder()
-                .addItemType(LocalPhoto.class, R.layout.item_download_photo,
-                        new CommonRVAdapter.CreateViewHolder() {
-                            @Override
-                            public CommonViewHolder createVH(View view) {
-                                return new PhotoViewHolder(view);
-                            }
-                        })
-                .setData(photos)
-                .build();
-        recyclerView.setAdapter(adapter);
+
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
@@ -111,6 +97,32 @@ public class PhotoFragment extends Fragment {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void init() {
+        photos = new ArrayList<>();
+        File photoDir = FileUtils.getImageDir();
+        File[] files = photoDir.listFiles();
+        if (files != null && files.length > 0) {
+            LocalPhoto tmp;
+            for (File file : photoDir.listFiles()) {
+                tmp = new LocalPhoto(file);
+                if (tmp.isValid()) {
+                    photos.add(new LocalPhoto(file));
+                }
+            }
+        }
+        adapter = CommonRVAdapter.newBuilder()
+                .addItemType(LocalPhoto.class, R.layout.item_download_photo,
+                        new CommonRVAdapter.CreateViewHolder() {
+                            @Override
+                            public CommonViewHolder createVH(View view) {
+                                return new PhotoViewHolder(view);
+                            }
+                        })
+                .setData(photos)
+                .build();
+        recyclerView.setAdapter(adapter);
     }
 
     public void scrollToTop() {

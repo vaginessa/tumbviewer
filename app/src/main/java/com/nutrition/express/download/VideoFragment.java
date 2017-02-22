@@ -62,6 +62,14 @@ public class VideoFragment extends Fragment {
     }
 
     @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isVisibleToUser && currentPlayView != null) {
+            playerInstance.getPlayer().setPlayWhenReady(false);
+        }
+    }
+
+    @Override
     public void onDetach() {
         super.onDetach();
         playerInstance.releasePlayer();

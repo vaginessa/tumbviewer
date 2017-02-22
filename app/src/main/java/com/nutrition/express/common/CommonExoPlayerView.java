@@ -22,6 +22,8 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.facebook.drawee.generic.GenericDraweeHierarchy;
+import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
@@ -132,7 +134,10 @@ public class CommonExoPlayerView extends FrameLayout {
         thumbnailView = new SimpleDraweeView(context);
         FrameLayout.LayoutParams thumbParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        thumbnailView.setScaleType(ImageView.ScaleType.FIT_CENTER);
+        GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(getResources())
+                .setPlaceholderImage(R.color.loading_color)
+                .build();
+        thumbnailView.setHierarchy(hierarchy);
         thumbnailView.setLayoutParams(thumbParams);
 
         playView = new ImageView(context);
