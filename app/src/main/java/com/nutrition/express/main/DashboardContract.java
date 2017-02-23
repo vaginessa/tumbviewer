@@ -2,7 +2,7 @@ package com.nutrition.express.main;
 
 import com.nutrition.express.common.BasePresenter;
 import com.nutrition.express.common.BaseView;
-import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
 
 import java.util.List;
 
@@ -18,8 +18,8 @@ public interface DashboardContract {
     }
 
     interface View extends BaseView {
-        void showDashboard(List<PostsItem> blogPosts, boolean hasNext);
-        void resetData(List<PostsItem> blogPosts, boolean hasNext);
+        void showDashboard(List<PhotoPostsItem> blogPosts, boolean hasNext);
+        void resetData(List<PhotoPostsItem> blogPosts, boolean hasNext);
     }
 
 }

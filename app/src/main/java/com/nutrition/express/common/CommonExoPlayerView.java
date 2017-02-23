@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -33,7 +34,6 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.nutrition.express.R;
-import com.nutrition.express.download.LocalVideo;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -56,7 +56,7 @@ public class CommonExoPlayerView extends FrameLayout {
     private TextView time;
     private TextView timeCurrent;
     private SeekBar progressBar;
-
+    private ProgressBar loadingBar;
 
     private StringBuilder formatBuilder;
     private Formatter formatter;
@@ -140,6 +140,13 @@ public class CommonExoPlayerView extends FrameLayout {
         thumbnailView.setHierarchy(hierarchy);
         thumbnailView.setLayoutParams(thumbParams);
 
+        loadingBar = new ProgressBar(context, null, android.R.attr.progressBarStyle);
+        FrameLayout.LayoutParams loadingParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        loadingParams.gravity = Gravity.CENTER;
+        loadingBar.setLayoutParams(loadingParams);
+        loadingBar.setVisibility(GONE);
+
         playView = new ImageView(context);
         FrameLayout.LayoutParams playParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
@@ -154,15 +161,16 @@ public class CommonExoPlayerView extends FrameLayout {
 
         addView(videoView, 0);
         addView(thumbnailView, 1);
-        addView(playView, 2);
+        addView(loadingBar, 2);
+        addView(playView, 3);
     }
 
     /**
      * should re-init every state
      * @param video
      */
-    public void bindLocalVideo(LocalVideo video) {
-        this.uri = video.getUri();
+    public void bindVideo(BaseVideoBean video) {
+        this.uri = video.getSourceUri();
         ViewGroup.LayoutParams params = getLayoutParams();
         if (params == null) {
             params = new ViewGroup.LayoutParams(video.getWidth(), video.getHeight());
@@ -170,7 +178,7 @@ public class CommonExoPlayerView extends FrameLayout {
         params.width = video.getWidth();
         params.height = video.getHeight();
         setLayoutParams(params);
-        thumbnailView.setImageURI(video.getUri());
+        thumbnailView.setImageURI(video.getThumbnailUri());
         thumbnailView.setVisibility(VISIBLE);
         hide();
         disconnect();
@@ -181,15 +189,16 @@ public class CommonExoPlayerView extends FrameLayout {
     }
 
     public void connect() {
+        playerInstance.disconnectPrevious();
         player = playerInstance.getPlayer();
         player.setVideoTextureView(videoView);
         player.addListener(componentListener);
         player.setVideoListener(componentListener);
-        playerInstance.prepare(uri);
+        playerInstance.prepare(uri, componentListener);
         isConnected = true;
     }
 
-    public void disconnect() {
+    private void disconnect() {
         if (player != null) {
             if (player.getPlayWhenReady()) { //pause
                 player.setPlayWhenReady(false);
@@ -198,6 +207,7 @@ public class CommonExoPlayerView extends FrameLayout {
             player.setVideoListener(null);
             player = null;
         }
+        thumbnailView.setVisibility(VISIBLE);
         isConnected = false;
     }
 
@@ -209,7 +219,9 @@ public class CommonExoPlayerView extends FrameLayout {
      * Shows the controller
      */
     public void show() {
-        if (!isControllerVisible()) {
+        if (isControllerVisible()) {
+            hide();
+        } else {
             controlLayout.setVisibility(VISIBLE);
             playView.setVisibility(VISIBLE);
             updateAll();
@@ -337,14 +349,20 @@ public class CommonExoPlayerView extends FrameLayout {
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         isAttachedToWindow = false;
-        thumbnailView.setVisibility(VISIBLE);
         hide();
         disconnect();
         Log.d("onDetachedFromWindow", "true");
     }
 
     private final class ComponentListener implements ExoPlayer.EventListener,
-            SimpleExoPlayer.VideoListener, SeekBar.OnSeekBarChangeListener, OnClickListener {
+            SimpleExoPlayer.VideoListener, SeekBar.OnSeekBarChangeListener, OnClickListener,
+            ExoPlayerInstance.OnDisconnectListener {
+
+        //ExoPlayerInstance.OnDisconnectListener
+        @Override
+        public void onDisconnectListener() {
+            disconnect();
+        }
 
         //Override SimpleExoPlayer.VideoListener
         @Override
@@ -355,6 +373,7 @@ public class CommonExoPlayerView extends FrameLayout {
         @Override
         public void onRenderedFirstFrame() {
             thumbnailView.setVisibility(GONE);
+            Log.d("onRenderedFirstFrame", "--");
         }
 
         //Override OnClickListener
@@ -410,6 +429,11 @@ public class CommonExoPlayerView extends FrameLayout {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             Log.d("onPlayerStateChanged", playWhenReady + "-" + playbackState);
+            if (playbackState == ExoPlayer.STATE_BUFFERING) {
+                loadingBar.setVisibility(VISIBLE);
+            } else {
+                loadingBar.setVisibility(GONE);
+            }
             updatePlayPauseButton();
             updateProgress();
         }

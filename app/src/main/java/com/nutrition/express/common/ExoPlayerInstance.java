@@ -1,6 +1,7 @@
 package com.nutrition.express.common;
 
 import android.content.Context;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
 
@@ -19,6 +20,7 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.nutrition.express.application.ExpressApplication;
 
 /**
  * Created by huang on 2/17/17.
@@ -34,9 +36,21 @@ public class ExoPlayerInstance {
 
     private SimpleExoPlayer player;
 
+    private AudioManager am;
+    private AudioManager.OnAudioFocusChangeListener afChangeListener;
 
-    public ExoPlayerInstance(Context context) {
-        this.context = context;
+    private OnDisconnectListener onDisconnectListener;
+
+    private static class Holder {
+        private static ExoPlayerInstance holder = new ExoPlayerInstance();
+    }
+
+    public static ExoPlayerInstance getInstance() {
+        return Holder.holder;
+    }
+
+    private ExoPlayerInstance() {
+        this.context = ExpressApplication.getApplication();
         DefaultBandwidthMeter defaultBandwidthMeter = new DefaultBandwidthMeter();
         mainHandler = new Handler();
         defaultExtractorsFactory = new DefaultExtractorsFactory();
@@ -58,26 +72,40 @@ public class ExoPlayerInstance {
         return player;
     }
 
-    public void prepare(Uri uri) {
+    public void prepare(Uri uri, OnDisconnectListener onDisconnectListener) {
         if (player == null) {
-            initPlayer();
+            return;
         }
+        requestAudioFocus();
         MediaSource source = new ExtractorMediaSource(uri,
                 mediaDataSourceFactory, defaultExtractorsFactory, mainHandler, null);
         player.prepare(source);
         player.setPlayWhenReady(true);
+        this.onDisconnectListener = onDisconnectListener;
+    }
+
+    public void disconnectPrevious() {
+        if (this.onDisconnectListener != null) {
+            this.onDisconnectListener.onDisconnectListener();
+            this.onDisconnectListener = null;
+        }
     }
 
     public void releasePlayer() {
         if (player != null) {
+            disconnectPrevious();
+            abandonAudioFocus();
             player.release();
             player = null;
         }
     }
 
+    /***
+     * if the player was released, this resumePlayer() method do the re-init job.
+     */
     public void resumePlayer() {
-        if (player != null) {
-            player.setPlayWhenReady(true);
+        if (player == null) {
+            initPlayer();
         }
     }
 
@@ -91,6 +119,34 @@ public class ExoPlayerInstance {
         if (player != null) {
             player.stop();
         }
+    }
+
+    private void requestAudioFocus() {
+        if (am == null) {
+            am = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        }
+        if (afChangeListener == null) {
+            afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
+                @Override
+                public void onAudioFocusChange(int focusChange) {
+                    if (focusChange == AudioManager.AUDIOFOCUS_LOSS) {
+                        pausePlayer();
+                    }
+                }
+            };
+        }
+        am.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC,
+                AudioManager.AUDIOFOCUS_GAIN);
+    }
+
+    private void abandonAudioFocus() {
+        if (am != null) {
+            am.abandonAudioFocus(afChangeListener);
+        }
+    }
+
+    public interface OnDisconnectListener {
+        void onDisconnectListener();
     }
 
 }

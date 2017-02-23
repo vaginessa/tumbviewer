@@ -1,4 +1,4 @@
-package com.nutrition.express.download;
+package com.nutrition.express.model.data.bean;
 
 import android.graphics.BitmapFactory;
 import android.net.Uri;

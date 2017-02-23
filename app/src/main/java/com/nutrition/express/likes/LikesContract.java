@@ -2,7 +2,7 @@ package com.nutrition.express.likes;
 
 import com.nutrition.express.common.BasePresenter;
 import com.nutrition.express.common.BaseView;
-import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
 
 import java.util.List;
 
@@ -18,6 +18,6 @@ public interface LikesContract {
     }
 
     interface LikesView extends BaseView {
-        void showLikePosts(List<PostsItem> posts, boolean hasNext);
+        void showLikePosts(List<PhotoPostsItem> posts, boolean hasNext);
     }
 }

@@ -2,7 +2,7 @@ package com.nutrition.express.taggedposts;
 
 import com.nutrition.express.common.BasePresenter;
 import com.nutrition.express.common.BaseView;
-import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
 
 import java.util.List;
 
@@ -17,6 +17,6 @@ public interface TaggedContract {
     }
 
     interface View extends BaseView {
-        void showTaggedPosts(List<PostsItem> postsItems, boolean hasNext);
+        void showTaggedPosts(List<PhotoPostsItem> postsItems, boolean hasNext);
     }
 }

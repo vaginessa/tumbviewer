@@ -1,5 +1,6 @@
 package com.nutrition.express.download;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -76,6 +77,7 @@ public class DownloadManagerActivity extends AppCompatActivity {
             }
         });
 
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override

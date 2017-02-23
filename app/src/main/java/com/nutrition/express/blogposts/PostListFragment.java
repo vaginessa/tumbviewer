@@ -17,7 +17,9 @@ import android.view.ViewGroup;
 import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
-import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.common.ExoPlayerInstance;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
+import com.nutrition.express.model.data.bean.VideoPostsItem;
 import com.nutrition.express.useraction.DeletePostContract;
 import com.nutrition.express.useraction.DeletePostPresenter;
 
@@ -35,6 +37,8 @@ public class PostListFragment extends Fragment
     private DeleteReceiver deleteReceiver;
     private PostListActivity postListActivity;
 
+    private ExoPlayerInstance playerInstance;
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -42,6 +46,10 @@ public class PostListFragment extends Fragment
         Bundle bundle = getArguments();
         blogName = bundle.getString("blog_name");
         postListActivity = (PostListActivity) context;
+
+        if (playerInstance == null) {
+            playerInstance = ExoPlayerInstance.getInstance();
+        }
     }
 
     @Override
@@ -49,6 +57,9 @@ public class PostListFragment extends Fragment
         super.setUserVisibleHint(isVisibleToUser);
         if (isResumed() && !loaded) {
             getPostsVideo();
+        }
+        if (!isVisibleToUser && playerInstance != null) {
+            playerInstance.pausePlayer();
         }
     }
 
@@ -58,6 +69,13 @@ public class PostListFragment extends Fragment
         if (getUserVisibleHint() && !loaded) {
             getPostsVideo();
         }
+        playerInstance.resumePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        playerInstance.releasePlayer();
     }
 
     @Nullable
@@ -137,11 +155,18 @@ public class PostListFragment extends Fragment
 
     private CommonRVAdapter buildAdapter() {
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.addItemType(PostsItem.class, R.layout.item_post,
+        builder.addItemType(PhotoPostsItem.class, R.layout.item_post,
                 new CommonRVAdapter.CreateViewHolder() {
                     @Override
                     public CommonViewHolder createVH(View view) {
-                        return new PostVH(view);
+                        return new PhotoPostVH(view);
+                    }
+                });
+        builder.addItemType(VideoPostsItem.class, R.layout.item_video_post,
+                new CommonRVAdapter.CreateViewHolder() {
+                    @Override
+                    public CommonViewHolder createVH(View view) {
+                        return new VideoPhotoPostVH(view, playerInstance);
                     }
                 });
         builder.setLoadListener(this);

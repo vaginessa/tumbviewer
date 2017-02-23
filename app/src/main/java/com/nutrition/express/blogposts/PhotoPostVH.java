@@ -36,6 +36,7 @@ import com.nutrition.express.application.ExpressApplication;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.imageviewer.ImageViewerActivity;
 import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
 import com.nutrition.express.model.rest.bean.PhotoItem;
 import com.nutrition.express.model.rest.bean.PostsItem;
 import com.nutrition.express.model.rest.bean.TrailItem;
@@ -56,9 +57,9 @@ import static android.content.ContentValues.TAG;
  * Created by huang on 11/7/16.
  */
 
-public class PostVH extends CommonViewHolder<PostsItem>
+public class PhotoPostVH<T extends PhotoPostsItem> extends CommonViewHolder<T>
         implements View.OnClickListener, LikePostContract.View {
-    private Context context;
+    protected Context context;
     private SimpleDraweeView avatarView;
     private TextView nameView, timeView, sourceView, noteCountView;
     private ImageView likeView, reblogView, deleteView;
@@ -70,12 +71,12 @@ public class PostVH extends CommonViewHolder<PostsItem>
     private int dividerWidth;
     private AtomicInteger atomicInteger = new AtomicInteger(0);
     private ArrayList<String> photos = new ArrayList<>();
-    private PostsItem postsItem;
+    protected PostsItem postsItem;
     private LikePostPresenter presenter;
 
     private boolean isSimpleMode;
 
-    public PostVH(View itemView) {
+    public PhotoPostVH(View itemView) {
         super(itemView);
         context = itemView.getContext();
         avatarView = (SimpleDraweeView) itemView.findViewById(R.id.post_avatar);
@@ -101,8 +102,8 @@ public class PostVH extends CommonViewHolder<PostsItem>
     }
 
     @Override
-    public void bindView(PostsItem postsItem) {
-        this.postsItem = postsItem;
+    public void bindView(PhotoPostsItem photoPostsItem) {
+        this.postsItem = photoPostsItem.getPostsItem();
         FrescoUtils.setTumblrAvatarUri(avatarView, postsItem.getBlog_name(), 128);
         nameView.setText(postsItem.getBlog_name());
         timeView.setText(DateUtils.getRelativeTimeSpanString(postsItem.getTimestamp() * 1000,
@@ -206,7 +207,7 @@ public class PostVH extends CommonViewHolder<PostsItem>
 
     }
 
-    private void setVideoContent() {
+    protected void setVideoContent() {
         contentLayout.removeAllViews();
         createPhotoView(1);
         SimpleDraweeView draweeView = contentViewCache.get(0);
@@ -286,7 +287,7 @@ public class PostVH extends CommonViewHolder<PostsItem>
         return view;
     }
 
-    private int calWidth(int count) {
+    protected int calWidth(int count) {
         return (ExpressApplication.width - (count -1) * dividerWidth) / count;
     }
 

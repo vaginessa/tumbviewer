@@ -11,10 +11,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.nutrition.express.R;
-import com.nutrition.express.blogposts.PostVH;
+import com.nutrition.express.blogposts.PhotoPostVH;
+import com.nutrition.express.blogposts.VideoPhotoPostVH;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
-import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.common.ExoPlayerInstance;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
+import com.nutrition.express.model.data.bean.VideoPostsItem;
 
 import java.util.List;
 
@@ -27,6 +30,8 @@ public class TaggedActivity extends AppCompatActivity implements TaggedContract.
     private TaggedContract.Presenter presenter;
     private CommonRVAdapter adapter;
     private String tag;
+
+    private ExoPlayerInstance playerInstance;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,16 +55,38 @@ public class TaggedActivity extends AppCompatActivity implements TaggedContract.
 
         presenter = new TaggedPresenter(this);
         presenter.getTaggedPosts(tag);
+
+        playerInstance = ExoPlayerInstance.getInstance();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        playerInstance.resumePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        playerInstance.releasePlayer();
     }
 
     private CommonRVAdapter getAdapter() {
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.addItemType(PostsItem.class, R.layout.item_post, new CommonRVAdapter.CreateViewHolder() {
-            @Override
-            public CommonViewHolder createVH(View view) {
-                return new PostVH(view);
-            }
-        });
+        builder.addItemType(PhotoPostsItem.class, R.layout.item_post,
+                new CommonRVAdapter.CreateViewHolder() {
+                    @Override
+                    public CommonViewHolder createVH(View view) {
+                        return new PhotoPostVH(view);
+                    }
+                });
+        builder.addItemType(VideoPostsItem.class, R.layout.item_video_post,
+                new CommonRVAdapter.CreateViewHolder() {
+                    @Override
+                    public CommonViewHolder createVH(View view) {
+                        return new VideoPhotoPostVH(view, playerInstance);
+                    }
+                });
         builder.setLoadListener(this);
         return builder.build();
     }
@@ -75,7 +102,7 @@ public class TaggedActivity extends AppCompatActivity implements TaggedContract.
     }
 
     @Override
-    public void showTaggedPosts(List<PostsItem> postsItems, boolean hasNext) {
+    public void showTaggedPosts(List<PhotoPostsItem> postsItems, boolean hasNext) {
         adapter.append(postsItems.toArray(), hasNext);
     }
 

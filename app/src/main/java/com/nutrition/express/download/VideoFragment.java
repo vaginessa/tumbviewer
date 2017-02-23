@@ -21,6 +21,7 @@ import com.nutrition.express.common.CommonExoPlayerView;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.common.ExoPlayerInstance;
+import com.nutrition.express.model.data.bean.LocalVideo;
 import com.nutrition.express.util.FileUtils;
 
 import java.io.File;
@@ -35,7 +36,6 @@ public class VideoFragment extends Fragment {
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
     private ExoPlayerInstance playerInstance;
-    private CommonExoPlayerView currentPlayView;
 
     private List<Object> videoInfos;
 
@@ -48,7 +48,7 @@ public class VideoFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        playerInstance = new ExoPlayerInstance(context);
+        playerInstance = ExoPlayerInstance.getInstance();
         videoInfos = new ArrayList<>();
         File videoDir = FileUtils.getVideoDir();
         File[] files = videoDir.listFiles();
@@ -64,14 +64,20 @@ public class VideoFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser && currentPlayView != null) {
-            playerInstance.getPlayer().setPlayWhenReady(false);
+        if (!isVisibleToUser && playerInstance != null) {
+            playerInstance.pausePlayer();
         }
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
+    public void onResume() {
+        super.onResume();
+        playerInstance.resumePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
         playerInstance.releasePlayer();
     }
 
@@ -151,19 +157,15 @@ public class VideoFragment extends Fragment {
         @Override
         public void bindView(LocalVideo localVideo) {
             video = localVideo;
-            playerView.bindLocalVideo(localVideo);
+            playerView.bindVideo(localVideo);
         }
 
         @Override
         public void onClick(View v) {
-            if (playerView == currentPlayView && playerView.isConnected()) {
+            if (playerView.isConnected()) {
                 playerView.show();
             } else {
-                if (currentPlayView != null) {
-                    currentPlayView.disconnect();
-                }
                 playerView.connect();
-                currentPlayView = playerView;
             }
         }
 

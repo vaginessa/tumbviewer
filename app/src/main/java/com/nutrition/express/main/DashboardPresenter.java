@@ -3,6 +3,8 @@ package com.nutrition.express.main;
 import android.text.TextUtils;
 
 import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
+import com.nutrition.express.model.data.bean.VideoPostsItem;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
 import com.nutrition.express.model.rest.RestCallback;
@@ -12,6 +14,7 @@ import com.nutrition.express.model.rest.bean.BlogPosts;
 import com.nutrition.express.model.rest.bean.PostsItem;
 import com.nutrition.express.model.rest.bean.TrailItem;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -90,11 +93,11 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
         }
         if (reset) {
             reset = false;
-            view.resetData(postsItems, hasNext);
+            view.resetData(wrapPostsItem(postsItems), hasNext);
         } else {
             postsItems = removeDuplicate(postsItems);
             if (postsItems.size() > 0) {
-                view.showDashboard(postsItems, hasNext);
+                view.showDashboard(wrapPostsItem(postsItems), hasNext);
             } else {
                 getNextDashboard();
                 return;
@@ -147,5 +150,20 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
         }
         return postsItems;
     }
+
+    private List<PhotoPostsItem> wrapPostsItem(List<PostsItem> postsItems) {
+        List<PhotoPostsItem> list = new ArrayList<>(postsItems.size());
+        if (TextUtils.equals("video", type)) {
+            for (PostsItem item : postsItems) {
+                list.add(new VideoPostsItem(item));
+            }
+        } else {
+            for (PostsItem item : postsItems) {
+                list.add(new PhotoPostsItem(item));
+            }
+        }
+        return list;
+    }
+
 
 }

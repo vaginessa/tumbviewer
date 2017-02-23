@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
@@ -96,6 +97,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(new CommonPagerAdapter(getSupportFragmentManager(), list, titles));
 
         positiveAccount = DataManager.getInstance().getPositiveAccount();
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     public void refreshData() {

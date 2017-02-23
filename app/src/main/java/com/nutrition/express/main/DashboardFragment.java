@@ -1,5 +1,6 @@
 package com.nutrition.express.main;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,10 +14,12 @@ import android.view.ViewGroup;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.nutrition.express.R;
-import com.nutrition.express.blogposts.PostVH;
+import com.nutrition.express.blogposts.VideoPhotoPostVH;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
-import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.common.ExoPlayerInstance;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
+import com.nutrition.express.model.data.bean.VideoPostsItem;
 
 import java.util.List;
 
@@ -42,6 +45,36 @@ public class DashboardFragment extends Fragment
             Log.d("onScrollStateChanged", "" + newState);
         }
     };
+
+    private ExoPlayerInstance playerInstance;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (playerInstance == null) {
+            playerInstance = ExoPlayerInstance.getInstance();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        playerInstance.resumePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        playerInstance.releasePlayer();
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isVisibleToUser && playerInstance != null) {
+            playerInstance.pausePlayer();
+        }
+    }
 
     @Nullable
     @Override
@@ -83,7 +116,7 @@ public class DashboardFragment extends Fragment
     }
 
     @Override
-    public void showDashboard(List<PostsItem> blogPosts, boolean hasNext) {
+    public void showDashboard(List<PhotoPostsItem> blogPosts, boolean hasNext) {
         if (blogPosts != null) {
             adapter.append(blogPosts.toArray(), hasNext);
         } else {
@@ -92,7 +125,7 @@ public class DashboardFragment extends Fragment
     }
 
     @Override
-    public void resetData(List<PostsItem> blogPosts, boolean hasNext) {
+    public void resetData(List<PhotoPostsItem> blogPosts, boolean hasNext) {
         adapter.resetData(blogPosts.toArray(), hasNext);
         refreshLayout.setRefreshing(false);
     }
@@ -121,12 +154,13 @@ public class DashboardFragment extends Fragment
 
     protected CommonRVAdapter getAdapter() {
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.addItemType(PostsItem.class, R.layout.item_post, new CommonRVAdapter.CreateViewHolder() {
-            @Override
-            public CommonViewHolder createVH(View view) {
-                return new PostVH(view);
-            }
-        });
+        builder.addItemType(VideoPostsItem.class, R.layout.item_video_post,
+                new CommonRVAdapter.CreateViewHolder() {
+                    @Override
+                    public CommonViewHolder createVH(View view) {
+                        return new VideoPhotoPostVH(view, playerInstance);
+                    }
+                });
         builder.setLoadListener(this);
         return builder.build();
     }

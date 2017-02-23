@@ -1,22 +1,24 @@
 package com.nutrition.express.likes;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.nutrition.express.R;
-import com.nutrition.express.blogposts.PostVH;
+import com.nutrition.express.blogposts.PhotoPostVH;
+import com.nutrition.express.blogposts.VideoPhotoPostVH;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
-import com.nutrition.express.model.rest.bean.PostsItem;
+import com.nutrition.express.common.ExoPlayerInstance;
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
+import com.nutrition.express.model.data.bean.VideoPostsItem;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -28,6 +30,36 @@ public class LikesFragment extends Fragment
     private CommonRVAdapter adapter;
     private LikesContract.LikesPresenter presenter;
     private String blogName = null;
+
+    private ExoPlayerInstance playerInstance;
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (playerInstance == null) {
+            playerInstance = ExoPlayerInstance.getInstance();
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        playerInstance.resumePlayer();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        playerInstance.releasePlayer();
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (!isVisibleToUser && playerInstance != null) {
+            playerInstance.pausePlayer();
+        }
+    }
 
     @Nullable
     @Override
@@ -66,12 +98,20 @@ public class LikesFragment extends Fragment
 
     private CommonRVAdapter getCommonRVAdapter() {
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.addItemType(PostsItem.class, R.layout.item_post, new CommonRVAdapter.CreateViewHolder() {
-            @Override
-            public CommonViewHolder createVH(View view) {
-                return new PostVH(view);
-            }
-        });
+        builder.addItemType(PhotoPostsItem.class, R.layout.item_post,
+                new CommonRVAdapter.CreateViewHolder() {
+                    @Override
+                    public CommonViewHolder createVH(View view) {
+                        return new PhotoPostVH(view);
+                    }
+                });
+        builder.addItemType(VideoPostsItem.class, R.layout.item_video_post,
+                new CommonRVAdapter.CreateViewHolder() {
+                    @Override
+                    public CommonViewHolder createVH(View view) {
+                        return new VideoPhotoPostVH(view, playerInstance);
+                    }
+                });
         builder.setLoadListener(this);
         return builder.build();
     }
@@ -91,16 +131,8 @@ public class LikesFragment extends Fragment
     }
 
     @Override
-    public void showLikePosts(List<PostsItem> posts, boolean hasNext) {
-        //trim to only show videos and photos
-        ArrayList<PostsItem> postsItems = new ArrayList<>(posts.size());
-        for (PostsItem item: posts) {
-            if (TextUtils.equals(item.getType(), "video") ||
-                    TextUtils.equals(item.getType(), "photo")) {
-                postsItems.add(item);
-            }
-        }
-        adapter.append(postsItems.toArray(), hasNext);
+    public void showLikePosts(List<PhotoPostsItem> posts, boolean hasNext) {
+        adapter.append(posts.toArray(), hasNext);
     }
 
     @Override

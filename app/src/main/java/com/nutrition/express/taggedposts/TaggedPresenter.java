@@ -2,6 +2,8 @@ package com.nutrition.express.taggedposts;
 
 import android.text.TextUtils;
 
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
+import com.nutrition.express.model.data.bean.VideoPostsItem;
 import com.nutrition.express.model.rest.ApiService.TaggedService;
 import com.nutrition.express.model.rest.ResponseListener;
 import com.nutrition.express.model.rest.RestCallback;
@@ -65,11 +67,12 @@ public class TaggedPresenter implements TaggedContract.Presenter, ResponseListen
         call = null;
         List<PostsItem> list = (List<PostsItem>) baseBean.getResponse();
         //trim to only show videos and photos
-        ArrayList<PostsItem> postsItems = new ArrayList<>(list.size());
+        List<PhotoPostsItem> postsItems = new ArrayList<>(list.size());
         for (PostsItem item: list) {
-            if (TextUtils.equals(item.getType(), "video") ||
-                    TextUtils.equals(item.getType(), "photo")) {
-                postsItems.add(item);
+            if (TextUtils.equals(item.getType(), "video")) {
+                postsItems.add(new VideoPostsItem(item));
+            } else if (TextUtils.equals(item.getType(), "photo")) {
+                postsItems.add(new PhotoPostsItem(item));
             }
         }
         if (list.size() > 0 &&

@@ -25,6 +25,7 @@ import com.nutrition.express.application.ExpressApplication;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.imageviewer.PhotoViewActivity;
+import com.nutrition.express.model.data.bean.LocalPhoto;
 import com.nutrition.express.util.FileUtils;
 
 import java.io.File;

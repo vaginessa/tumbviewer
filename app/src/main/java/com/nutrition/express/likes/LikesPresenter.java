@@ -2,6 +2,8 @@ package com.nutrition.express.likes;
 
 import android.text.TextUtils;
 
+import com.nutrition.express.model.data.bean.PhotoPostsItem;
+import com.nutrition.express.model.data.bean.VideoPostsItem;
 import com.nutrition.express.model.rest.ApiService.BlogService;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
@@ -13,6 +15,7 @@ import com.nutrition.express.model.rest.bean.PostsItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import retrofit2.Call;
 
@@ -95,11 +98,12 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
             hasNext = false;
         }
         //trim to only show videos and photos
-        ArrayList<PostsItem> postsItems = new ArrayList<>(likes.getList().size());
+        List<PhotoPostsItem> postsItems = new ArrayList<>(likes.getList().size());
         for (PostsItem item: likes.getList()) {
-            if (TextUtils.equals(item.getType(), "video") ||
-                    TextUtils.equals(item.getType(), "photo")) {
-                postsItems.add(item);
+            if (TextUtils.equals(item.getType(), "video")) {
+                postsItems.add(new VideoPostsItem(item));
+            } else if (TextUtils.equals(item.getType(), "photo")) {
+                postsItems.add(new PhotoPostsItem(item));
             }
         }
         view.showLikePosts(postsItems, hasNext);
