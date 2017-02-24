@@ -1,5 +1,6 @@
 package com.nutrition.express.likes;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -25,6 +26,7 @@ public class LikesActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override

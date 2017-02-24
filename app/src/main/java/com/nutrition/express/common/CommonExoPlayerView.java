@@ -76,7 +76,7 @@ public class CommonExoPlayerView extends FrameLayout {
         @Override
         public void run() {
             updateProgress();
-            Log.d("run", "update progress action");
+//            Log.d("run", "update progress action");
         }
     };
 
@@ -84,7 +84,7 @@ public class CommonExoPlayerView extends FrameLayout {
         @Override
         public void run() {
             hide();
-            Log.d("run", "hide action");
+//            Log.d("run", "hide action");
         }
     };
 
@@ -342,7 +342,7 @@ public class CommonExoPlayerView extends FrameLayout {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         isAttachedToWindow = true;
-        Log.d("onAttachedToWindow", "true");
+//        Log.d("onAttachedToWindow", "true");
     }
 
     @Override
@@ -351,7 +351,7 @@ public class CommonExoPlayerView extends FrameLayout {
         isAttachedToWindow = false;
         hide();
         disconnect();
-        Log.d("onDetachedFromWindow", "true");
+//        Log.d("onDetachedFromWindow", "true");
     }
 
     private final class ComponentListener implements ExoPlayer.EventListener,
@@ -373,7 +373,7 @@ public class CommonExoPlayerView extends FrameLayout {
         @Override
         public void onRenderedFirstFrame() {
             thumbnailView.setVisibility(GONE);
-            Log.d("onRenderedFirstFrame", "--");
+//            Log.d("onRenderedFirstFrame", "--");
         }
 
         //Override OnClickListener

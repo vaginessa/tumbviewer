@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.nutrition.express.R;
 import com.nutrition.express.application.SystemDownload;
@@ -79,6 +80,7 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> {
             }
         } else if (v.getId() == R.id.post_download) {
             SystemDownload.downloadVideo(context, postsItem.getVideo_url());
+            Toast.makeText(context, R.string.download_delete_title, Toast.LENGTH_SHORT).show();
         } else {
             super.onClick(v);
         }

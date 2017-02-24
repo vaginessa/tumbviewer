@@ -1,6 +1,7 @@
 package com.nutrition.express.taggedposts;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
@@ -57,6 +58,8 @@ public class TaggedActivity extends AppCompatActivity implements TaggedContract.
         presenter.getTaggedPosts(tag);
 
         playerInstance = ExoPlayerInstance.getInstance();
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.nutrition.express.videoplayer;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -67,6 +68,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements ExoPlayer.
             return;
         }
         uri = Uri.parse(url);
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     private void initPlayer() {

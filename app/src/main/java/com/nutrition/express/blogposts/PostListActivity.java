@@ -1,6 +1,7 @@
 package com.nutrition.express.blogposts;
 
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -90,6 +91,8 @@ public class PostListActivity extends AppCompatActivity implements FollowBlogCon
         });
 
         followBlogPresenter = new FollowBlogPresenter(this);
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     @Override
