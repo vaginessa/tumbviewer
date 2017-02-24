@@ -2,6 +2,7 @@ package com.nutrition.express.common;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.support.annotation.AttrRes;
@@ -34,6 +35,7 @@ import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.nutrition.express.R;
+import com.nutrition.express.videoplayer.VideoPlayerActivity;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -55,6 +57,7 @@ public class CommonExoPlayerView extends FrameLayout {
     private LinearLayout controlLayout;
     private TextView time;
     private TextView timeCurrent;
+    private ImageView fullscreen;
     private SeekBar progressBar;
     private ProgressBar loadingBar;
 
@@ -122,6 +125,8 @@ public class CommonExoPlayerView extends FrameLayout {
         controlLayout = (LinearLayout) findViewById(R.id.video_control_layout);
         time = (TextView) findViewById(R.id.time);
         timeCurrent = (TextView) findViewById(R.id.time_current);
+        fullscreen = (ImageView) findViewById(R.id.video_fullscreen);
+        fullscreen.setOnClickListener(componentListener);
         progressBar = (SeekBar) findViewById(R.id.video_controller_progress);
         progressBar.setOnSeekBarChangeListener(componentListener);
         progressBar.setMax(PROGRESS_BAR_MAX);
@@ -386,6 +391,13 @@ public class CommonExoPlayerView extends FrameLayout {
                 } else {
                     player.setPlayWhenReady(!player.getPlayWhenReady());
                 }
+            } else if (v == fullscreen) {
+                Intent playerIntent = new Intent(getContext(), VideoPlayerActivity.class);
+                playerIntent.putExtra("uri", uri);
+                playerIntent.putExtra("position", player.getCurrentPosition());
+                playerIntent.putExtra("windowIndex", player.getCurrentWindowIndex());
+                playerIntent.putExtra("rotation", getWidth() > getHeight());
+                getContext().startActivity(playerIntent);
             }
         }
 

@@ -11,6 +11,7 @@ import android.support.design.widget.BottomSheetDialogFragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nutrition.express.R;
 import com.nutrition.express.application.SystemDownload;
@@ -56,9 +57,13 @@ public class PostBottomSheet extends BottomSheetDialogFragment implements View.O
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.item_play:
-                Intent playerIntent = new Intent(getContext(), VideoPlayerActivity.class);
-                playerIntent.putExtra("url", videoUrl);
-                startActivity(playerIntent);
+                if (TextUtils.isEmpty(videoUrl)) {
+                    Toast.makeText(getContext(), "Video not exist", Toast.LENGTH_SHORT).show();
+                } else {
+                    Intent playerIntent = new Intent(getContext(), VideoPlayerActivity.class);
+                    playerIntent.putExtra("uri", Uri.parse(videoUrl));
+                    startActivity(playerIntent);
+                }
                 break;
             case R.id.item_view_image:
                 ArrayList<String> urls = new ArrayList<>();

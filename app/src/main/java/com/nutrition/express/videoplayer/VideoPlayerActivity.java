@@ -1,14 +1,13 @@
 package com.nutrition.express.videoplayer;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.text.TextUtils;
-import android.widget.Toast;
 
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -50,24 +49,29 @@ public class VideoPlayerActivity extends AppCompatActivity implements ExoPlayer.
     private int playerWindow;
     private long playerPosition;
     private boolean isTimelineStatic;
+    private boolean autoPlay;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent intent = getIntent();
+        uri = intent.getParcelableExtra("uri");
+        playerPosition = intent.getLongExtra("position", C.TIME_UNSET);
+        playerWindow = intent.getIntExtra("windowIndex", 0);
+        if (playerPosition != C.TIME_UNSET) {
+            isTimelineStatic = true;
+            autoPlay = true;
+        }
+        boolean rotation = intent.getBooleanExtra("rotation", false);
+        if (rotation) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
         setContentView(R.layout.activity_video_player);
         mediaDataSourceFactory = new DefaultDataSourceFactory(this, BANDWIDTH_METER,
                 new DefaultHttpDataSourceFactory(Util.getUserAgent(this, "Tumblr"), BANDWIDTH_METER));
         window = new Timeline.Window();
         mainHandler = new Handler();
         playerView = (SimpleExoPlayerView) findViewById(R.id.player_view);
-        Intent intent = getIntent();
-        String url = intent.getStringExtra("url");
-        if (TextUtils.isEmpty(url)) {
-            Toast.makeText(this, "视频不存在", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-        uri = Uri.parse(url);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
@@ -95,6 +99,10 @@ public class VideoPlayerActivity extends AppCompatActivity implements ExoPlayer.
         MediaSource source = new ExtractorMediaSource(uri,
                 mediaDataSourceFactory, new DefaultExtractorsFactory(), mainHandler, null);
         player.prepare(source, !isTimelineStatic, !isTimelineStatic);
+        if (autoPlay) {
+            player.setPlayWhenReady(true);
+            autoPlay = false;
+        }
     }
 
     private void releasePlayer() {

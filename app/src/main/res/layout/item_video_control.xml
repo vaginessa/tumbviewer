@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:textColor="@android:color/white"
         android:layout_gravity="center_vertical"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:textStyle="bold"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
@@ -32,10 +32,19 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:textColor="@android:color/white"
-        android:textSize="14sp"
+        android:textSize="13sp"
         android:textStyle="bold"
         android:paddingStart="4dp"
         android:paddingEnd="4dp"
+        />
+    <ImageView
+        android:id="@+id/video_fullscreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@mipmap/ic_fullscreen"
+        android:layout_gravity="center"
+        android:layout_marginRight="4dp"
+        android:layout_marginEnd="4dp"
         />
 
 </LinearLayout>
