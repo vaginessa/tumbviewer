@@ -127,7 +127,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
 
     @Override
     public void showLoginSuccess() {
-        Toast.makeText(this, "登录成功", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, R.string.login_success, Toast.LENGTH_LONG).show();
         if (type == NEW_ACCOUNT) {
             setResult(RESULT_OK);
             finish();

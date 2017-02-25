@@ -126,8 +126,8 @@ public class SearchFragment extends Fragment {
 
     private void showDeleteDialog(final  String text, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("删除记录" + text + "?");
-        builder.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+        builder.setMessage(R.string.download_delete_title);
+        builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 //                historyHelper.remove(text);

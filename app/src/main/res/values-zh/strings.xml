@@ -82,4 +82,6 @@
     <string name="download_start">开始下载</string>
     <string name="download_display_current">显示当前账户的</string>
     <string name="video_play_error">无法播放该视频</string>
+    <string name="login_success">登录成功</string>
+    <string name="copy_to_clipboard">已复制到粘贴板</string>
 </resources>

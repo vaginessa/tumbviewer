@@ -10,6 +10,9 @@
     <string name="blog_unfollow">UNFOLLOW</string>
     <string name="blog_post">POSTS</string>
 
+    <string name="login_success">Login success</string>
+    <string name="copy_to_clipboard">Have copied to clipboard</string>
+
     <string name="page_main">main</string>
     <string name="page_video">video</string>
     <string name="page_photo">photo</string>

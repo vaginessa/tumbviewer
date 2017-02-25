@@ -6,6 +6,8 @@ import android.content.Context;
 import android.util.TypedValue;
 import android.widget.Toast;
 
+import com.nutrition.express.R;
+
 /**
  * Created by huang on 5/16/16.
  */
@@ -20,6 +22,6 @@ public class Utils {
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("Tumblr", string);
         clipboardManager.setPrimaryClip(clipData);
-        Toast.makeText(context, "已复制到粘贴板", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.video_copy_url, Toast.LENGTH_SHORT).show();
     }
 }
