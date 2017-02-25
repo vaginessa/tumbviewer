@@ -11,15 +11,9 @@ import android.support.design.widget.BottomSheetDialogFragment;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.nutrition.express.R;
-import com.nutrition.express.application.SystemDownload;
-import com.nutrition.express.imageviewer.ImageViewerActivity;
 import com.nutrition.express.util.Utils;
-import com.nutrition.express.videoplayer.VideoPlayerActivity;
-
-import java.util.ArrayList;
 
 /**
  * Created by huang on 5/30/16.
@@ -27,14 +21,12 @@ import java.util.ArrayList;
 public class PostBottomSheet extends BottomSheetDialogFragment implements View.OnClickListener {
     BottomSheetBehavior behavior;
     private String videoUrl;
-    private String imageUrl;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle bundle = getArguments();
         videoUrl = bundle.getString("video_url");
-        imageUrl = bundle.getString("image_url");
     }
 
     @Override
@@ -44,9 +36,6 @@ public class PostBottomSheet extends BottomSheetDialogFragment implements View.O
         TextView textView = (TextView) view.findViewById(R.id.item_link);
         textView.setText(videoUrl);
         textView.setOnClickListener(this);
-        view.findViewById(R.id.item_play).setOnClickListener(this);
-        view.findViewById(R.id.item_view_image).setOnClickListener(this);
-        view.findViewById(R.id.item_download).setOnClickListener(this);
         view.findViewById(R.id.item_copy).setOnClickListener(this);
         dialog.setContentView(view);
         behavior = BottomSheetBehavior.from((View) view.getParent());
@@ -56,25 +45,6 @@ public class PostBottomSheet extends BottomSheetDialogFragment implements View.O
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.item_play:
-                if (TextUtils.isEmpty(videoUrl)) {
-                    Toast.makeText(getContext(), "Video not exist", Toast.LENGTH_SHORT).show();
-                } else {
-                    Intent playerIntent = new Intent(getContext(), VideoPlayerActivity.class);
-                    playerIntent.putExtra("uri", Uri.parse(videoUrl));
-                    startActivity(playerIntent);
-                }
-                break;
-            case R.id.item_view_image:
-                ArrayList<String> urls = new ArrayList<>();
-                urls.add(imageUrl);
-                Intent intent = new Intent(getContext(), ImageViewerActivity.class);
-                intent.putStringArrayListExtra("image_urls", urls);
-                getContext().startActivity(intent);
-                break;
-            case R.id.item_download:
-                SystemDownload.downloadVideo(getActivity(), videoUrl);
-                break;
             case R.id.item_copy:
                 Utils.copy2Clipboard(getActivity(), videoUrl);
                 break;

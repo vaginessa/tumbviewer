@@ -3,6 +3,8 @@ package com.nutrition.express.blogposts;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,7 +21,7 @@ import com.nutrition.express.model.data.bean.VideoPostsItem;
  * Created by huang on 2/23/17.
  */
 
-public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> {
+public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> implements View.OnLongClickListener {
     private CommonExoPlayerView playerView;
     private ImageView downloadView;
 
@@ -32,6 +34,7 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> {
         playerView.setOnClickListener(this);
         downloadView = (ImageView) itemView.findViewById(R.id.post_download);
         downloadView.setOnClickListener(this);
+        downloadView.setOnLongClickListener(this);
     }
 
     @Override
@@ -54,29 +57,20 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> {
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.post_video) {
-            if (TextUtils.isEmpty(postsItem.getVideo_type())) {
-                return;
-            }
-            switch (postsItem.getVideo_type()) {
-                case "tumblr":
-                    if (playerView.isConnected()) {
-                        playerView.show();
-                    } else {
-                        playerView.connect();
-                    }
-                    break;
-                default:
-                    //case "vine","youtube","instagram".
-                    if (TextUtils.isEmpty(postsItem.getPermalink_url())) {
-                        break;
-                    }
-                    Intent intent = new Intent(Intent.ACTION_VIEW,
-                            Uri.parse(postsItem.getPermalink_url()));
-                    try {
-                        context.startActivity(intent);
-                    } catch (ActivityNotFoundException e) {
-                    }
-                    break;
+            if (TextUtils.equals("tumblr", postsItem.getVideo_type())) {
+                if (playerView.isConnected()) {
+                    playerView.show();
+                } else {
+                    playerView.connect();
+                }
+            } else if (!TextUtils.isEmpty(postsItem.getPermalink_url())) {
+                //case "vine","youtube","instagram".
+                Intent intent = new Intent(Intent.ACTION_VIEW,
+                        Uri.parse(postsItem.getPermalink_url()));
+                try {
+                    context.startActivity(intent);
+                } catch (ActivityNotFoundException e) {
+                }
             }
         } else if (v.getId() == R.id.post_download) {
             long id = SystemDownload.downloadVideo(context, postsItem.getVideo_url());
@@ -86,5 +80,23 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> {
         } else {
             super.onClick(v);
         }
+    }
+
+    @Override
+    public boolean onLongClick(View v) {
+        if (v.getId() == R.id.post_download) {
+            openBottomSheet();
+            return true;
+        }
+        return false;
+    }
+
+    private void openBottomSheet() {
+        Bundle bundle = new Bundle();
+        bundle.putString("video_url", postsItem.getVideo_url());
+        PostBottomSheet bottomSheet = new PostBottomSheet();
+        bottomSheet.setArguments(bundle);
+        bottomSheet.show(((FragmentActivity) itemView.getContext()).getSupportFragmentManager(),
+                bottomSheet.getTag());
     }
 }

@@ -1,13 +1,10 @@
 package com.nutrition.express.blogposts;
 
-import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
 import android.text.Html;
@@ -349,30 +346,8 @@ public class PhotoPostVH<T extends PhotoPostsItem> extends CommonViewHolder<T>
         } else if (id == R.id.post_delete) {
             showDeleteDailog();
         } else {
-            if ("video".equals(postsItem.getType())) {
-                if (TextUtils.isEmpty(postsItem.getVideo_type())) {
-                    return;
-                }
-                switch (postsItem.getVideo_type()) {
-                    case "tumblr":
-                        openBottomSheet();
-                        break;
-//                    case "vine":
-//                    case "youtube":
-//                    case "instagram":
-                    default:
-                        if (TextUtils.isEmpty(postsItem.getPermalink_url())) {
-                            break;
-                        }
-                        Intent intent = new Intent(Intent.ACTION_VIEW,
-                                Uri.parse(postsItem.getPermalink_url()));
-                        try {
-                            context.startActivity(intent);
-                        } catch (ActivityNotFoundException e) {
-                        }
-                        break;
-                }
-            } else {
+            //click on photo
+            if (v.getTag() instanceof Integer) {
                 Integer tag = (Integer) v.getTag();
                 Intent intent = new Intent(context, ImageViewerActivity.class);
                 intent.putExtra("selected_index", tag.intValue());
@@ -404,16 +379,6 @@ public class PhotoPostVH<T extends PhotoPostsItem> extends CommonViewHolder<T>
 
     @Override
     public void onUnlikeFailure() {
-    }
-
-    private void openBottomSheet() {
-        Bundle bundle = new Bundle();
-        bundle.putString("image_url", postsItem.getThumbnail_url());
-        bundle.putString("video_url", postsItem.getVideo_url());
-        PostBottomSheet bottomSheet = new PostBottomSheet();
-        bottomSheet.setArguments(bundle);
-        bottomSheet.show(((FragmentActivity) itemView.getContext()).getSupportFragmentManager(),
-                bottomSheet.getTag());
     }
 
     private void openBlog(String blogName) {

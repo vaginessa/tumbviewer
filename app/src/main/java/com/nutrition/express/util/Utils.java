@@ -22,6 +22,6 @@ public class Utils {
                 (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
         ClipData clipData = ClipData.newPlainText("Tumblr", string);
         clipboardManager.setPrimaryClip(clipData);
-        Toast.makeText(context, R.string.video_copy_url, Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, R.string.copy_to_clipboard, Toast.LENGTH_SHORT).show();
     }
 }
