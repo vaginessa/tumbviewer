@@ -23,6 +23,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.generic.GenericDraweeHierarchy;
 import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
@@ -278,7 +279,7 @@ public class CommonExoPlayerView extends FrameLayout {
             return;
         }
         boolean playing = player != null && player.getPlayWhenReady()
-                && player.getPlaybackState() == ExoPlayer.STATE_READY;
+                && player.getPlaybackState() != ExoPlayer.STATE_ENDED;
         String contentDescription = getResources().getString(
                 playing ? R.string.exo_controls_pause_description : R.string.exo_controls_play_description);
         playView.setContentDescription(contentDescription);
@@ -443,6 +444,9 @@ public class CommonExoPlayerView extends FrameLayout {
             Log.d("onPlayerStateChanged", playWhenReady + "-" + playbackState);
             if (playbackState == ExoPlayer.STATE_BUFFERING) {
                 loadingBar.setVisibility(VISIBLE);
+            } else if (playbackState == ExoPlayer.STATE_ENDED) {
+                show();
+                loadingBar.setVisibility(GONE);
             } else {
                 loadingBar.setVisibility(GONE);
             }
@@ -452,7 +456,7 @@ public class CommonExoPlayerView extends FrameLayout {
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
-
+            Toast.makeText(getContext(), R.string.video_play_error, Toast.LENGTH_SHORT).show();
         }
 
         @Override

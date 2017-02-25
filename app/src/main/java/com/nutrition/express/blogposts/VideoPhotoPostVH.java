@@ -79,8 +79,10 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> {
                     break;
             }
         } else if (v.getId() == R.id.post_download) {
-            SystemDownload.downloadVideo(context, postsItem.getVideo_url());
-            Toast.makeText(context, R.string.download_start, Toast.LENGTH_SHORT).show();
+            long id = SystemDownload.downloadVideo(context, postsItem.getVideo_url());
+            if (id >= 0) {
+                Toast.makeText(context, R.string.download_start, Toast.LENGTH_SHORT).show();
+            }
         } else {
             super.onClick(v);
         }

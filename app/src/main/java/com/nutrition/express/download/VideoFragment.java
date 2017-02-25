@@ -27,6 +27,8 @@ import com.nutrition.express.util.PreferencesUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -151,6 +153,7 @@ public class VideoFragment extends Fragment {
             File userVideoDir = FileUtils.getVideoDir();
             if (userVideoDir.isDirectory()) {
                 getVideoFile(userVideoDir, userVideo);
+                sortPhotoData(userVideo);
             }
         }
         videoList.clear();
@@ -163,6 +166,7 @@ public class VideoFragment extends Fragment {
             File publicVideoDir = FileUtils.getPublicVideoDir();
             if (publicVideoDir.isDirectory()) {
                 getVideoFile(publicVideoDir, allVideo);
+                sortPhotoData(allVideo);
             }
         }
         videoList.clear();
@@ -181,6 +185,16 @@ public class VideoFragment extends Fragment {
         }
     }
 
+    private void sortPhotoData(List<Object> videos) {
+        Collections.sort(videos, new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                long x = ((LocalVideo) o1).getFile().lastModified();
+                long y = ((LocalVideo) o2).getFile().lastModified();
+                return (x < y) ? 1 : ((x == y) ? 0 : -1);
+            }
+        });
+    }
     private void showDeleteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {

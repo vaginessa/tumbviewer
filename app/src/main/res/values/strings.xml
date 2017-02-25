@@ -31,6 +31,7 @@
     <string name="video_download">Download</string>
     <string name="video_copy_url">Copy link</string>
     <string name="video_exist">Video exists</string>
+    <string name="video_play_error">Cannot play this video</string>
 
     <string name="pic_save">Save</string>
     <string name="pic_cancel">Cancel</string>

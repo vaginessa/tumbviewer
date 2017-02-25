@@ -30,6 +30,8 @@ import com.nutrition.express.util.PreferencesUtils;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -142,6 +144,7 @@ public class PhotoFragment extends Fragment {
             File userVideoDir = FileUtils.getImageDir();
             if (userVideoDir.isDirectory()) {
                 getVideoFile(userVideoDir, userPhoto);
+                sortPhotoData(userPhoto);
             }
         }
         photoList.clear();
@@ -154,6 +157,7 @@ public class PhotoFragment extends Fragment {
             File publicVideoDir = FileUtils.getPublicImageDir();
             if (publicVideoDir.isDirectory()) {
                 getVideoFile(publicVideoDir, allPhoto);
+                sortPhotoData(allPhoto);
             }
         }
         photoList.clear();
@@ -172,6 +176,17 @@ public class PhotoFragment extends Fragment {
                 }
             }
         }
+    }
+
+    private void sortPhotoData(List<Object> photos) {
+        Collections.sort(photos, new Comparator<Object>() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                long x = ((LocalPhoto) o1).getFile().lastModified();
+                long y = ((LocalPhoto) o2).getFile().lastModified();
+                return (x < y) ? 1 : ((x == y) ? 0 : -1);
+            }
+        });
     }
 
     private void showDeleteDialog() {

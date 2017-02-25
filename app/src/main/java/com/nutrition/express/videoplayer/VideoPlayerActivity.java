@@ -64,7 +64,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements ExoPlayer.
         }
         boolean rotation = intent.getBooleanExtra("rotation", false);
         if (rotation) {
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
         }
         setContentView(R.layout.activity_video_player);
         mediaDataSourceFactory = new DefaultDataSourceFactory(this, BANDWIDTH_METER,
