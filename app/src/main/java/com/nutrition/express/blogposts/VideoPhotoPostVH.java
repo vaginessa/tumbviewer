@@ -80,7 +80,7 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> {
             }
         } else if (v.getId() == R.id.post_download) {
             SystemDownload.downloadVideo(context, postsItem.getVideo_url());
-            Toast.makeText(context, R.string.download_delete_title, Toast.LENGTH_SHORT).show();
+            Toast.makeText(context, R.string.download_start, Toast.LENGTH_SHORT).show();
         } else {
             super.onClick(v);
         }

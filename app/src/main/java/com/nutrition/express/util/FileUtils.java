@@ -3,8 +3,10 @@ package com.nutrition.express.util;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
+import android.text.TextUtils;
 
 import com.nutrition.express.application.ExpressApplication;
+import com.nutrition.express.model.data.DataManager;
 
 import java.io.File;
 
@@ -14,10 +16,28 @@ import java.io.File;
 
 public class FileUtils {
     public static File getVideoDir() {
-        return new File(Environment.getExternalStorageDirectory(), "tumblr/video");
+        String accountName = DataManager.getInstance().getPositiveAccount().getName();
+        if (TextUtils.isEmpty(accountName)) {
+            return getPublicVideoDir();
+        } else {
+            return new File(Environment.getExternalStorageDirectory(), "tumblr/video/" + accountName);
+        }
     }
 
     public static File getImageDir() {
+        String accountName = DataManager.getInstance().getPositiveAccount().getName();
+        if (TextUtils.isEmpty(accountName)) {
+            return getPublicImageDir();
+        } else {
+            return new File(Environment.getExternalStorageDirectory(), "tumblr/image/" + accountName);
+        }
+    }
+
+    public static File getPublicVideoDir() {
+        return new File(Environment.getExternalStorageDirectory(), "tumblr/video");
+    }
+
+    public static File getPublicImageDir() {
         return new File(Environment.getExternalStorageDirectory(), "tumblr/image");
     }
 

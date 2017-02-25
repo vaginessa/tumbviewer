@@ -76,6 +76,9 @@
     <string name="download_photo_title">图片</string>
     <string name="download_photo_delete">删除所有图片</string>
     <string name="download_video_delete">删除所有视频</string>
+    <string name="download_photo_delete_title">删除所有图片</string>
+    <string name="download_video_delete_title">删除所有视频</string>
     <string name="download_delete_title">删除？</string>
     <string name="download_start">开始下载</string>
+    <string name="download_display_current">显示当前账户的</string>
 </resources>

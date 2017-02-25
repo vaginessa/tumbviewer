@@ -6,4 +6,9 @@
         android:title="@string/download_photo_delete"
         app:showAsAction="never"/>
 
+    <item android:id="@+id/show_user_photo"
+        android:title="@string/download_display_current"
+        android:checkable="true"
+        app:actionViewClass="android.widget.CheckBox"
+        app:showAsAction="never"/>
 </menu>

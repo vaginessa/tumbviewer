@@ -23,6 +23,7 @@ import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.common.ExoPlayerInstance;
 import com.nutrition.express.model.data.bean.LocalVideo;
 import com.nutrition.express.util.FileUtils;
+import com.nutrition.express.util.PreferencesUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,11 +34,15 @@ import java.util.List;
  */
 
 public class VideoFragment extends Fragment {
+    private static final String SHOW_USER_VIDEO = "SUV";
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
     private ExoPlayerInstance playerInstance;
 
-    private List<Object> videoInfos;
+    private List<Object> userVideo;
+    private List<Object> allVideo;
+    private List<Object> videoList = new ArrayList<>();
+    private boolean showUserVideo;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,15 +54,11 @@ public class VideoFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         playerInstance = ExoPlayerInstance.getInstance();
-        videoInfos = new ArrayList<>();
-        File videoDir = FileUtils.getVideoDir();
-        File[] files = videoDir.listFiles();
-        if (files != null && files.length > 0) {
-            for (File file : videoDir.listFiles()) {
-                if (file.getName().endsWith(".mp4")) {
-                    videoInfos.add(new LocalVideo(file));
-                }
-            }
+        showUserVideo = PreferencesUtils.getBoolean(SHOW_USER_VIDEO, false);
+        if (showUserVideo) {
+            initVideoDataUser();
+        } else {
+            initVideoDataAll();
         }
     }
 
@@ -95,7 +96,7 @@ public class VideoFragment extends Fragment {
                                 return new VideoViewHolder(view);
                             }
                         })
-                .setData(videoInfos)
+                .setData(videoList)
                 .build();
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -115,18 +116,85 @@ public class VideoFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_download_video, menu);
+        MenuItem menuItem = menu.findItem(R.id.show_user_video);
+        if (showUserVideo) {
+            menuItem.setChecked(true);
+        } else {
+            menuItem.setChecked(false);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.delete_video) {
-            FileUtils.deleteFile(FileUtils.getVideoDir());
-            onAllVideosDeleted();
+            showDeleteDialog();
+            return true;
+        } else if (item.getItemId() == R.id.show_user_video) {
+            item.setChecked(!item.isChecked());
+            showUserVideo = item.isChecked();
+            if (showUserVideo) {
+                initVideoDataUser();
+            } else {
+                initVideoDataAll();
+            }
+            adapter.notifyDataSetChanged();
+            PreferencesUtils.putBoolean(SHOW_USER_VIDEO, showUserVideo);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void initVideoDataUser() {
+        if (userVideo == null) {
+            userVideo = new ArrayList<>();
+            File userVideoDir = FileUtils.getVideoDir();
+            if (userVideoDir.isDirectory()) {
+                getVideoFile(userVideoDir, userVideo);
+            }
+        }
+        videoList.clear();
+        videoList.addAll(userVideo);
+    }
+
+    private void initVideoDataAll() {
+        if (allVideo == null) {
+            allVideo = new ArrayList<>();
+            File publicVideoDir = FileUtils.getPublicVideoDir();
+            if (publicVideoDir.isDirectory()) {
+                getVideoFile(publicVideoDir, allVideo);
+            }
+        }
+        videoList.clear();
+        videoList.addAll(allVideo);
+    }
+
+    private void getVideoFile(File dir, List<Object> list) {
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory()) {
+                getVideoFile(file, list);
+            } else {
+                if (file.getName().endsWith(".mp4")) {
+                    list.add(new LocalVideo(file));
+                }
+            }
+        }
+    }
+
+    private void showDeleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                FileUtils.deleteFile(FileUtils.getPublicVideoDir());
+                onAllVideosDeleted();
+            }
+        });
+        builder.setNegativeButton(R.string.pic_cancel, null);
+        builder.setTitle(R.string.download_video_delete_title);
+        builder.show();
+    }
+
 
     public void scrollToTop() {
         recyclerView.scrollToPosition(0);

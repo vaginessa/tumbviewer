@@ -44,7 +44,7 @@ import java.util.List;
  */
 
 public class SettingsActivity extends AppCompatActivity implements View.OnClickListener {
-    public static final String VIDEO_SIMPLE_MODE = "video_simple_mode";
+    public static final String POST_SIMPLE_MODE = "post_simple_mode";
 
     private static final int REQUEST_LOGIN = 1;
     private CommonRVAdapter adapter;
@@ -71,10 +71,10 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         simpleCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                PreferencesUtils.putBoolean(VIDEO_SIMPLE_MODE, isChecked);
+                PreferencesUtils.putBoolean(POST_SIMPLE_MODE, isChecked);
             }
         });
-        simpleCheckBox.setChecked(PreferencesUtils.getBoolean(VIDEO_SIMPLE_MODE, false));
+        simpleCheckBox.setChecked(PreferencesUtils.getBoolean(POST_SIMPLE_MODE, false));
 
         List<TumblrAccount> tumblrAccounts = DataManager.getInstance().getTumblrAccounts();
         accounts = new ArrayList<>(tumblrAccounts.size());
@@ -114,7 +114,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.settings_option_simple:
                 simpleCheckBox.setChecked(!simpleCheckBox.isChecked());
-                PreferencesUtils.putBoolean(VIDEO_SIMPLE_MODE, simpleCheckBox.isChecked());
+                PreferencesUtils.putBoolean(POST_SIMPLE_MODE, simpleCheckBox.isChecked());
                 break;
         }
     }

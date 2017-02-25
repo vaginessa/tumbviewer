@@ -288,7 +288,7 @@ public class DataManager {
     }
 
     public void refreshData() {
-        isSimpleMode = PreferencesUtils.getBoolean(SettingsActivity.VIDEO_SIMPLE_MODE, false);
+        isSimpleMode = PreferencesUtils.getBoolean(SettingsActivity.POST_SIMPLE_MODE, false);
     }
 
 }

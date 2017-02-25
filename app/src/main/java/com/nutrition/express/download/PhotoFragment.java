@@ -1,7 +1,6 @@
 package com.nutrition.express.download;
 
 import android.app.ActivityOptions;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -27,6 +26,7 @@ import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.imageviewer.PhotoViewActivity;
 import com.nutrition.express.model.data.bean.LocalPhoto;
 import com.nutrition.express.util.FileUtils;
+import com.nutrition.express.util.PreferencesUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,21 +37,22 @@ import java.util.List;
  */
 
 public class PhotoFragment extends Fragment {
+    private static final String SHOW_USER_PHOTO = "SUP";
     private final int DEFAULT_PHOTO_WIDTH = ExpressApplication.width / 2;
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
 
-    private List<Object> photos;
+    private List<Object> userPhoto;
+    private List<Object> allPhoto;
+    private List<Object> photoList = new ArrayList<>();
+    private boolean showUserPhoto;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+        showUserPhoto = PreferencesUtils.getBoolean(SHOW_USER_PHOTO, false);
     }
 
     @Override
@@ -87,31 +88,40 @@ public class PhotoFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.menu_download_photo, menu);
+        MenuItem menuItem = menu.findItem(R.id.show_user_photo);
+        if (showUserPhoto) {
+            menuItem.setChecked(true);
+        } else {
+            menuItem.setChecked(false);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.delete_photo) {
-            FileUtils.deleteFile(FileUtils.getImageDir());
-            onAllPhotosDeleted();
+            showDeleteDialog();
+            return true;
+        } else if (item.getItemId() == R.id.show_user_photo) {
+            item.setChecked(!item.isChecked());
+            showUserPhoto = item.isChecked();
+            if (showUserPhoto) {
+                initPhotoDataUser();
+            } else {
+                initPhotoDataAll();
+            }
+            adapter.notifyDataSetChanged();
+            PreferencesUtils.putBoolean(SHOW_USER_PHOTO, showUserPhoto);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void init() {
-        photos = new ArrayList<>();
-        File photoDir = FileUtils.getImageDir();
-        File[] files = photoDir.listFiles();
-        if (files != null && files.length > 0) {
-            LocalPhoto tmp;
-            for (File file : photoDir.listFiles()) {
-                tmp = new LocalPhoto(file);
-                if (tmp.isValid()) {
-                    photos.add(new LocalPhoto(file));
-                }
-            }
+        if (showUserPhoto) {
+            initPhotoDataUser();
+        } else {
+            initPhotoDataAll();
         }
         adapter = CommonRVAdapter.newBuilder()
                 .addItemType(LocalPhoto.class, R.layout.item_download_photo,
@@ -121,10 +131,63 @@ public class PhotoFragment extends Fragment {
                                 return new PhotoViewHolder(view);
                             }
                         })
-                .setData(photos)
+                .setData(photoList)
                 .build();
         recyclerView.setAdapter(adapter);
     }
+
+    private void initPhotoDataUser() {
+        if (userPhoto == null) {
+            userPhoto = new ArrayList<>();
+            File userVideoDir = FileUtils.getImageDir();
+            if (userVideoDir.isDirectory()) {
+                getVideoFile(userVideoDir, userPhoto);
+            }
+        }
+        photoList.clear();
+        photoList.addAll(userPhoto);
+    }
+
+    private void initPhotoDataAll() {
+        if (allPhoto == null) {
+            allPhoto = new ArrayList<>();
+            File publicVideoDir = FileUtils.getPublicImageDir();
+            if (publicVideoDir.isDirectory()) {
+                getVideoFile(publicVideoDir, allPhoto);
+            }
+        }
+        photoList.clear();
+        photoList.addAll(allPhoto);
+    }
+
+    private void getVideoFile(File dir, List<Object> list) {
+        LocalPhoto tmp;
+        for (File file : dir.listFiles()) {
+            if (file.isDirectory()) {
+                getVideoFile(file, list);
+            } else {
+                tmp = new LocalPhoto(file);
+                if (tmp.isValid()) {
+                    list.add(tmp);
+                }
+            }
+        }
+    }
+
+    private void showDeleteDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                FileUtils.deleteFile(FileUtils.getPublicImageDir());
+                onAllPhotosDeleted();
+            }
+        });
+        builder.setNegativeButton(R.string.pic_cancel, null);
+        builder.setTitle(R.string.download_photo_delete_title);
+        builder.show();
+    }
+
 
     public void scrollToTop() {
         recyclerView.scrollToPosition(0);
