@@ -14,6 +14,7 @@ import java.io.File;
 
 public class LocalVideo extends BaseVideoBean {
     private File file;
+    private boolean checked = false;
 
     public LocalVideo(File file) {
         this.file = file;
@@ -31,6 +32,14 @@ public class LocalVideo extends BaseVideoBean {
 
     public File getFile() {
         return file;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
 }

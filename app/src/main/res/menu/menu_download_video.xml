@@ -2,10 +2,6 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <item android:id="@+id/delete_video"
-        android:title="@string/download_video_delete"
-        app:showAsAction="never"
-        />
     <item android:id="@+id/show_user_video"
         android:title="@string/download_display_current"
         android:checkable="true"

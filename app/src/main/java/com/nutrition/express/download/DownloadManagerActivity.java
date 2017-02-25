@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
@@ -88,4 +89,9 @@ public class DownloadManagerActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    protected ActionMode startMultiChoice(ActionMode.Callback callback) {
+        return startSupportActionMode(callback);
+    }
+
 }

@@ -80,11 +80,10 @@
     <string name="download_toolbar_title">Download</string>
     <string name="download_video_title">Video</string>
     <string name="download_photo_title">Photo</string>
-    <string name="download_video_delete">Delete all videos</string>
-    <string name="download_photo_delete">Delete all photos</string>
-    <string name="download_video_delete_title">Delete all videos?</string>
-    <string name="download_photo_delete_title">Delete all photos?</string>
+    <string name="download_video_delete_title">Delete selected videos?</string>
+    <string name="download_photo_delete_title">Delete selected photos?</string>
     <string name="download_delete_title">Delete ?</string>
     <string name="download_start">Start download</string>
-    <string name="download_display_current">Show current account</string>
+    <string name="download_display_current">Only current account</string>
+    <string name="download_select_all">Select all</string>
 </resources>

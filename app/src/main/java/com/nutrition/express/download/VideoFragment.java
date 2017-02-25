@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.nutrition.express.R;
@@ -29,6 +31,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -40,11 +43,49 @@ public class VideoFragment extends Fragment {
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
     private ExoPlayerInstance playerInstance;
+    private DownloadManagerActivity activity;
 
     private List<Object> userVideo;
     private List<Object> allVideo;
-    private List<Object> videoList = new ArrayList<>();
+    private List<Object> videoList;
     private boolean showUserVideo;
+
+    private boolean isChoiceState = false;
+    private int checkedCount;
+    private ActionMode actionMode;
+    private ActionMode.Callback callback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.menu_multi_choice, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.delete:
+                    showDeleteDialog();
+                    return true;
+                case R.id.select_all:
+                    checkAllVideos();
+                    adapter.notifyDataSetChanged();
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            finishMultiChoice();
+            adapter.notifyDataSetChanged();
+        }
+    };
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -55,6 +96,7 @@ public class VideoFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        activity = (DownloadManagerActivity) context;
         playerInstance = ExoPlayerInstance.getInstance();
         showUserVideo = PreferencesUtils.getBoolean(SHOW_USER_VIDEO, false);
         if (showUserVideo) {
@@ -67,8 +109,14 @@ public class VideoFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser && playerInstance != null) {
-            playerInstance.pausePlayer();
+        if (!isVisibleToUser) {
+            if (playerInstance != null) {
+                playerInstance.pausePlayer();
+            }
+            if (actionMode != null) {
+                actionMode.finish();
+                adapter.notifyDataSetChanged();
+            }
         }
     }
 
@@ -98,8 +146,8 @@ public class VideoFragment extends Fragment {
                                 return new VideoViewHolder(view);
                             }
                         })
-                .setData(videoList)
                 .build();
+        adapter.resetData(videoList.toArray(), false);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -129,10 +177,7 @@ public class VideoFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.delete_video) {
-            showDeleteDialog();
-            return true;
-        } else if (item.getItemId() == R.id.show_user_video) {
+        if (item.getItemId() == R.id.show_user_video) {
             item.setChecked(!item.isChecked());
             showUserVideo = item.isChecked();
             if (showUserVideo) {
@@ -140,7 +185,7 @@ public class VideoFragment extends Fragment {
             } else {
                 initVideoDataAll();
             }
-            adapter.notifyDataSetChanged();
+            adapter.resetData(videoList.toArray(), false);
             PreferencesUtils.putBoolean(SHOW_USER_VIDEO, showUserVideo);
             return true;
         }
@@ -156,8 +201,7 @@ public class VideoFragment extends Fragment {
                 sortPhotoData(userVideo);
             }
         }
-        videoList.clear();
-        videoList.addAll(userVideo);
+        videoList = userVideo;
     }
 
     private void initVideoDataAll() {
@@ -169,8 +213,7 @@ public class VideoFragment extends Fragment {
                 sortPhotoData(allVideo);
             }
         }
-        videoList.clear();
-        videoList.addAll(allVideo);
+        videoList = allVideo;
     }
 
     private void getVideoFile(File dir, List<Object> list) {
@@ -195,13 +238,66 @@ public class VideoFragment extends Fragment {
             }
         });
     }
+
+    private void startMultiChoice() {
+        //reset
+        LocalVideo tmpVideo;
+        for (Object video : videoList) {
+            tmpVideo = (LocalVideo) video;
+            tmpVideo.setChecked(false);
+        }
+        actionMode = activity.startMultiChoice(callback);
+        checkedCount = 0;
+        isChoiceState = true;
+    }
+
+    private void finishMultiChoice() {
+        actionMode.finish();
+        actionMode = null;
+        isChoiceState = false;
+    }
+
+    private void onItemChecked(LocalVideo localVideo) {
+        localVideo.setChecked(!localVideo.isChecked());
+        if (localVideo.isChecked()) {
+            checkedCount++;
+        } else {
+            checkedCount--;
+        }
+        actionMode.setTitle(String.valueOf(checkedCount));
+    }
+
+    private void deleteCheckedVideos() {
+        LocalVideo tmpVideo;
+        Iterator<Object> i = videoList.iterator();
+        while (i.hasNext()) {
+            tmpVideo = (LocalVideo) i.next();
+            if (tmpVideo.isChecked()) {
+                FileUtils.deleteFile(tmpVideo.getFile());
+                i.remove();
+            }
+        }
+        adapter.resetData(videoList.toArray(), false);
+    }
+
+    private void checkAllVideos() {
+        LocalVideo tmpVideo;
+        for (Object video : videoList) {
+            tmpVideo = (LocalVideo) video;
+            tmpVideo.setChecked(true);
+        }
+        checkedCount = videoList.size();
+        actionMode.setTitle(String.valueOf(checkedCount));
+        adapter.notifyDataSetChanged();
+    }
+
     private void showDeleteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                FileUtils.deleteFile(FileUtils.getPublicVideoDir());
-                onAllVideosDeleted();
+                deleteCheckedVideos();
+                finishMultiChoice();
             }
         });
         builder.setNegativeButton(R.string.pic_cancel, null);
@@ -214,23 +310,17 @@ public class VideoFragment extends Fragment {
         recyclerView.scrollToPosition(0);
     }
 
-    public void onAllVideosDeleted() {
-        adapter.resetData(null, false);
-    }
-
-    public void onVideoDeleted(int pos) {
-        adapter.remove(pos);
-    }
-
     private class VideoViewHolder extends CommonViewHolder<LocalVideo>
             implements View.OnClickListener, View.OnLongClickListener {
         private CommonExoPlayerView playerView;
+        private ImageView checkView;
 
         private LocalVideo video;
 
         private VideoViewHolder(View itemView) {
             super(itemView);
-            playerView = (CommonExoPlayerView) itemView;
+            playerView = (CommonExoPlayerView) itemView.findViewById(R.id.player_view);
+            checkView = (ImageView) itemView.findViewById(R.id.check_view);
             playerView.setPlayerInstance(playerInstance);
             playerView.setOnClickListener(this);
             playerView.setOnLongClickListener(this);
@@ -240,10 +330,24 @@ public class VideoFragment extends Fragment {
         public void bindView(LocalVideo localVideo) {
             video = localVideo;
             playerView.bindVideo(localVideo);
+            if (isChoiceState && video.isChecked()) {
+                checkView.setVisibility(View.VISIBLE);
+            } else {
+                checkView.setVisibility(View.GONE);
+            }
         }
 
         @Override
         public void onClick(View v) {
+            if (isChoiceState) {
+                onItemChecked(video);
+                if (video.isChecked()) {
+                    checkView.setVisibility(View.VISIBLE);
+                } else {
+                    checkView.setVisibility(View.GONE);
+                }
+                return;
+            }
             if (playerView.isConnected()) {
                 playerView.show();
             } else {
@@ -253,17 +357,12 @@ public class VideoFragment extends Fragment {
 
         @Override
         public boolean onLongClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    FileUtils.deleteFile(video.getFile());
-                    onVideoDeleted(getAdapterPosition());
-                }
-            });
-            builder.setNegativeButton(R.string.pic_cancel, null);
-            builder.setTitle(R.string.download_delete_title);
-            builder.show();
+            if (actionMode != null) {
+                return true;
+            }
+            startMultiChoice();
+            onItemChecked(video);
+            checkView.setVisibility(View.VISIBLE);
             return true;
         }
     }

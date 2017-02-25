@@ -11,6 +11,7 @@ import java.io.File;
 
 public class LocalPhoto {
     private File file;
+    private boolean checked;
     private Uri uri;
     private int width;
     private int height;
@@ -31,6 +32,14 @@ public class LocalPhoto {
 
     public File getFile() {
         return file;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
     public Uri getUri() {

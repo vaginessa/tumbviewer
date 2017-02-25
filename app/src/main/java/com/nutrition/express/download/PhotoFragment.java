@@ -1,6 +1,7 @@
 package com.nutrition.express.download;
 
 import android.app.ActivityOptions;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
@@ -8,6 +9,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.view.ActionMode;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -32,6 +35,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -43,12 +47,55 @@ public class PhotoFragment extends Fragment {
     private final int DEFAULT_PHOTO_WIDTH = ExpressApplication.width / 2;
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
+    private DownloadManagerActivity activity;
 
     private List<Object> userPhoto;
     private List<Object> allPhoto;
-    private List<Object> photoList = new ArrayList<>();
+    private List<Object> photoList;
     private boolean showUserPhoto;
 
+    private boolean isChoiceState = false;
+    private int checkedCount;
+    private ActionMode actionMode;
+    private ActionMode.Callback callback = new ActionMode.Callback() {
+        @Override
+        public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+            MenuInflater inflater = mode.getMenuInflater();
+            inflater.inflate(R.menu.menu_multi_choice, menu);
+            return true;
+        }
+
+        @Override
+        public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+            return false;
+        }
+
+        @Override
+        public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.delete:
+                    showDeleteDialog();
+                    return true;
+                case R.id.select_all:
+                    checkAllVideos();
+                    adapter.notifyDataSetChanged();
+                    return true;
+            }
+            return false;
+        }
+
+        @Override
+        public void onDestroyActionMode(ActionMode mode) {
+            finishMultiChoice();
+            adapter.notifyDataSetChanged();
+        }
+    };
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        activity = (DownloadManagerActivity) context;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,6 +109,10 @@ public class PhotoFragment extends Fragment {
         super.setUserVisibleHint(isVisibleToUser);
         if (isVisibleToUser && adapter == null) {
             init();
+        }
+        if (!isVisibleToUser && actionMode != null) {
+            actionMode.finish();
+            adapter.notifyDataSetChanged();
         }
     }
 
@@ -101,10 +152,7 @@ public class PhotoFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.delete_photo) {
-            showDeleteDialog();
-            return true;
-        } else if (item.getItemId() == R.id.show_user_photo) {
+        if (item.getItemId() == R.id.show_user_photo) {
             item.setChecked(!item.isChecked());
             showUserPhoto = item.isChecked();
             if (showUserPhoto) {
@@ -112,7 +160,7 @@ public class PhotoFragment extends Fragment {
             } else {
                 initPhotoDataAll();
             }
-            adapter.notifyDataSetChanged();
+            adapter.resetData(photoList.toArray(), false);
             PreferencesUtils.putBoolean(SHOW_USER_PHOTO, showUserPhoto);
             return true;
         }
@@ -133,8 +181,8 @@ public class PhotoFragment extends Fragment {
                                 return new PhotoViewHolder(view);
                             }
                         })
-                .setData(photoList)
                 .build();
+        adapter.resetData(photoList.toArray(), false);
         recyclerView.setAdapter(adapter);
     }
 
@@ -147,8 +195,7 @@ public class PhotoFragment extends Fragment {
                 sortPhotoData(userPhoto);
             }
         }
-        photoList.clear();
-        photoList.addAll(userPhoto);
+        photoList = userPhoto;
     }
 
     private void initPhotoDataAll() {
@@ -160,8 +207,7 @@ public class PhotoFragment extends Fragment {
                 sortPhotoData(allPhoto);
             }
         }
-        photoList.clear();
-        photoList.addAll(allPhoto);
+        photoList = allPhoto;
     }
 
     private void getVideoFile(File dir, List<Object> list) {
@@ -189,13 +235,65 @@ public class PhotoFragment extends Fragment {
         });
     }
 
+    private void startMultiChoice() {
+        //reset
+        LocalPhoto tmp;
+        for (Object photo: photoList) {
+            tmp = (LocalPhoto) photo;
+            tmp.setChecked(false);
+        }
+        actionMode = activity.startMultiChoice(callback);
+        checkedCount = 0;
+        isChoiceState = true;
+    }
+
+    private void finishMultiChoice() {
+        actionMode.finish();
+        actionMode = null;
+        isChoiceState = false;
+    }
+
+    private void onItemChecked(LocalPhoto localVideo) {
+        localVideo.setChecked(!localVideo.isChecked());
+        if (localVideo.isChecked()) {
+            checkedCount++;
+        } else {
+            checkedCount--;
+        }
+        actionMode.setTitle(String.valueOf(checkedCount));
+    }
+
+    private void deleteCheckedVideos() {
+        LocalPhoto tmp;
+        Iterator<Object> i = photoList.iterator();
+        while (i.hasNext()) {
+            tmp = (LocalPhoto) i.next();
+            if (tmp.isChecked()) {
+                FileUtils.deleteFile(tmp.getFile());
+                i.remove();
+            }
+        }
+        adapter.resetData(photoList.toArray(), false);
+    }
+
+    private void checkAllVideos() {
+        LocalPhoto tmp;
+        for (Object photo: photoList) {
+            tmp = (LocalPhoto) photo;
+            tmp.setChecked(true);
+        }
+        checkedCount = photoList.size();
+        actionMode.setTitle(String.valueOf(checkedCount));
+        adapter.notifyDataSetChanged();
+    }
+
     private void showDeleteDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                FileUtils.deleteFile(FileUtils.getPublicImageDir());
-                onAllPhotosDeleted();
+                deleteCheckedVideos();
+                finishMultiChoice();
             }
         });
         builder.setNegativeButton(R.string.pic_cancel, null);
@@ -203,28 +301,21 @@ public class PhotoFragment extends Fragment {
         builder.show();
     }
 
-
     public void scrollToTop() {
         recyclerView.scrollToPosition(0);
-    }
-
-    public void onAllPhotosDeleted() {
-        adapter.resetData(null, false);
-    }
-
-    public void onPhotoDeleted(int pos) {
-        adapter.remove(pos);
     }
 
     private final class PhotoViewHolder extends CommonViewHolder<LocalPhoto>
             implements View.OnClickListener, View.OnLongClickListener {
         private SimpleDraweeView photoView;
+        private ImageView checkView;
 
         private LocalPhoto photo;
 
         public PhotoViewHolder(View itemView) {
             super(itemView);
             photoView = (SimpleDraweeView) itemView.findViewById(R.id.photoView);
+            checkView = (ImageView) itemView.findViewById(R.id.check_view);
             photoView.setOnClickListener(this);
             photoView.setOnLongClickListener(this);
         }
@@ -241,10 +332,24 @@ public class PhotoFragment extends Fragment {
             params.height = height;
             photoView.setLayoutParams(params);
             photoView.setImageURI(localPhoto.getUri());
+            if (isChoiceState && photo.isChecked()) {
+                checkView.setVisibility(View.VISIBLE);
+            } else {
+                checkView.setVisibility(View.GONE);
+            }
         }
 
         @Override
         public void onClick(View v) {
+            if (isChoiceState) {
+                onItemChecked(photo);
+                if (photo.isChecked()) {
+                    checkView.setVisibility(View.VISIBLE);
+                } else {
+                    checkView.setVisibility(View.GONE);
+                }
+                return;
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 Intent intent = new Intent(getActivity(), PhotoViewActivity.class);
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
@@ -261,17 +366,12 @@ public class PhotoFragment extends Fragment {
 
         @Override
         public boolean onLongClick(View v) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-            builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    FileUtils.deleteFile(photo.getFile());
-                    onPhotoDeleted(getAdapterPosition());
-                }
-            });
-            builder.setNegativeButton(R.string.pic_cancel, null);
-            builder.setTitle(R.string.download_delete_title);
-            builder.show();
+            if (actionMode != null) {
+                return true;
+            }
+            startMultiChoice();
+            onItemChecked(photo);
+            checkView.setVisibility(View.VISIBLE);
             return true;
         }
     }

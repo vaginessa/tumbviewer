@@ -74,14 +74,13 @@
     <string name="download_toolbar_title">下载</string>
     <string name="download_video_title">视频</string>
     <string name="download_photo_title">图片</string>
-    <string name="download_photo_delete">删除所有图片</string>
-    <string name="download_video_delete">删除所有视频</string>
-    <string name="download_photo_delete_title">删除所有图片？</string>
-    <string name="download_video_delete_title">删除所有视频？</string>
+    <string name="download_photo_delete_title">删除所选图片？</string>
+    <string name="download_video_delete_title">删除所选视频？</string>
     <string name="download_delete_title">删除？</string>
     <string name="download_start">开始下载</string>
-    <string name="download_display_current">显示当前账户的</string>
+    <string name="download_display_current">仅当前账户</string>
     <string name="video_play_error">无法播放该视频</string>
     <string name="login_success">登录成功</string>
     <string name="copy_to_clipboard">已复制到粘贴板</string>
+    <string name="download_select_all">选择全部</string>
 </resources>
