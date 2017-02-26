@@ -273,6 +273,21 @@ public class PhotoFragment extends Fragment {
                 i.remove();
             }
         }
+        if (photoList == allPhoto && userPhoto != null) {
+            i = userPhoto.iterator();
+        } else if (photoList == userPhoto && allPhoto != null) {
+            i = allPhoto.iterator();
+        } else {
+            i = null;
+        }
+        if (i != null) {
+            while (i.hasNext()) {
+                tmp = (LocalPhoto) i.next();
+                if (!tmp.getFile().exists()) {
+                    i.remove();
+                }
+            }
+        }
         adapter.resetData(photoList.toArray(), false);
     }
 

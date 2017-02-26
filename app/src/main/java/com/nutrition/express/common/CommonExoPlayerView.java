@@ -214,6 +214,7 @@ public class CommonExoPlayerView extends FrameLayout {
             player = null;
         }
         thumbnailView.setVisibility(VISIBLE);
+        loadingBar.setVisibility(GONE);
         isConnected = false;
     }
 
@@ -456,6 +457,7 @@ public class CommonExoPlayerView extends FrameLayout {
 
         @Override
         public void onPlayerError(ExoPlaybackException error) {
+            disconnect();
             Toast.makeText(getContext(), R.string.video_play_error, Toast.LENGTH_SHORT).show();
         }
 

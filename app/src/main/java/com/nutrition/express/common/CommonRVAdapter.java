@@ -148,7 +148,11 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
             } else {
                 state = LOADING_FINISH;
             }
-            notifyItemRangeChanged(lastDataIndex, size);
+            if (lastDataIndex == 0) {
+                notifyDataSetChanged();
+            } else {
+                notifyItemRangeChanged(lastDataIndex, size);
+            }
         } else {
             if (this.data.size() > 0) {
                 //all data has been loaded

@@ -277,6 +277,21 @@ public class VideoFragment extends Fragment {
                 i.remove();
             }
         }
+        if (videoList == allVideo && userVideo != null) {
+            i = userVideo.iterator();
+        } else if (videoList == userVideo && allVideo != null) {
+            i = allVideo.iterator();
+        } else {
+            i = null;
+        }
+        if (i != null) {
+            while (i.hasNext()) {
+                tmpVideo = (LocalVideo) i.next();
+                if (!tmpVideo.getFile().exists()) {
+                    i.remove();
+                }
+            }
+        }
         adapter.resetData(videoList.toArray(), false);
     }
 
