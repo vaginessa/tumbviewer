@@ -25,7 +25,8 @@ public class PhotoViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             getWindow().setSharedElementEnterTransition(DraweeTransition.createTransitionSet(
                     ScalingUtils.ScaleType.FIT_CENTER, ScalingUtils.ScaleType.FIT_CENTER));
             getWindow().setSharedElementReturnTransition(DraweeTransition.createTransitionSet(
@@ -37,7 +38,8 @@ public class PhotoViewActivity extends AppCompatActivity {
         String transitionName = getIntent().getStringExtra("transition_name");
 
         final ZoomableDraweeView draweeView = (ZoomableDraweeView) findViewById(R.id.photoView);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
             draweeView.setTransitionName(transitionName);
         }
         GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(getResources())
@@ -54,7 +56,8 @@ public class PhotoViewActivity extends AppCompatActivity {
         draweeView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                     draweeView.reset();
                     finishAfterTransition();
                 } else {

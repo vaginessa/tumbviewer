@@ -212,6 +212,7 @@ public class CommonExoPlayerView extends FrameLayout {
             player.removeListener(componentListener);
             player.setVideoListener(null);
             player = null;
+            playerInstance.abandonAudioFocus();
         }
         thumbnailView.setVisibility(VISIBLE);
         loadingBar.setVisibility(GONE);
@@ -447,6 +448,7 @@ public class CommonExoPlayerView extends FrameLayout {
                 loadingBar.setVisibility(VISIBLE);
             } else if (playbackState == ExoPlayer.STATE_ENDED) {
                 show();
+                playerInstance.abandonAudioFocus();
                 loadingBar.setVisibility(GONE);
             } else {
                 loadingBar.setVisibility(GONE);

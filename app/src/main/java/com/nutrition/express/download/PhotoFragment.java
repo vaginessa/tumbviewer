@@ -77,7 +77,7 @@ public class PhotoFragment extends Fragment {
                     showDeleteDialog();
                     return true;
                 case R.id.select_all:
-                    checkAllVideos();
+                    checkAllPhotos();
                     adapter.notifyDataSetChanged();
                     return true;
             }
@@ -189,9 +189,9 @@ public class PhotoFragment extends Fragment {
     private void initPhotoDataUser() {
         if (userPhoto == null) {
             userPhoto = new ArrayList<>();
-            File userVideoDir = FileUtils.getImageDir();
-            if (userVideoDir.isDirectory()) {
-                getVideoFile(userVideoDir, userPhoto);
+            File userPhotoDir = FileUtils.getImageDir();
+            if (userPhotoDir.isDirectory()) {
+                getPhotoFile(userPhotoDir, userPhoto);
                 sortPhotoData(userPhoto);
             }
         }
@@ -201,20 +201,24 @@ public class PhotoFragment extends Fragment {
     private void initPhotoDataAll() {
         if (allPhoto == null) {
             allPhoto = new ArrayList<>();
-            File publicVideoDir = FileUtils.getPublicImageDir();
-            if (publicVideoDir.isDirectory()) {
-                getVideoFile(publicVideoDir, allPhoto);
+            File publicPhotoDir = FileUtils.getPublicImageDir();
+            if (publicPhotoDir.isDirectory()) {
+                getPhotoFile(publicPhotoDir, allPhoto);
                 sortPhotoData(allPhoto);
             }
         }
         photoList = allPhoto;
     }
 
-    private void getVideoFile(File dir, List<Object> list) {
+    private void getPhotoFile(File dir, List<Object> list) {
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
         LocalPhoto tmp;
-        for (File file : dir.listFiles()) {
+        for (File file : files) {
             if (file.isDirectory()) {
-                getVideoFile(file, list);
+                getPhotoFile(file, list);
             } else {
                 tmp = new LocalPhoto(file);
                 if (tmp.isValid()) {
@@ -253,9 +257,9 @@ public class PhotoFragment extends Fragment {
         isChoiceState = false;
     }
 
-    private void onItemChecked(LocalPhoto localVideo) {
-        localVideo.setChecked(!localVideo.isChecked());
-        if (localVideo.isChecked()) {
+    private void onItemChecked(LocalPhoto localPhoto) {
+        localPhoto.setChecked(!localPhoto.isChecked());
+        if (localPhoto.isChecked()) {
             checkedCount++;
         } else {
             checkedCount--;
@@ -263,7 +267,7 @@ public class PhotoFragment extends Fragment {
         actionMode.setTitle(String.valueOf(checkedCount));
     }
 
-    private void deleteCheckedVideos() {
+    private void deleteCheckedPhotos() {
         LocalPhoto tmp;
         Iterator<Object> i = photoList.iterator();
         while (i.hasNext()) {
@@ -291,7 +295,7 @@ public class PhotoFragment extends Fragment {
         adapter.resetData(photoList.toArray(), false);
     }
 
-    private void checkAllVideos() {
+    private void checkAllPhotos() {
         LocalPhoto tmp;
         for (Object photo: photoList) {
             tmp = (LocalPhoto) photo;
@@ -307,7 +311,7 @@ public class PhotoFragment extends Fragment {
         builder.setPositiveButton(R.string.delete_positive, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                deleteCheckedVideos();
+                deleteCheckedPhotos();
                 finishMultiChoice();
             }
         });
@@ -365,7 +369,8 @@ public class PhotoFragment extends Fragment {
                 }
                 return;
             }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
+                    Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 Intent intent = new Intent(getActivity(), PhotoViewActivity.class);
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
                         getActivity(), photoView, photo.getUri().getPath());

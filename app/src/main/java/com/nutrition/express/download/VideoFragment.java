@@ -217,7 +217,11 @@ public class VideoFragment extends Fragment {
     }
 
     private void getVideoFile(File dir, List<Object> list) {
-        for (File file : dir.listFiles()) {
+        File[] files = dir.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File file : files) {
             if (file.isDirectory()) {
                 getVideoFile(file, list);
             } else {

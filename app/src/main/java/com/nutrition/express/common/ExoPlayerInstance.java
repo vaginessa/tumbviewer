@@ -137,10 +137,10 @@ public class ExoPlayerInstance {
             };
         }
         am.requestAudioFocus(afChangeListener, AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN);
+                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
     }
 
-    private void abandonAudioFocus() {
+    public void abandonAudioFocus() {
         if (am != null) {
             am.abandonAudioFocus(afChangeListener);
         }

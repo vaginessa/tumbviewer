@@ -288,6 +288,7 @@ public class DataManager {
     }
 
     public void refreshData() {
+        clearReferenceBlog();
         isSimpleMode = PreferencesUtils.getBoolean(SettingsActivity.POST_SIMPLE_MODE, false);
     }
 
