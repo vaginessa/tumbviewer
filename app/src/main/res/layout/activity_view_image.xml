@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:orientation="vertical"
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/container"
-    android:fitsSystemWindows="true"
-    android:clipToPadding="false"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    >
 
     <android.support.v4.view.ViewPager
         android:id="@+id/viewPager"
@@ -21,12 +20,18 @@
         android:layout_marginBottom="16dp"
         android:layout_gravity="bottom|center"
         />
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolBar"
-        android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/semi_transparent"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginRight="24dp"
+        android:visibility="invisible"
+        app:backgroundTint="@color/fabAccent"
+        app:srcCompat="@mipmap/ic_save"
         />
-</FrameLayout>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -1,5 +1,8 @@
 package com.nutrition.express.blogposts;
 
+import android.annotation.TargetApi;
+import android.app.ActivityOptions;
+import android.app.SharedElementCallback;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -7,6 +10,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Html;
 import android.text.Spanned;
 import android.text.TextUtils;
@@ -46,6 +50,7 @@ import com.nutrition.express.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static android.content.ContentValues.TAG;
@@ -352,7 +357,16 @@ public class PhotoPostVH<T extends PhotoPostsItem> extends CommonViewHolder<T>
                 Intent intent = new Intent(context, ImageViewerActivity.class);
                 intent.putExtra("selected_index", tag.intValue());
                 intent.putStringArrayListExtra("image_urls", photos);
-                context.startActivity(intent);
+
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
+                        Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                    ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
+                            (AppCompatActivity) context, v, "name" + tag);
+                    context.startActivity(intent, options.toBundle());
+                    setCallback(tag);
+                } else {
+                    context.startActivity(intent);
+                }
             }
         }
     }
@@ -402,6 +416,21 @@ public class PhotoPostVH<T extends PhotoPostsItem> extends CommonViewHolder<T>
         builder.setNegativeButton(R.string.pic_cancel, null);
         builder.setTitle(R.string.delete_title);
         builder.show();
+    }
+
+    @TargetApi(21)
+    private void setCallback(final int chosenPosition) {
+        DataManager.getInstance().setPosition(chosenPosition);
+        ((AppCompatActivity) context).setExitSharedElementCallback(new SharedElementCallback() {
+            @Override
+            public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+                int pos = DataManager.getInstance().getPosition();
+                if (chosenPosition != pos && names.size() > 0) {
+                    sharedElements.put(names.get(0), contentViewCache.get(pos));
+                }
+                ((AppCompatActivity) context).setExitSharedElementCallback((SharedElementCallback) null);
+            }
+        });
     }
 
 }

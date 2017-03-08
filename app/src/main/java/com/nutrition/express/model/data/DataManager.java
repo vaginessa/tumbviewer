@@ -292,4 +292,16 @@ public class DataManager {
         isSimpleMode = PreferencesUtils.getBoolean(SettingsActivity.POST_SIMPLE_MODE, false);
     }
 
+    /**
+     * helper for shared element transition
+     */
+    private int position;
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
+
+    public int getPosition() {
+        return position;
+    }
 }
