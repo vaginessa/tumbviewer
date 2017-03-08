@@ -206,12 +206,10 @@ public class CommonExoPlayerView extends FrameLayout {
 
     private void disconnect() {
         if (player != null) {
-            if (player.getPlayWhenReady()) { //pause
-                player.setPlayWhenReady(false);
-            }
             player.removeListener(componentListener);
             player.setVideoListener(null);
             player = null;
+            playerInstance.stopPlayer();
             playerInstance.abandonAudioFocus();
         }
         thumbnailView.setVisibility(VISIBLE);

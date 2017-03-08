@@ -4,6 +4,7 @@ import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.StrictMode;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
@@ -66,6 +67,18 @@ public class ExpressApplication extends Application {
             Log.d(TAG, "onCreate: " + am.getMemoryClass());
             Log.d(TAG, "onCreate: " + am.getLargeMemoryClass());
             Log.d(TAG, "onCreate: " + Runtime.getRuntime().maxMemory());
+
+            StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder()
+                    .detectCustomSlowCalls()
+                    .detectNetwork()
+//                    .detectResourceMismatches()
+                    .penaltyLog()
+                    .build());
+            StrictMode.setVmPolicy(new StrictMode.VmPolicy.Builder()
+                    .detectAll()
+                    .penaltyLog()
+//                    .penaltyDeath()
+                    .build());
         }
     }
 
