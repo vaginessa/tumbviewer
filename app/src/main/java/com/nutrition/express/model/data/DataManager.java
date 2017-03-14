@@ -147,7 +147,7 @@ public class DataManager {
      * @return
      */
     public boolean switchToNextRoute() {
-        if (TextUtils.isEmpty(positiveAccount.getName())) {
+        if (positiveAccount == null || TextUtils.isEmpty(positiveAccount.getName())) {
             return false;
         }
         List<TumblrAccount> list = new ArrayList<>();
