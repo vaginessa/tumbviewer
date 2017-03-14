@@ -1,8 +1,8 @@
 package com.nutrition.express.util;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v4.view.MotionEventCompat;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
@@ -11,10 +11,8 @@ import android.view.ViewConfiguration;
  */
 
 public class SwipeGestureDetector {
-    public static final int Direction_top_bottom = 1;
-    public static final int Direction_bottom_top = 2;
-    public static final int Direction_left_right = 4;
-    public static final int Direction_right_left = 8;
+    public static final int DIRECTION_TOP_BOTTOM = 1;
+    public static final int DIRECTION_LEFT_RIGHT = 4;
 
     private OnSwipeGestureListener listener;
     private int direction;
@@ -23,9 +21,51 @@ public class SwipeGestureDetector {
     private float lastMotionX, lastMotionY;
     private boolean isBeingDragged;
 
-    public SwipeGestureDetector(Context context, OnSwipeGestureListener listener) {
+    public SwipeGestureDetector(Context context, @NonNull OnSwipeGestureListener listener) {
         this.listener = listener;
         touchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
+    }
+
+    public boolean onInterceptTouchEvent(MotionEvent event) {
+        int action = MotionEventCompat.getActionMasked(event);
+//        Log.d("onInterceptTouchEvent", "action-" + action);
+
+        float x = event.getRawX();
+        float y = event.getRawY();
+
+        // Always take care of the touch gesture being complete.
+        if (action == MotionEvent.ACTION_CANCEL || action == MotionEvent.ACTION_UP) {
+            // Release the drag.
+            reset(initialMotionX, initialMotionY);
+            return false;
+        }
+
+        if (action != MotionEvent.ACTION_DOWN) {
+            if (isBeingDragged) {
+                return true;
+            }
+        }
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                initialMotionX = lastMotionX = x;
+                initialMotionY = lastMotionY = y;
+                break;
+            case MotionEvent.ACTION_MOVE:
+                final float xDiff = Math.abs(x - initialMotionX);
+                final float yDiff = Math.abs(y - initialMotionY);
+                if (xDiff > touchSlop && xDiff > yDiff) {
+                    isBeingDragged = true;
+                    //direction horizon
+                    direction = DIRECTION_LEFT_RIGHT;
+                } else if (yDiff > touchSlop && yDiff > xDiff) {
+                    isBeingDragged = true;
+                    //direction vertical
+                    direction = DIRECTION_TOP_BOTTOM;
+                }
+                break;
+        }
+        return isBeingDragged;
     }
 
     public boolean onTouchEvent(MotionEvent event) {
@@ -38,52 +78,43 @@ public class SwipeGestureDetector {
             case MotionEvent.ACTION_DOWN:
                 initialMotionX = lastMotionX = x;
                 initialMotionY = lastMotionY = y;
-                Log.d("onTouchEvent", "init motion:" + lastMotionX + "-" + lastMotionY);
+//                Log.d("onTouchEvent", "init motion:" + lastMotionX + "-" + lastMotionY);
                 break;
             case MotionEvent.ACTION_MOVE:
                 final float deltaX = x - lastMotionX;
                 final float deltaY = y - lastMotionY;
-                Log.d("onTouchEvent", "move motion x:" + x + "-" + y);
-                if (!isBeingDragged) {
-                    final float xDiff = Math.abs(deltaX);
-                    final float yDiff = Math.abs(deltaY);
-                    if (xDiff > touchSlop && xDiff > yDiff) {
-                        isBeingDragged = true;
-                        //direction horizon
-                        direction = Direction_left_right;
-                    } else if (yDiff > touchSlop && yDiff > xDiff) {
-                        isBeingDragged = true;
-                        //direction vertical
-                        direction = Direction_top_bottom;
-                    }
-                }
+                lastMotionX = x;
+                lastMotionY = y;
+//                Log.d("onTouchEvent", "move motion x:" + x + "-" + y);
                 if (isBeingDragged) {
-                    if (direction == Direction_left_right) {
-                        listener.onSwipeLeftRight(deltaX);
-                        lastMotionX = x;
-                    } else if (direction == Direction_top_bottom) {
-                        listener.onSwipeTopBottom(deltaY);
-                        lastMotionY = y;
+                    if (direction == DIRECTION_LEFT_RIGHT) {
+                        listener.onSwipeLeftRight(deltaX, deltaY);
+                    } else if (direction == DIRECTION_TOP_BOTTOM) {
+                        listener.onSwipeTopBottom(deltaX, deltaY);
                     }
                 }
                 break;
             case MotionEvent.ACTION_UP:
-                reset();
+                reset(x, y);
                 break;
             case MotionEvent.ACTION_CANCEL:
-                reset();
+                reset(x, y);
                 break;
         }
         return true;
     }
 
-    private void reset() {
+    private void reset(float x, float y) {
+        if (isBeingDragged) {
+            listener.onFinish(direction, x - initialMotionX, y - initialMotionY);
+        }
         isBeingDragged = false;
     }
 
     public interface OnSwipeGestureListener {
-        void onSwipeTopBottom(float deltaY);
-        void onSwipeLeftRight(float deltaX);
+        void onSwipeTopBottom(float deltaX, float deltaY);
+        void onSwipeLeftRight(float deltaX, float deltaY);
+        void onFinish(int direction, float distanceX, float distanceY);
     }
 
 }

@@ -8,9 +8,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
@@ -37,6 +39,7 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeTransition;
 import com.nutrition.express.R;
+import com.nutrition.express.common.DismissFrameLayout;
 import com.nutrition.express.imageviewer.zoomable.ZoomableDraweeView;
 import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
@@ -53,7 +56,8 @@ import static com.nutrition.express.R.id.save;
 /**
  * Created by huang on 1/21/16.
  */
-public class ImageViewerActivity extends AppCompatActivity {
+public class ImageViewerActivity extends AppCompatActivity
+        implements DismissFrameLayout.OnDismissListener {
     private final String ACTION = "SAVE_IMAGE";
     private ViewPager viewPager;
     private LinearLayout indicator;
@@ -64,6 +68,8 @@ public class ImageViewerActivity extends AppCompatActivity {
     private int desiredSavedCount;
     private boolean isTransitionEnd = false;
     private FloatingActionButton saveButton;
+    private ColorDrawable colorDrawable;
+    private int ALPHA_MAX = 0xFF;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,6 +99,8 @@ public class ImageViewerActivity extends AppCompatActivity {
         });
 
         final CoordinatorLayout container = (CoordinatorLayout) findViewById(R.id.container);
+        colorDrawable = new ColorDrawable(getResources().getColor(R.color.divider_color));
+        container.setBackgroundDrawable(colorDrawable);
         ViewCompat.setOnApplyWindowInsetsListener(container, new OnApplyWindowInsetsListener() {
             @Override
             public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
@@ -177,6 +185,39 @@ public class ImageViewerActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onScaleProgress(float scale) {
+        colorDrawable.setAlpha(
+                Math.min(ALPHA_MAX, colorDrawable.getAlpha() - (int) (scale * ALPHA_MAX)));
+        saveButton.hide();
+    }
+
+    @Override
+    public void onDismiss() {
+        finishAction(null);
+    }
+
+    @Override
+    public void onCancel() {
+        colorDrawable.setAlpha(ALPHA_MAX);
+        if (!FileUtils.imageSaved(photoUris.get(selectedIndex))) {
+            saveButton.show();
+        }
+    }
+
+    private void finishAction(@Nullable ZoomableDraweeView draweeView) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
+                Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            if (draweeView != null) {
+                draweeView.reset();
+            }
+            saveButton.hide();
+            finishAfterTransition();
+        } else {
+            finish();
+        }
+    }
+
     private void convert2Uri(List<String> urls) {
         photoUris = new ArrayList<>(urls.size());
         for (String url : urls) {
@@ -242,7 +283,7 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     private class ViewImageAdapter extends PagerAdapter implements View.OnClickListener {
         private List<Uri> uris;
-        private LinkedList<ZoomableDraweeView> viewCache = new LinkedList<>();
+        private LinkedList<View> viewCache = new LinkedList<>();
 
         public ViewImageAdapter(List<Uri> uris) {
             this.uris = uris;
@@ -260,9 +301,10 @@ public class ImageViewerActivity extends AppCompatActivity {
 
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
+            DismissFrameLayout layout;
             ZoomableDraweeView draweeView;
             if (viewCache.size() == 0) {
-                draweeView = new ZoomableDraweeView(ImageViewerActivity.this);
+                draweeView = new ZoomableDraweeView(container.getContext());
                 draweeView.setLayoutParams(new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(getResources())
@@ -270,8 +312,14 @@ public class ImageViewerActivity extends AppCompatActivity {
                         .setPlaceholderImage(R.color.loading_color)
                         .build();
                 draweeView.setHierarchy(hierarchy);
+
+                layout = new DismissFrameLayout(container.getContext());
+                layout.setDismissListener(ImageViewerActivity.this);
+                layout.setLayoutParams(new ViewPager.LayoutParams());
+                layout.addView(draweeView);
             } else {
-                draweeView = viewCache.removeFirst();
+                layout = (DismissFrameLayout) viewCache.removeFirst();
+                draweeView = (ZoomableDraweeView) layout.getChildAt(0);
             }
             DraweeController controller = Fresco.newDraweeControllerBuilder()
                     .setOldController(draweeView.getController())
@@ -291,26 +339,19 @@ public class ImageViewerActivity extends AppCompatActivity {
                 }
             }
 
-            container.addView(draweeView);
-            return draweeView;
+            container.addView(layout);
+            return layout;
         }
 
         @Override
         public void destroyItem(ViewGroup container, int position, Object object) {
             container.removeView((View) object);
-            viewCache.add((ZoomableDraweeView) object);
+            viewCache.add((View) object);
         }
 
         @Override
         public void onClick(View v) {
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
-                ((ZoomableDraweeView) v).reset();
-                saveButton.hide();
-                finishAfterTransition();
-            } else {
-                ImageViewerActivity.this.finish();
-            }
+            finishAction((ZoomableDraweeView) v);
         }
     }
 

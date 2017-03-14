@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout android:orientation="vertical"
+<com.nutrition.express.common.DismissFrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/container"
-    android:fitsSystemWindows="true"
-    android:clipToPadding="false"
+    android:id="@+id/dismiss_layout"
     >
     <com.nutrition.express.imageviewer.zoomable.ZoomableDraweeView
         android:id="@+id/photoView"
@@ -13,4 +11,4 @@
         android:layout_height="match_parent"
         />
 
-</FrameLayout>
+</com.nutrition.express.common.DismissFrameLayout>
