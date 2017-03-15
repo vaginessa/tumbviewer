@@ -376,11 +376,6 @@ public class ImageViewerActivity extends AppCompatActivity
                 names.add(view.getTransitionName());
                 sharedElements.put(view.getTransitionName(), view);
             }
-
-            @Override
-            public void onSharedElementEnd(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
-
-            }
         };
         setEnterSharedElementCallback(callback);
     }

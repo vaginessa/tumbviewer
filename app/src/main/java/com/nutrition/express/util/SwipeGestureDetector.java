@@ -92,6 +92,18 @@ public class SwipeGestureDetector {
                     } else if (direction == DIRECTION_TOP_BOTTOM) {
                         listener.onSwipeTopBottom(deltaX, deltaY);
                     }
+                } else {
+                    final float xDiff = Math.abs(x - initialMotionX);
+                    final float yDiff = Math.abs(y - initialMotionY);
+                    if (xDiff > touchSlop && xDiff > yDiff) {
+                        isBeingDragged = true;
+                        //direction horizon
+                        direction = DIRECTION_LEFT_RIGHT;
+                    } else if (yDiff > touchSlop && yDiff > xDiff) {
+                        isBeingDragged = true;
+                        //direction vertical
+                        direction = DIRECTION_TOP_BOTTOM;
+                    }
                 }
                 break;
             case MotionEvent.ACTION_UP:
