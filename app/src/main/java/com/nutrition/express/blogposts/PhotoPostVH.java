@@ -358,8 +358,7 @@ public class PhotoPostVH<T extends PhotoPostsItem> extends CommonViewHolder<T>
                 intent.putExtra("selected_index", tag.intValue());
                 intent.putStringArrayListExtra("image_urls", photos);
 
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                        Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                     ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
                             (AppCompatActivity) context, v, "name" + tag);
                     context.startActivity(intent, options.toBundle());

@@ -15,8 +15,8 @@ import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
 import com.facebook.drawee.interfaces.DraweeController;
 import com.facebook.drawee.view.DraweeTransition;
 import com.nutrition.express.R;
-import com.nutrition.express.imageviewer.zoomable.ZoomableDraweeView;
 import com.nutrition.express.common.DismissFrameLayout;
+import com.nutrition.express.imageviewer.zoomable.ZoomableDraweeView;
 
 /**
  * Created by huang on 2/22/17.
@@ -29,8 +29,7 @@ public class PhotoViewActivity extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setSharedElementEnterTransition(DraweeTransition.createTransitionSet(
                     ScalingUtils.ScaleType.FIT_CENTER, ScalingUtils.ScaleType.FIT_CENTER));
             getWindow().setSharedElementReturnTransition(DraweeTransition.createTransitionSet(
@@ -65,8 +64,7 @@ public class PhotoViewActivity extends AppCompatActivity {
         colorDrawable = new ColorDrawable(getResources().getColor(R.color.divider_color));
         layout.setBackgroundDrawable(colorDrawable);
         ZoomableDraweeView draweeView = (ZoomableDraweeView) findViewById(R.id.photoView);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             draweeView.setTransitionName(transitionName);
         }
         GenericDraweeHierarchy hierarchy = new GenericDraweeHierarchyBuilder(getResources())
@@ -89,8 +87,7 @@ public class PhotoViewActivity extends AppCompatActivity {
     }
 
     private void finishAction(@Nullable ZoomableDraweeView draweeView) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             if (draweeView != null) {
                 draweeView.reset();
             }

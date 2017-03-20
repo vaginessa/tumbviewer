@@ -74,8 +74,7 @@ public class ImageViewerActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             getWindow().setSharedElementEnterTransition(DraweeTransition.createTransitionSet(
                     ScalingUtils.ScaleType.CENTER_CROP, ScalingUtils.ScaleType.FIT_CENTER));
             getWindow().setSharedElementReturnTransition(DraweeTransition.createTransitionSet(
@@ -145,8 +144,7 @@ public class ImageViewerActivity extends AppCompatActivity
         }
         LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 new IntentFilter(ACTION));
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             getWindow().getSharedElementEnterTransition().addListener(
                     new Transition.TransitionListener() {
                         @Override
@@ -155,8 +153,7 @@ public class ImageViewerActivity extends AppCompatActivity
 
                         @Override
                         public void onTransitionEnd(Transition transition) {
-                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                                    Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+                            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                                 getWindow().getSharedElementEnterTransition().removeListener(this);
                                 if (!FileUtils.imageSaved(photoUris.get(selectedIndex))) {
                                     saveButton.show();
@@ -206,8 +203,7 @@ public class ImageViewerActivity extends AppCompatActivity
     }
 
     private void finishAction(@Nullable ZoomableDraweeView draweeView) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             if (draweeView != null) {
                 draweeView.reset();
             }
@@ -329,8 +325,7 @@ public class ImageViewerActivity extends AppCompatActivity
             draweeView.setController(controller);
             draweeView.setOnClickListener(this);
 
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                 String tag = "name" + position;
                 draweeView.setTransitionName(tag);
                 draweeView.setTag(tag);

@@ -44,7 +44,7 @@ import java.util.List;
 
 public class PhotoFragment extends Fragment {
     private static final String SHOW_USER_PHOTO = "SUP";
-    private final int DEFAULT_PHOTO_WIDTH = ExpressApplication.width / 2;
+    private final int HALF_WIDTH = ExpressApplication.width / 2;
     private RecyclerView recyclerView;
     private CommonRVAdapter adapter;
     private DownloadManagerActivity activity;
@@ -331,12 +331,17 @@ public class PhotoFragment extends Fragment {
 
         private LocalPhoto photo;
 
+        private final int DEFAULT_PHOTO_WIDTH;
+
         public PhotoViewHolder(View itemView) {
             super(itemView);
             photoView = (SimpleDraweeView) itemView.findViewById(R.id.photoView);
             checkView = (ImageView) itemView.findViewById(R.id.check_view);
             photoView.setOnClickListener(this);
             photoView.setOnLongClickListener(this);
+
+            int margin = (int) (8 * itemView.getContext().getResources().getDisplayMetrics().density);
+            DEFAULT_PHOTO_WIDTH = HALF_WIDTH - margin;
         }
 
         @Override
@@ -369,8 +374,7 @@ public class PhotoFragment extends Fragment {
                 }
                 return;
             }
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP &&
-                    Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
                 Intent intent = new Intent(getActivity(), PhotoViewActivity.class);
                 ActivityOptions options = ActivityOptions.makeSceneTransitionAnimation(
                         getActivity(), photoView, photo.getUri().getPath());

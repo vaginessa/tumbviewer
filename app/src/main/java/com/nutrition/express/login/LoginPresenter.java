@@ -180,6 +180,7 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
         view = null;
     }
 
+    //avoid holding the view in okhttp callback ?
     private Runnable requestTokenFailure = new Runnable() {
         @Override
         public void run() {
