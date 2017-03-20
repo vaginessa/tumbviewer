@@ -23,6 +23,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import static android.content.ContentValues.TAG;
 
@@ -113,20 +114,26 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
             call.enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    handler.post(requestTokenFailure);
+                    handler.post(new FailureRunnable(LoginPresenter.this, 0, e.getMessage()));
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        String body = response.body().string();
-                        Log.d(TAG, "onResponse: " + body);
-                        HashMap<String, String> hashMap = convert(body);
-                        oauthToken = hashMap.get("oauth_token");
-                        oauthTokenSecret = hashMap.get("oauth_token_secret");
-                        handler.post(requestTokenSuccess);
-                    } else {
-                        handler.post(requestTokenFailure);
+                    ResponseBody responseBody = response.body();
+                    try {
+                        if (response.isSuccessful()) {
+                            String body = responseBody.string();
+                            Log.d(TAG, "onResponse: " + body);
+                            HashMap<String, String> hashMap = convert(body);
+                            oauthToken = hashMap.get("oauth_token");
+                            oauthTokenSecret = hashMap.get("oauth_token_secret");
+                            handler.post(requestTokenSuccess);
+                        } else {
+                            handler.post(new FailureRunnable(LoginPresenter.this, response.code(),
+                                    response.message()));
+                        }
+                    } finally {
+                        responseBody.close();
                     }
                 }
             });
@@ -154,15 +161,20 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-                    if (response.isSuccessful()) {
-                        String body = response.body().string();
-                        Log.d(TAG, "onResponse: " + body);
-                        HashMap<String, String> hashMap = convert(body);
-                        oauthToken = hashMap.get("oauth_token");
-                        oauthTokenSecret = hashMap.get("oauth_token_secret");
-                        handler.post(accessTokenSuccess);
-                    } else {
-                        handler.post(accessTokenFailure);
+                    ResponseBody responseBody = response.body();
+                    try {
+                        if (response.isSuccessful()) {
+                            String body = responseBody.string();
+                            Log.d(TAG, "onResponse: " + body);
+                            HashMap<String, String> hashMap = convert(body);
+                            oauthToken = hashMap.get("oauth_token");
+                            oauthTokenSecret = hashMap.get("oauth_token_secret");
+                            handler.post(accessTokenSuccess);
+                        } else {
+                            handler.post(accessTokenFailure);
+                        }
+                    } finally {
+                        responseBody.close();
                     }
 
                 }
@@ -178,6 +190,26 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
     @Override
     public void onDetach() {
         view = null;
+    }
+
+    //avoid holding the view in okhttp callback ?
+    private static class FailureRunnable implements Runnable {
+        private LoginPresenter presenter;
+        private String msg;
+        private int code;
+
+        public FailureRunnable(LoginPresenter presenter, int code, String msg) {
+            this.presenter = presenter;
+            this.msg = msg;
+            this.code = code;
+        }
+
+        @Override
+        public void run() {
+            if (presenter.view != null) {
+                presenter.view.onError(code, msg);
+            }
+        }
     }
 
     //avoid holding the view in okhttp callback ?
