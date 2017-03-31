@@ -136,6 +136,7 @@ public class CommonExoPlayerView extends FrameLayout {
         FrameLayout.LayoutParams videoParams = new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         videoView.setLayoutParams(videoParams);
+        videoView.setOnClickListener(componentListener);
 
         thumbnailView = new SimpleDraweeView(context);
         FrameLayout.LayoutParams thumbParams = new FrameLayout.LayoutParams(
@@ -190,11 +191,27 @@ public class CommonExoPlayerView extends FrameLayout {
         disconnect();
     }
 
+    public void setPlayerClickable(boolean enable) {
+        if (enable) {
+            videoView.setClickable(true);
+        } else {
+            videoView.setClickable(false);
+        }
+    }
+
+    public void performPlayerClick() {
+        if (isConnected) {
+            show();
+        } else {
+            connect();
+        }
+    }
+
     public void setPlayerInstance(ExoPlayerInstance playerInstance) {
         this.playerInstance = playerInstance;
     }
 
-    public void connect() {
+    private void connect() {
         playerInstance.disconnectPrevious();
         player = playerInstance.getPlayer();
         player.setVideoTextureView(videoView);
@@ -217,14 +234,10 @@ public class CommonExoPlayerView extends FrameLayout {
         isConnected = false;
     }
 
-    public boolean isConnected() {
-        return isConnected;
-    }
-
     /**
      * Shows the controller
      */
-    public void show() {
+    private void show() {
         if (isControllerVisible()) {
             hide();
         } else {
@@ -239,7 +252,7 @@ public class CommonExoPlayerView extends FrameLayout {
     /**
      * Hides the controller.
      */
-    public void hide() {
+    private void hide() {
         if (isControllerVisible()) {
             controlLayout.setVisibility(GONE);
             playView.setVisibility(GONE);
@@ -253,7 +266,7 @@ public class CommonExoPlayerView extends FrameLayout {
      *
      * @return true if controller is visible.
      */
-    public boolean isControllerVisible() {
+    private boolean isControllerVisible() {
         return controlLayout.getVisibility() == VISIBLE;
     }
 
@@ -399,6 +412,14 @@ public class CommonExoPlayerView extends FrameLayout {
                 playerIntent.putExtra("windowIndex", player.getCurrentWindowIndex());
                 playerIntent.putExtra("rotation", getWidth() > getHeight());
                 getContext().startActivity(playerIntent);
+                disconnect();
+                playerInstance.startFullScreenMode();
+            } else if (v == videoView) {
+                if (isConnected) {
+                    show();
+                } else {
+                    connect();
+                }
             }
         }
 

@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
 
-    private DashboardFragment videoFragment;
-    private PhotoDashboardFragment photoFragment;
+    private DashboardFragment photoFragment;
+    private VideoDashboardFragment videoFragment;
     private SearchFragment searchFragment;
     private UserFragment userFragment;
 
@@ -85,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
         titles.add(getString(R.string.page_photo));
         titles.add(getString(R.string.page_search));
         titles.add(getString(R.string.page_user));
-        videoFragment = new DashboardFragment();
-        photoFragment = new PhotoDashboardFragment();
+        videoFragment = new VideoDashboardFragment();
+        photoFragment = new DashboardFragment();
         searchFragment = new SearchFragment();
         userFragment = new UserFragment();
         list.clear();

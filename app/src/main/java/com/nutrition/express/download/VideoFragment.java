@@ -343,6 +343,7 @@ public class VideoFragment extends Fragment {
             playerView.setPlayerInstance(playerInstance);
             playerView.setOnClickListener(this);
             playerView.setOnLongClickListener(this);
+            playerView.setPlayerClickable(false);
         }
 
         @Override
@@ -365,12 +366,8 @@ public class VideoFragment extends Fragment {
                 } else {
                     checkView.setVisibility(View.GONE);
                 }
-                return;
-            }
-            if (playerView.isConnected()) {
-                playerView.show();
             } else {
-                playerView.connect();
+                playerView.performPlayerClick();
             }
         }
 

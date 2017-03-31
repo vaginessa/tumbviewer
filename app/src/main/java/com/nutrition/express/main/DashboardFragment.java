@@ -1,6 +1,5 @@
 package com.nutrition.express.main;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -14,12 +13,10 @@ import android.view.ViewGroup;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.nutrition.express.R;
-import com.nutrition.express.blogposts.VideoPhotoPostVH;
+import com.nutrition.express.blogposts.PhotoPostVH;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
-import com.nutrition.express.common.ExoPlayerInstance;
 import com.nutrition.express.model.data.bean.PhotoPostsItem;
-import com.nutrition.express.model.data.bean.VideoPostsItem;
 
 import java.util.List;
 
@@ -45,36 +42,6 @@ public class DashboardFragment extends Fragment
             Log.d("onScrollStateChanged", "" + newState);
         }
     };
-
-    private ExoPlayerInstance playerInstance;
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (playerInstance == null) {
-            playerInstance = ExoPlayerInstance.getInstance();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        playerInstance.resumePlayer();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        playerInstance.releasePlayer();
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (!isVisibleToUser && playerInstance != null) {
-            playerInstance.pausePlayer();
-        }
-    }
 
     @Nullable
     @Override
@@ -154,11 +121,11 @@ public class DashboardFragment extends Fragment
 
     protected CommonRVAdapter getAdapter() {
         CommonRVAdapter.Builder builder = CommonRVAdapter.newBuilder();
-        builder.addItemType(VideoPostsItem.class, R.layout.item_video_post,
+        builder.addItemType(PhotoPostsItem.class, R.layout.item_post,
                 new CommonRVAdapter.CreateViewHolder() {
                     @Override
                     public CommonViewHolder createVH(View view) {
-                        return new VideoPhotoPostVH(view, playerInstance);
+                        return new PhotoPostVH(view);
                     }
                 });
         builder.setLoadListener(this);
@@ -166,7 +133,7 @@ public class DashboardFragment extends Fragment
     }
 
     protected String getType() {
-        return "video";
+        return "photo";
     }
 
     private void getPosts() {

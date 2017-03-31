@@ -52,18 +52,17 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> implements Vie
     @Override
     protected void setVideoContent() {
         playerView.bindVideo(onlineVideo);
+        if (TextUtils.equals("tumblr", postsItem.getVideo_type())) {
+            playerView.setPlayerClickable(true);
+        } else {
+            playerView.setPlayerClickable(false);
+        }
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.post_video) {
-            if (TextUtils.equals("tumblr", postsItem.getVideo_type())) {
-                if (playerView.isConnected()) {
-                    playerView.show();
-                } else {
-                    playerView.connect();
-                }
-            } else if (!TextUtils.isEmpty(postsItem.getPermalink_url())) {
+            if (!TextUtils.isEmpty(postsItem.getPermalink_url())) {
                 //case "vine","youtube","instagram".
                 Intent intent = new Intent(Intent.ACTION_VIEW,
                         Uri.parse(postsItem.getPermalink_url()));

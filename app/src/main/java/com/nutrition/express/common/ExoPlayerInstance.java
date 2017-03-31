@@ -41,6 +41,8 @@ public class ExoPlayerInstance {
 
     private OnDisconnectListener onDisconnectListener;
 
+    private boolean fullScreenMode = false;
+
     private static class Holder {
         private static ExoPlayerInstance holder = new ExoPlayerInstance();
     }
@@ -84,7 +86,7 @@ public class ExoPlayerInstance {
         this.onDisconnectListener = onDisconnectListener;
     }
 
-    public void disconnectPrevious() {
+    void disconnectPrevious() {
         if (this.onDisconnectListener != null) {
             this.onDisconnectListener.onDisconnectListener();
             this.onDisconnectListener = null;
@@ -92,12 +94,13 @@ public class ExoPlayerInstance {
     }
 
     public void releasePlayer() {
-        if (player != null) {
+        if (player != null && !fullScreenMode) {
             disconnectPrevious();
             abandonAudioFocus();
             player.release();
             player = null;
         }
+        fullScreenMode = false;
     }
 
     /***
@@ -115,7 +118,7 @@ public class ExoPlayerInstance {
         }
     }
 
-    public void stopPlayer() {
+    void stopPlayer() {
         if (player != null) {
             player.stop();
         }
@@ -140,13 +143,17 @@ public class ExoPlayerInstance {
                 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT);
     }
 
-    public void abandonAudioFocus() {
+    void abandonAudioFocus() {
         if (am != null) {
             am.abandonAudioFocus(afChangeListener);
         }
     }
 
-    public interface OnDisconnectListener {
+    void startFullScreenMode() {
+        fullScreenMode = true;
+    }
+
+    interface OnDisconnectListener {
         void onDisconnectListener();
     }
 
