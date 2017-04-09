@@ -8,12 +8,11 @@ import android.support.v4.app.FragmentActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.nutrition.express.R;
-import com.nutrition.express.application.SystemDownload;
 import com.nutrition.express.common.CommonExoPlayerView;
 import com.nutrition.express.common.ExoPlayerInstance;
+import com.nutrition.express.downloadservice.DownloadService;
 import com.nutrition.express.model.data.bean.OnlineVideo;
 import com.nutrition.express.model.data.bean.VideoPostsItem;
 
@@ -72,10 +71,9 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> implements Vie
                 }
             }
         } else if (v.getId() == R.id.post_download) {
-            long id = SystemDownload.downloadVideo(context, postsItem.getVideo_url());
-            if (id >= 0) {
-                Toast.makeText(context, R.string.download_start, Toast.LENGTH_SHORT).show();
-            }
+            Intent intent = new Intent(context, DownloadService.class);
+            intent.putExtra(DownloadService.DOWNLOAD_URL, postsItem.getVideo_url());
+            context.startService(intent);
         } else {
             super.onClick(v);
         }

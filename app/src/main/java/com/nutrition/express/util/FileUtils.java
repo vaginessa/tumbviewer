@@ -70,7 +70,7 @@ public class FileUtils {
     }
 
     public static File createVideoFile(Uri uri) {
-        File dir = getImageDir();
+        File dir = getVideoDir();
         if (!dir.exists()) {
             dir.mkdirs();
         }

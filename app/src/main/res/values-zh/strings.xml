@@ -83,4 +83,5 @@
     <string name="login_success">登录成功</string>
     <string name="copy_to_clipboard">已复制到粘贴板</string>
     <string name="download_select_all">选择全部</string>
+    <string name="download_complete">下载完成</string>
 </resources>

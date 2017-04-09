@@ -67,15 +67,12 @@
             />
         <activity
             android:name=".download.DownloadManagerActivity"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             />
 
-        <receiver
-            android:name=".application.DownloadedReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
-            </intent-filter>
-        </receiver>
+        <service android:name=".downloadservice.DownloadService"/>
+
     </application>
 
 </manifest>

@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public static final String STORAGE_PERMISSION = "WRITE_EXTERNAL_STORAGE";
     public static final String ERROR_429 = "ERROR_429"; //
     public static final String ERROR_401 = "ERROR_401"; //
+    public static final String TOAST_MESSAGE = "toast_msg";
 
     private TumblrAccount positiveAccount;
 
@@ -77,6 +78,7 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(STORAGE_PERMISSION);
         intentFilter.addAction(ERROR_401);
         intentFilter.addAction(ERROR_429);
+        intentFilter.addAction(TOAST_MESSAGE);
         LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
 
         DataManager.getInstance().refreshData();
@@ -162,6 +164,9 @@ public class MainActivity extends AppCompatActivity {
                 case ERROR_429:
                     Toast.makeText(MainActivity.this, "429 error, please login again", Toast.LENGTH_SHORT).show();
                     gotoLogin();
+                    break;
+                case TOAST_MESSAGE:
+                    Toast.makeText(MainActivity.this, intent.getStringExtra(TOAST_MESSAGE), Toast.LENGTH_SHORT).show();
                     break;
             }
         }
