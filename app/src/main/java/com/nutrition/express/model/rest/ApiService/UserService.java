@@ -25,7 +25,7 @@ public interface UserService {
     Call<BaseBean<FollowingBlog>> getFollowing(@Query("limit") int limit, @Query("offset") int offset);
 
     @GET("/v2/user/likes")
-    Call<BaseBean<BlogLikes>> getLikes(@Query("limit") int limit, @Query("offset") int offset);
+    Call<BaseBean<BlogLikes>> getLikes(@Query("limit") int limit, @Query("before") long before);
 
     @GET("/v2/user/info")
     Call<BaseBean<UserInfo>> getInfo();

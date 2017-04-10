@@ -29,7 +29,8 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
     private BlogService blogService;
     private Call<BaseBean<BlogLikes>> call;
     private final int limit = 20;
-    private int offset = 0;
+    private int total = 0;
+    private long before = -1;
     private String name;
 
     public LikesPresenter(LikesContract.LikesView view) {
@@ -43,7 +44,10 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
             if (userService == null) {
                 userService = RestClient.getInstance().getUserService();
             }
-            call = userService.getLikes(limit, offset);
+            if (before < 0) {
+                before = System.currentTimeMillis() / 1000;
+            }
+            call = userService.getLikes(limit, before);
             call.enqueue(new RestCallback<BlogLikes>(this, "likes"));
         }
     }
@@ -55,9 +59,12 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
                 blogService = RestClient.getInstance().getBlogService();
             }
             this.name = name;
+            if (before < 0) {
+                before = System.currentTimeMillis() / 1000;
+            }
             HashMap<String, String> options = new HashMap<>(2);
             options.put("limit", "" + limit);
-            options.put("offset", "" + offset);
+            options.put("before", "" + before);
             call = blogService.getBlogLikes(name, options);
             call.enqueue(new RestCallback<BlogLikes>(this, "likes"));
         }
@@ -92,21 +99,29 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
         }
         call = null;
         BlogLikes likes = (BlogLikes) baseBean.getResponse();
-        offset += likes.getList().size();
+        List<PostsItem> data = likes.getList();
+        total += data.size();
+        if (data.size() > 0) {
+            before = data.get(data.size() - 1).getTimestamp();
+        }
         boolean hasNext = true;
-        if (likes.getList().size() < limit || offset >= likes.getCount()) {
+        if (total >= likes.getCount() || data.size() < 1) {
             hasNext = false;
         }
         //trim to only show videos and photos
-        List<PhotoPostsItem> postsItems = new ArrayList<>(likes.getList().size());
-        for (PostsItem item: likes.getList()) {
+        List<PhotoPostsItem> postsItems = new ArrayList<>(data.size());
+        for (PostsItem item: data) {
             if (TextUtils.equals(item.getType(), "video")) {
                 postsItems.add(new VideoPostsItem(item));
             } else if (TextUtils.equals(item.getType(), "photo")) {
                 postsItems.add(new PhotoPostsItem(item));
             }
         }
-        view.showLikePosts(postsItems, hasNext);
+        if (hasNext && postsItems.size() < 1) {
+            nextLikePosts();
+        } else {
+            view.showLikePosts(postsItems, hasNext);
+        }
     }
 
     @Override
