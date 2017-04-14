@@ -8,19 +8,22 @@ import android.os.Handler;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSourceFactory;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.nutrition.express.application.ExpressApplication;
+
+import okhttp3.CacheControl;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by huang on 2/17/17.
@@ -57,8 +60,10 @@ public class ExoPlayerInstance {
         mainHandler = new Handler();
         defaultExtractorsFactory = new DefaultExtractorsFactory();
         mediaDataSourceFactory = new DefaultDataSourceFactory(context, defaultBandwidthMeter,
-                new DefaultHttpDataSourceFactory(Util.getUserAgent(context, "Tumblr"), defaultBandwidthMeter));
-        TrackSelection.Factory factory = new AdaptiveVideoTrackSelection.Factory(defaultBandwidthMeter);
+                new OkHttpDataSourceFactory(
+                        new OkHttpClient(), Util.getUserAgent(context, "Tumbviewer"),
+                        defaultBandwidthMeter, CacheControl.FORCE_NETWORK));
+        TrackSelection.Factory factory = new AdaptiveTrackSelection.Factory(defaultBandwidthMeter);
         trackSelector = new DefaultTrackSelector(factory);
         defaultLoadControl = new DefaultLoadControl();
     }
