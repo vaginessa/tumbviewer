@@ -201,7 +201,11 @@ public class PhotoPostVH<T extends PhotoPostsItem> extends CommonViewHolder<T>
             for (int i = 0; i < size; i++) {
                 info = postsItem.getPhotos().get(i).getOriginal_size();
                 w = calWidth(1);
-                h = w * info.getHeight() / info.getWidth();
+                if (info.getWidth() != 0) {
+                    h = w * info.getHeight() / info.getWidth();
+                } else {
+                    h = w / 2;
+                }
                 addSimpleDraweeView(contentViewCache.get(i), w, h);
                 setUri(contentViewCache.get(i), info.getUrl());
             }
