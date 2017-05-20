@@ -20,13 +20,24 @@ public class LocalVideo extends BaseVideoBean {
         this.file = file;
         sourceUri = Uri.fromFile(file);
         thumbnailUri = sourceUri;
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        retriever.setDataSource(file.getPath());
-        int videoWidth = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
-        int videoHeight = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
-        width = ExpressApplication.width;
-        height = width * videoHeight / videoWidth;
-        retriever.release();
+        MediaMetadataRetriever retriever = null;
+        try {
+            retriever = new MediaMetadataRetriever();
+            retriever.setDataSource(file.getPath());
+            int videoWidth = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+            int videoHeight = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+            width = ExpressApplication.width;
+            height = width * videoHeight / videoWidth;
+//            retriever.release();
+        } catch (Exception e) {
+            e.printStackTrace();
+            width = ExpressApplication.width;
+            height = width / 2;
+        } finally {
+            if (retriever != null) {
+                retriever.release();
+            }
+        }
 //        Log.d("LocalVideo", videoWidth + "-" + videoHeight + ":" + width + "-" + height);
     }
 

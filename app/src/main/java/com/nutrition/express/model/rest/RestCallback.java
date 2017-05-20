@@ -2,6 +2,7 @@ package com.nutrition.express.model.rest;
 
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -64,7 +65,8 @@ public class RestCallback<T> implements Callback<BaseBean<T>> {
         if (BuildConfig.DEBUG) {
             t.printStackTrace();
         }
-        if (t.getMessage().equals("Canceled")) {
+//        if (t.getMessage().equals("Canceled")) {
+        if (TextUtils.equals(t.getMessage(), "Canceled")) {
             listener.onError(0, "Failed, touch to retry", tag);
         } else {
             listener.onFailure(t, tag);

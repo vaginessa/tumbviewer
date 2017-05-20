@@ -13,6 +13,7 @@ import com.nutrition.express.R;
 import com.nutrition.express.common.CommonExoPlayerView;
 import com.nutrition.express.common.ExoPlayerInstance;
 import com.nutrition.express.downloadservice.DownloadService;
+import com.nutrition.express.downloadservice.TransferRequest;
 import com.nutrition.express.model.data.bean.OnlineVideo;
 import com.nutrition.express.model.data.bean.VideoPostsItem;
 
@@ -71,8 +72,10 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> implements Vie
                 }
             }
         } else if (v.getId() == R.id.post_download) {
+            TransferRequest video = new TransferRequest(postsItem.getVideo_url(),
+                    postsItem.getThumbnail_url());
             Intent intent = new Intent(context, DownloadService.class);
-            intent.putExtra(DownloadService.DOWNLOAD_URL, postsItem.getVideo_url());
+            intent.putExtra(DownloadService.DOWNLOAD_REQUEST, video);
             context.startService(intent);
         } else {
             super.onClick(v);

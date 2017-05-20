@@ -15,12 +15,21 @@ import java.io.File;
  */
 
 public class FileUtils {
+    private static File getTumblrRootDir() {
+        File tumblrDir = new File(Environment.getExternalStorageDirectory(), "tumblr");
+        if (tumblrDir.exists()) {
+            return tumblrDir;
+        } else {
+            return new File(Environment.getExternalStorageDirectory(), "Tumblr");
+        }
+    }
+
     public static File getVideoDir() {
         String accountName = DataManager.getInstance().getPositiveAccount().getName();
         if (TextUtils.isEmpty(accountName)) {
             return getPublicVideoDir();
         } else {
-            return new File(Environment.getExternalStorageDirectory(), "tumblr/video/" + accountName);
+            return new File(getTumblrRootDir(), "video/" + accountName);
         }
     }
 
@@ -29,16 +38,16 @@ public class FileUtils {
         if (TextUtils.isEmpty(accountName)) {
             return getPublicImageDir();
         } else {
-            return new File(Environment.getExternalStorageDirectory(), "tumblr/image/" + accountName);
+            return new File(getTumblrRootDir(), "image/" + accountName);
         }
     }
 
     public static File getPublicVideoDir() {
-        return new File(Environment.getExternalStorageDirectory(), "tumblr/video");
+        return new File(getTumblrRootDir(), "video");
     }
 
     public static File getPublicImageDir() {
-        return new File(Environment.getExternalStorageDirectory(), "tumblr/image");
+        return new File(getTumblrRootDir(), "image");
     }
 
     public static boolean imageSaved(Uri uri) {
@@ -79,6 +88,21 @@ public class FileUtils {
             name = uri.toString();
         }
         return new File(FileUtils.getVideoDir(), name);
+    }
+
+    public static File createVideoFile(String url) {
+        File dir = getVideoDir();
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+        String name;
+        int index = url.lastIndexOf("/");
+        if (index > 0) {
+            name = url.substring(url.lastIndexOf("/"));
+        } else {
+            name = url;
+        }
+        return new File(dir, name);
     }
 
     public static void deleteFile(File file) {

@@ -94,4 +94,9 @@ public class RestClient {
     public ReblogService getReblogService() {
         return retrofit.create(ReblogService.class);
     }
+
+    public <T> T createService(Class<T> tClass) {
+        return retrofit.create(tClass);
+    }
+
 }

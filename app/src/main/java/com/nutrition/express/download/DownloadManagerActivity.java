@@ -24,7 +24,6 @@ import com.nutrition.express.downloadservice.DownloadService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
 
 /**
  * Created by huang on 2/17/17.
@@ -43,8 +42,7 @@ public class DownloadManagerActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             downloadService = ((DownloadService.LocalBinder) service).getService();
-            Queue<String> strings = downloadService.getDownloadQueue();
-            setContentData(!strings.isEmpty());
+            setContentData(true);
         }
 
         @Override
@@ -106,18 +104,14 @@ public class DownloadManagerActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void setContentData(boolean hasDownloadPage) {
+    private void setContentData(boolean hasDownloadingData) {
         List<Fragment> list = new ArrayList<>();
         List<String> titles = new ArrayList<>();
 
         videoFragment = new VideoFragment();
         photoFragment = new PhotoFragment();
-        if (hasDownloadPage) {
+        if (hasDownloadingData) {
             DownloadFragment downloadFragment = new DownloadFragment();
-            Bundle bundle = new Bundle();
-            bundle.putStringArrayList(DownloadService.DOWNLOAD_LIST,
-                    new ArrayList<>(downloadService.getDownloadQueue()));
-            downloadFragment.setArguments(bundle);
             downloadFragment.setDownloadService(downloadService);
             list.add(downloadFragment);
             titles.add(getString(R.string.video_download));

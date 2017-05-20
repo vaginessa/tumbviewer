@@ -36,8 +36,8 @@ android {
         debug {
             applicationIdSuffix ".debug"
             signingConfig signingConfigs.release
-            shrinkResources true
-            minifyEnabled true
+            shrinkResources false
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
@@ -46,9 +46,9 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:recyclerview-v7:25.3.0'
-    compile 'com.android.support:design:25.3.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
     compile 'com.google.android:flexbox:0.2.5'
     compile 'com.google.android.exoplayer:exoplayer:r2.3.1'
     compile 'com.google.android.exoplayer:extension-okhttp:r2.3.1'

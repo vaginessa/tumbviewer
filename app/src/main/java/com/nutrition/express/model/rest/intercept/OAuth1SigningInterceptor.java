@@ -40,7 +40,8 @@ public final class OAuth1SigningInterceptor implements Interceptor {
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
         String auth = request.header("Authorization");
-        if (DataManager.getInstance().isLogin() && TextUtils.isEmpty(auth)) {
+        if (TextUtils.equals(request.url().host(), "api.tumblr.com") &&
+                DataManager.getInstance().isLogin() && TextUtils.isEmpty(auth)) {
             request = signRequest(request);
         }
         return chain.proceed(request);
