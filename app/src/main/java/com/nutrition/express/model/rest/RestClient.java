@@ -11,6 +11,7 @@ import com.nutrition.express.model.rest.ApiService.ReblogService;
 import com.nutrition.express.model.rest.ApiService.TaggedService;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.intercept.OAuth1SigningInterceptor;
+import com.orhanobut.logger.AndroidLogAdapter;
 import com.orhanobut.logger.Logger;
 
 import java.util.concurrent.TimeUnit;
@@ -51,6 +52,7 @@ public class RestClient {
                 }
             }
         };
+        Logger.addLogAdapter(new AndroidLogAdapter());
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(logger);
         loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
         okHttpClient = new OkHttpClient.Builder()
