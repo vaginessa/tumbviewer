@@ -12,10 +12,9 @@ import android.widget.ImageView;
 import com.nutrition.express.R;
 import com.nutrition.express.common.CommonExoPlayerView;
 import com.nutrition.express.common.ExoPlayerInstance;
-import com.nutrition.express.downloadservice.DownloadService;
-import com.nutrition.express.downloadservice.TransferRequest;
 import com.nutrition.express.model.data.bean.OnlineVideo;
 import com.nutrition.express.model.data.bean.VideoPostsItem;
+import com.nutrition.express.util.DownloadManager;
 
 /**
  * Created by huang on 2/23/17.
@@ -72,11 +71,12 @@ public class VideoPhotoPostVH extends PhotoPostVH<VideoPostsItem> implements Vie
                 }
             }
         } else if (v.getId() == R.id.post_download) {
-            TransferRequest video = new TransferRequest(postsItem.getVideo_url(),
-                    postsItem.getThumbnail_url());
-            Intent intent = new Intent(context, DownloadService.class);
-            intent.putExtra(DownloadService.DOWNLOAD_REQUEST, video);
-            context.startService(intent);
+//            TransferRequest video = new TransferRequest(postsItem.getVideo_url(),
+//                    postsItem.getThumbnail_url());
+//            Intent intent = new Intent(context, DownloadService.class);
+//            intent.putExtra(DownloadService.DOWNLOAD_REQUEST, video);
+//            context.startService(intent);
+            DownloadManager.getInstance().download(postsItem.getVideo_url());
         } else {
             super.onClick(v);
         }

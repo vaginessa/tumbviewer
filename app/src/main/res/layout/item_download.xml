@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    >
+    xmlns:tools="http://schemas.android.com/tools"
+    android:padding="8dp">
 
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/thumbnail"
@@ -26,12 +25,30 @@
     <TextView
         android:id="@+id/url"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_height="24dp"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
         android:layout_toRightOf="@+id/thumbnail"
         android:layout_toEndOf="@+id/thumbnail"
+        android:gravity="center"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="@string/blog_follow"
         />
+
+    <TextView
+        android:id="@+id/progress"
+        android:layout_width="wrap_content"
+        android:layout_height="24dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:layout_toEndOf="@+id/thumbnail"
+        android:layout_below="@id/url"
+        android:gravity="center"
+        tools:text="@string/blog_follow"
+        />
+
+
 
 </RelativeLayout>

@@ -21,9 +21,13 @@ import android.view.MenuItem;
 import com.nutrition.express.R;
 import com.nutrition.express.common.CommonPagerAdapter;
 import com.nutrition.express.downloadservice.DownloadService;
+import com.nutrition.express.util.DownloadManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import io.reactivex.functions.Consumer;
+import zlc.season.rxdownload2.entity.DownloadRecord;
 
 /**
  * Created by huang on 2/17/17.
@@ -90,7 +94,8 @@ public class DownloadManagerActivity extends AppCompatActivity {
             }
         });
 
-        doBindService();
+//        doBindService();
+        getDownloadStatus();
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
@@ -128,6 +133,30 @@ public class DownloadManagerActivity extends AppCompatActivity {
         viewPager.setAdapter(pagerAdapter);
     }
 
+    private void setContentData(List<DownloadRecord> records) {
+        List<Fragment> list = new ArrayList<>();
+        List<String> titles = new ArrayList<>();
+
+        videoFragment = new VideoFragment();
+        photoFragment = new PhotoFragment();
+        if (records != null && records.size() > 0) {
+            DownloadFragment downloadFragment = new DownloadFragment();
+            downloadFragment.setDownloadRecords(records);
+            list.add(downloadFragment);
+            titles.add(getString(R.string.video_download));
+        }
+        list.add(videoFragment);
+        videoIndex = list.size() - 1;
+        titles.add(getString(R.string.download_video_title));
+        list.add(photoFragment);
+        photoIndex = list.size() - 1;
+        titles.add(getString(R.string.download_photo_title));
+
+        CommonPagerAdapter pagerAdapter =
+                new CommonPagerAdapter(getSupportFragmentManager(), list, titles);
+        viewPager.setAdapter(pagerAdapter);
+    }
+
     protected ActionMode startMultiChoice(ActionMode.Callback callback) {
         return startSupportActionMode(callback);
     }
@@ -149,4 +178,20 @@ public class DownloadManagerActivity extends AppCompatActivity {
         super.onDestroy();
         doUnbindService();
     }
+
+    private void getDownloadStatus() {
+        DownloadManager.getInstance().getRxDownload().getTotalDownloadRecords()
+                .subscribe(new Consumer<List<DownloadRecord>>() {
+                    @Override
+                    public void accept(List<DownloadRecord> downloadRecords) throws Exception {
+                        setContentData(downloadRecords);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        setContentData(null);
+                    }
+                });
+    }
+
 }
