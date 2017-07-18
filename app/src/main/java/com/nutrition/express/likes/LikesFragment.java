@@ -26,7 +26,7 @@ import java.util.List;
  */
 
 public class LikesFragment extends Fragment
-        implements LikesContract.LikesView, CommonRVAdapter.OnLoadListener {
+        implements LikesContract.View, CommonRVAdapter.OnLoadListener {
     private CommonRVAdapter adapter;
     private LikesContract.LikesPresenter presenter;
     private String blogName = null;

@@ -26,7 +26,8 @@ public class ReblogPresenter implements ReblogContract.Presenter, ResponseListen
         service = RestClient.getInstance().getReblogService();
     }
 
-    public void onAttach() {
+    @Override
+    public void onAttach(ReblogContract.View view) {
 
     }
 

@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.format.DateUtils;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -22,7 +21,7 @@ import com.nutrition.express.blogposts.PostListActivity;
 import java.util.List;
 
 public class FollowingActivity extends AppCompatActivity
-        implements FollowingContract.FollowersView, CommonRVAdapter.OnLoadListener {
+        implements FollowingContract.View, CommonRVAdapter.OnLoadListener {
     private CommonRVAdapter adapter;
     private FollowingPresenter presenter;
 
@@ -42,7 +41,7 @@ public class FollowingActivity extends AppCompatActivity
         builder.addItemType(FollowingBlog.Blog.class, R.layout.item_following_blog,
                 new CommonRVAdapter.CreateViewHolder() {
                     @Override
-                    public CommonViewHolder createVH(View view) {
+                    public CommonViewHolder createVH(android.view.View view) {
                         return new BlogVH(view);
                     }
                 });
@@ -95,12 +94,12 @@ public class FollowingActivity extends AppCompatActivity
     }
 
     public class BlogVH extends CommonViewHolder<FollowingBlog.Blog>
-            implements View.OnClickListener {
+            implements android.view.View.OnClickListener {
         private TextView nameTV, titleTV, updateTime;
         private SimpleDraweeView avatarView;
         private FollowingBlog.Blog blog;
 
-        public BlogVH(View itemView) {
+        public BlogVH(android.view.View itemView) {
             super(itemView);
             avatarView = (SimpleDraweeView) itemView.findViewById(R.id.blog_avatar);
             updateTime = (TextView) itemView.findViewById(R.id.blog_last_update);
@@ -124,7 +123,7 @@ public class FollowingActivity extends AppCompatActivity
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(android.view.View v) {
            openBlog(blog.getName());
         }
     }

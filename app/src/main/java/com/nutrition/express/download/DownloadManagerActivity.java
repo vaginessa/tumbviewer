@@ -95,7 +95,8 @@ public class DownloadManagerActivity extends AppCompatActivity {
         });
 
 //        doBindService();
-        getDownloadStatus();
+//        getDownloadStatus();
+        setContentData(false);
 
         setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }

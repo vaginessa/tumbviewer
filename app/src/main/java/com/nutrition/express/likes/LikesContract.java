@@ -11,13 +11,13 @@ import java.util.List;
  */
 
 public interface LikesContract {
-    interface LikesPresenter extends BasePresenter {
+    interface LikesPresenter extends BasePresenter<View> {
         void getLikePosts();
         void nextLikePosts();
         void getLikePosts(String name);
     }
 
-    interface LikesView extends BaseView {
+    interface View extends BaseView {
         void showLikePosts(List<PhotoPostsItem> posts, boolean hasNext);
     }
 }

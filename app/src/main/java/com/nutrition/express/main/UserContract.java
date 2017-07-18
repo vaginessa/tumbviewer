@@ -9,7 +9,7 @@ import com.nutrition.express.model.rest.bean.UserInfo;
  */
 
 public interface UserContract {
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void getMyInfo();
     }
 

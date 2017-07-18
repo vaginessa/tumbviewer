@@ -8,7 +8,7 @@ import com.nutrition.express.common.BaseView;
  */
 
 public interface PostContract {
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void loadData(String blogName);
     }
 

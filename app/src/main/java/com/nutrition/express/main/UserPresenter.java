@@ -32,7 +32,7 @@ public class UserPresenter implements UserContract.Presenter, ResponseListener {
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(UserContract.View view) {
 
     }
 

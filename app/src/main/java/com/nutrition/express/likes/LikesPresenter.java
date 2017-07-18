@@ -24,7 +24,7 @@ import retrofit2.Call;
  */
 
 public class LikesPresenter implements LikesContract.LikesPresenter, ResponseListener {
-    private LikesContract.LikesView view;
+    private LikesContract.View view;
     private UserService userService;
     private BlogService blogService;
     private Call<BaseBean<BlogLikes>> call;
@@ -33,7 +33,7 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
     private long before = -1;
     private String name;
 
-    public LikesPresenter(LikesContract.LikesView view) {
+    public LikesPresenter(LikesContract.View view) {
         this.view = view;
         userService = RestClient.getInstance().getUserService();
     }
@@ -80,7 +80,7 @@ public class LikesPresenter implements LikesContract.LikesPresenter, ResponseLis
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(LikesContract.View view) {
 
     }
 

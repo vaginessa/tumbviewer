@@ -24,7 +24,8 @@ public class DeletePostPresenter implements DeletePostContract.Presenter, Respon
         service = RestClient.getInstance().getBlogService();
     }
 
-    public void onAttach() {
+    @Override
+    public void onAttach(DeletePostContract.View view) {
 
     }
 

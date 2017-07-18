@@ -7,7 +7,7 @@ import com.nutrition.express.common.BasePresenter;
  */
 
 public interface FollowBlogContract {
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void follow(String url);
         void unfollow(String url);
     }

@@ -11,12 +11,12 @@ import java.util.List;
  */
 
 public interface FollowingContract {
-    interface FollowersPresenter extends BasePresenter {
+    interface FollowersPresenter extends BasePresenter<View> {
         void getMyFollowing();
         void getNextFollowing();
     }
 
-    interface FollowersView extends BaseView {
+    interface View extends BaseView {
         void showFollowing(List<FollowingBlog.Blog> blogs, boolean hasNext);
     }
 }

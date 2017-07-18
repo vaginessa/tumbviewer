@@ -40,7 +40,8 @@ public class TaggedPresenter implements TaggedContract.Presenter, ResponseListen
         }
     }
 
-    public void onAttach() {
+    @Override
+    public void onAttach(TaggedContract.View view) {
 
     }
 

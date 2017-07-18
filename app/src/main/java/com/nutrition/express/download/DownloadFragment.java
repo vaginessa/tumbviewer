@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,8 +40,7 @@ import zlc.season.rxdownload2.entity.DownloadStatus;
  * Created by huang on 4/10/17.
  */
 
-public class DownloadFragment extends Fragment implements DownloadService.DownloadListener {
-    private List<Object> data = new ArrayList<>();
+public class DownloadFragment extends Fragment {
     private DownloadService downloadService;
     private RxDownload rxDownload;
     private HashSet<Disposable> disposables = new HashSet<>();
@@ -66,33 +66,29 @@ public class DownloadFragment extends Fragment implements DownloadService.Downlo
                         return new RxDownloadVH(view);
                     }
                 })
-                .setData(data)
                 .build();
         recyclerView.setAdapter(adapter);
 
-//        this.downloadService.getDownloadList(this);
+        getDownloadStatus();
         return view;
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
+    public void onDestroyView() {
+        super.onDestroyView();
         for (Disposable disposable : disposables) {
             disposable.dispose();
         }
     }
 
-    @Override
-    public void onDownloadList(List<TransferRequest> requests) {
-        data.addAll(requests);
-        adapter.notifyDataSetChanged();
-    }
-
+    @Deprecated
     public void setDownloadService(DownloadService downloadService) {
         this.downloadService = downloadService;
     }
 
+    @Deprecated
     public void setDownloadRecords(List<DownloadRecord> records) {
+        List<Object> data = new ArrayList<>();
         rxDownload = DownloadManager.getInstance().getRxDownload();
         for (DownloadRecord record : records) {
             if (record.getFlag() == DownloadFlag.COMPLETED) {
@@ -100,6 +96,41 @@ public class DownloadFragment extends Fragment implements DownloadService.Downlo
             } else {
                 data.add(record);
             }
+        }
+        if (adapter != null) {
+            adapter.append(data.toArray(), false);
+        }
+    }
+
+    private void getDownloadStatus() {
+        rxDownload = DownloadManager.getInstance().getRxDownload();
+        rxDownload.getTotalDownloadRecords()
+                .subscribe(new Consumer<List<DownloadRecord>>() {
+                    @Override
+                    public void accept(List<DownloadRecord> downloadRecords) throws Exception {
+                        setContentData(downloadRecords);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        setContentData(null);
+                    }
+                });
+    }
+
+    private void setContentData(List<DownloadRecord> records) {
+        if (records != null) {
+            List<Object> data = new ArrayList<>();
+            for (DownloadRecord record : records) {
+                if (record.getFlag() == DownloadFlag.COMPLETED) {
+                    rxDownload.deleteServiceDownload(record.getUrl(), false);
+                } else {
+                    data.add(record);
+                }
+            }
+            adapter.append(data.toArray(), false);
+        } else {
+            adapter.append(null, false);
         }
     }
 
@@ -155,7 +186,7 @@ public class DownloadFragment extends Fragment implements DownloadService.Downlo
         private ProgressCircle progressView;
         private Disposable disposable;
         private DownloadRecord record;
-        private int status = DownloadFlag.NORMAL;
+        private int status = 0;
 
         public RxDownloadVH(View itemView) {
             super(itemView);
@@ -169,7 +200,12 @@ public class DownloadFragment extends Fragment implements DownloadService.Downlo
         @Override
         public void bindView(final DownloadRecord downloadRecord) {
             this.record = downloadRecord;
-            urlView.setText(downloadRecord.getSaveName());
+            if (TextUtils.isEmpty(downloadRecord.getSaveName())) {
+                String url = downloadRecord.getUrl();
+                urlView.setText(url.substring(url.lastIndexOf("/") + 1));
+            } else {
+                urlView.setText(downloadRecord.getSaveName());
+            }
             disposable = rxDownload.receiveDownloadStatus(downloadRecord.getUrl())
                     .subscribe(new Consumer<DownloadEvent>() {
                         @Override
@@ -183,7 +219,9 @@ public class DownloadFragment extends Fragment implements DownloadService.Downlo
                                 updateProgress(downloadEvent);
                             } else if (downloadEvent.getFlag() == DownloadFlag.COMPLETED) {
                                 downloadComplete(getAdapterPosition());
-                            } else if (downloadEvent.getFlag() == DownloadFlag.PAUSED)
+                            } else if (downloadEvent.getFlag() == DownloadFlag.PAUSED) {
+
+                            }
                             setStatus(downloadEvent);
                         }
                     });
@@ -194,13 +232,7 @@ public class DownloadFragment extends Fragment implements DownloadService.Downlo
                 return;
             }
             Uri uri;
-            if (event.getFlag() == DownloadFlag.PAUSED) {
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                        .path(String.valueOf(R.mipmap.ic_play_circle_filled_black_24dp))
-                        .build();
-                thumbnailView.setImageURI(uri);
-            } else if (event.getFlag() == DownloadFlag.STARTED) {
+            if (event.getFlag() == DownloadFlag.STARTED) {
                 uri = new Uri.Builder()
                         .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
                         .path(String.valueOf(R.mipmap.ic_pause_circle_filled_black_24dp))
@@ -211,7 +243,10 @@ public class DownloadFragment extends Fragment implements DownloadService.Downlo
                         .path(String.valueOf(R.mipmap.ic_failed))
                         .build();
             } else {
-                uri = Uri.EMPTY;
+                uri = new Uri.Builder()
+                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
+                        .path(String.valueOf(R.mipmap.ic_play_circle_filled_black_24dp))
+                        .build();
             }
             thumbnailView.setImageURI(uri);
         }

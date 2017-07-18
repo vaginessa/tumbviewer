@@ -8,12 +8,12 @@ import com.nutrition.express.common.BaseView;
  */
 
 public interface LoginContract {
-    interface LoginPresenter extends BasePresenter {
+    interface LoginPresenter extends BasePresenter<View> {
         void getRequestToken();
         void getAccessToken(String oauthVerifier);
     }
 
-    interface LoginView extends BaseView {
+    interface View extends BaseView {
         void loadUrl(String url);
         void showLoginSuccess();
     }

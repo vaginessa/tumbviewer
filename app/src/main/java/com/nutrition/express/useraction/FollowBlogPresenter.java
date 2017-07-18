@@ -38,7 +38,7 @@ public class FollowBlogPresenter implements FollowBlogContract.Presenter, Respon
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(FollowBlogContract.View view) {
 
     }
 

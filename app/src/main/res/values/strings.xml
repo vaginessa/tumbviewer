@@ -87,4 +87,7 @@
     <string name="download_complete">Download done</string>
     <string name="download_display_current">Only current account</string>
     <string name="download_select_all">Select all</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>

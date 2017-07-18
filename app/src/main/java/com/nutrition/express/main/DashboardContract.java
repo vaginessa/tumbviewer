@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 public interface DashboardContract {
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void getDashboard();
         void getNextDashboard();
         void refresh();

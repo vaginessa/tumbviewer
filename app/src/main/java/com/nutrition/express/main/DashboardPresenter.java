@@ -71,7 +71,7 @@ public class DashboardPresenter implements DashboardContract.Presenter, Response
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(DashboardContract.View view) {
 
     }
 

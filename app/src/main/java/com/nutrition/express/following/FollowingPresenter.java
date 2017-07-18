@@ -14,14 +14,14 @@ import retrofit2.Call;
  */
 
 public class FollowingPresenter implements FollowingContract.FollowersPresenter, ResponseListener {
-    private FollowingContract.FollowersView view;
+    private FollowingContract.View view;
     private UserService service;
     private Call<BaseBean<FollowingBlog>> followingCall;
     private int defaultLimit = 20;
     private int offset = 0;
     private boolean hasNext = true;
 
-    public FollowingPresenter(FollowingContract.FollowersView view) {
+    public FollowingPresenter(FollowingContract.View view) {
         this.view = view;
         service = RestClient.getInstance().getUserService();
     }
@@ -44,7 +44,7 @@ public class FollowingPresenter implements FollowingContract.FollowersPresenter,
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(FollowingContract.View view) {
 
     }
 

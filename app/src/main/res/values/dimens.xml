@@ -17,5 +17,7 @@
     <dimen name="cn_text_size_subheading">17sp</dimen>
     <dimen name="cn_text_size_title">21sp</dimen>
     <dimen name="cn_text_size_headline">24sp</dimen>
+    <dimen name="nav_header_vertical_spacing">8dp</dimen>
+    <dimen name="nav_header_height">176dp</dimen>
 
 </resources>

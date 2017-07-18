@@ -54,7 +54,7 @@ public class RestClient {
         };
         Logger.addLogAdapter(new AndroidLogAdapter());
         HttpLoggingInterceptor loggingInterceptor = new HttpLoggingInterceptor(logger);
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.HEADERS);
+        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
         okHttpClient = new OkHttpClient.Builder()
                 .addInterceptor(new OAuth1SigningInterceptor())
                 .addInterceptor(loggingInterceptor)

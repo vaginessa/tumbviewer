@@ -8,7 +8,7 @@ import com.nutrition.express.common.BaseView;
  */
 
 public interface DeletePostContract {
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void deletePost(String blogName, String postId, int position);
     }
 

@@ -42,7 +42,7 @@ public class LikePostPresenter implements LikePostContract.Presenter, ResponseLi
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(LikePostContract.View view) {
 
     }
 

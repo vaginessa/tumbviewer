@@ -7,7 +7,7 @@ import com.nutrition.express.common.BasePresenter;
  */
 
 public interface LikePostContract {
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void like(long id, String reblogKey);
         void unlike(long id, String reblogKey);
     }

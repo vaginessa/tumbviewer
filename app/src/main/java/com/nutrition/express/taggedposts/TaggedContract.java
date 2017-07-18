@@ -11,7 +11,7 @@ import java.util.List;
  */
 
 public interface TaggedContract {
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void getTaggedPosts(String tag);
         void nextTaggedPosts(String tag);
     }

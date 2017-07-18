@@ -18,10 +18,10 @@ import android.widget.Toast;
 
 import com.nutrition.express.R;
 import com.nutrition.express.application.Constants;
-import com.nutrition.express.main.MainActivity;
+import com.nutrition.express.main.v2.Main2Activity;
 import com.nutrition.express.model.data.DataManager;
 
-public class LoginActivity extends AppCompatActivity implements LoginContract.LoginView {
+public class LoginActivity extends AppCompatActivity implements LoginContract.View {
 
     public static final int NORMAL = 0;
     public static final int NEW_ACCOUNT = 1;   //using default tumblr app
@@ -155,7 +155,7 @@ public class LoginActivity extends AppCompatActivity implements LoginContract.Lo
     }
 
     private void gotoMainActivity() {
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, Main2Activity.class);
         startActivity(intent);
         finish();
     }

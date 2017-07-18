@@ -9,7 +9,7 @@ import com.nutrition.express.common.BaseView;
 
 public interface ReblogContract {
 
-    interface Presenter extends BasePresenter {
+    interface Presenter extends BasePresenter<View> {
         void reblog(String blogName, String blogId, String blogkey, String blogType, String comment);
     }
 

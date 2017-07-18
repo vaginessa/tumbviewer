@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,9 +38,9 @@ public class DashboardFragment extends Fragment
             } else {
                 Fresco.getImagePipeline().pause();
             }
-            Log.d("onScrollStateChanged", "" + newState);
         }
     };
+    private boolean loaded = false;
 
     @Nullable
     @Override
@@ -58,11 +57,17 @@ public class DashboardFragment extends Fragment
         recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
 
-        adapter = getAdapter();
+        if (adapter == null) {
+            adapter = getAdapter();
+        }
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(onScrollListener);
 
-        presenter = new DashboardPresenter(this, getType());
+        if (presenter == null) {
+            presenter = new DashboardPresenter(this, getType());
+        } else {
+            presenter.onAttach(this);
+        }
 
         return view;
     }
@@ -70,7 +75,9 @@ public class DashboardFragment extends Fragment
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        getPosts();
+        if (!loaded) {
+            getPosts();
+        }
     }
 
     @Override
@@ -80,10 +87,13 @@ public class DashboardFragment extends Fragment
             presenter.onDetach();
         }
         recyclerView.removeOnScrollListener(onScrollListener);
+        recyclerView = null;
+        refreshLayout = null;
     }
 
     @Override
     public void showDashboard(List<PhotoPostsItem> blogPosts, boolean hasNext) {
+        loaded = true;
         if (blogPosts != null) {
             adapter.append(blogPosts.toArray(), hasNext);
         } else {
@@ -94,19 +104,25 @@ public class DashboardFragment extends Fragment
     @Override
     public void resetData(List<PhotoPostsItem> blogPosts, boolean hasNext) {
         adapter.resetData(blogPosts.toArray(), hasNext);
-        refreshLayout.setRefreshing(false);
+        if (refreshLayout != null) {
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
     public void onFailure(Throwable t) {
         adapter.showLoadingFailure(t.getMessage());
-        refreshLayout.setRefreshing(false);
+        if (refreshLayout != null) {
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
     public void onError(int code, String error) {
         adapter.showLoadingFailure(getString(R.string.load_failure_des, code, error));
-        refreshLayout.setRefreshing(false);
+        if (refreshLayout != null) {
+            refreshLayout.setRefreshing(false);
+        }
     }
 
     @Override
@@ -144,12 +160,17 @@ public class DashboardFragment extends Fragment
     }
 
     public void scrollToTop() {
-        recyclerView.scrollToPosition(0);
+        if (recyclerView != null) {
+            recyclerView.scrollToPosition(0);
+        }
     }
 
     public void refreshData() {
+        loaded = false;
         adapter = getAdapter();
-        recyclerView.setAdapter(adapter);
+        if (recyclerView != null) {
+            recyclerView.setAdapter(adapter);
+        }
         presenter.refresh();
     }
 

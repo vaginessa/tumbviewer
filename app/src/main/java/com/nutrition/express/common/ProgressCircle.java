@@ -54,7 +54,7 @@ public class ProgressCircle extends View {
         unit = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1f,
                 getResources().getDisplayMetrics());
         strokeWidth = 2 * unit;
-        paint.setColor(Color.WHITE);
+        paint.setColor(getResources().getColor(R.color.divider_color));
         paint.setStrokeWidth(strokeWidth);
         paint.setAntiAlias(true);
     }

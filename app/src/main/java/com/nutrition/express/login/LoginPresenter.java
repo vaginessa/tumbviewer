@@ -33,14 +33,14 @@ import static android.content.ContentValues.TAG;
 
 public class LoginPresenter implements LoginContract.LoginPresenter {
     private Handler handler = new Handler();
-    private LoginContract.LoginView view;
+    private LoginContract.View view;
     private OkHttpClient okHttpClient;
     private boolean requesting = false;
     private String oauthToken, oauthTokenSecret;
     private int type;
     private TumblrApp tumblrApp;
 
-    public LoginPresenter(LoginContract.LoginView view, int type) {
+    public LoginPresenter(LoginContract.View view, int type) {
         this.view = view;
         this.type = type;
         okHttpClient = RestClient.getInstance().getOkHttpClient();
@@ -183,7 +183,7 @@ public class LoginPresenter implements LoginContract.LoginPresenter {
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(LoginContract.View view) {
 
     }
 

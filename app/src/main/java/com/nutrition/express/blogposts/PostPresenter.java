@@ -45,7 +45,7 @@ public class PostPresenter implements PostContract.Presenter, ResponseListener {
     }
 
     @Override
-    public void onAttach() {
+    public void onAttach(PostContract.View view) {
 
     }
 
