@@ -21,9 +21,9 @@ import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import com.nutrition.express.application.ExpressApplication;
-import com.nutrition.express.model.rest.RestClient;
 
 import okhttp3.CacheControl;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by huang on 2/17/17.
@@ -60,7 +60,7 @@ public class ExoPlayerInstance {
         mainHandler = new Handler();
         defaultExtractorsFactory = new DefaultExtractorsFactory();
         mediaDataSourceFactory = new DefaultDataSourceFactory(context, defaultBandwidthMeter,
-                new OkHttpDataSourceFactory(RestClient.getInstance().getOkHttpClient(),
+                new OkHttpDataSourceFactory(new OkHttpClient.Builder().build(),
                         Util.getUserAgent(context, "Tumbviewer"),
                         defaultBandwidthMeter, CacheControl.FORCE_NETWORK));
         TrackSelection.Factory factory = new AdaptiveTrackSelection.Factory(defaultBandwidthMeter);
