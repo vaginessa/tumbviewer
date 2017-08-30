@@ -5,13 +5,13 @@ def properties = new Properties()
 properties.load(new FileInputStream(proFile))
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion "25.0.3"
 
     defaultConfig {
         applicationId "com.nutrition.humblr"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode 20
         versionName "0.9.6"
     }
@@ -46,9 +46,9 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.4.0'
-    compile 'com.android.support:recyclerview-v7:25.4.0'
-    compile 'com.android.support:design:25.4.0'
+    compile 'com.android.support:appcompat-v7:26.0.1'
+    compile 'com.android.support:recyclerview-v7:26.0.1'
+    compile 'com.android.support:design:26.0.1'
     compile 'com.google.android:flexbox:0.3.0'
     compile 'com.google.android.exoplayer:exoplayer:r2.3.1'
     compile 'com.google.android.exoplayer:extension-okhttp:r2.3.1'

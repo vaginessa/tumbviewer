@@ -1,6 +1,6 @@
 package com.nutrition.express.download;
 
-import android.net.Uri;
+import android.graphics.drawable.ClipDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,14 +12,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.facebook.common.util.UriUtil;
-import com.facebook.drawee.view.SimpleDraweeView;
 import com.nutrition.express.R;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
-import com.nutrition.express.common.ProgressCircle;
 import com.nutrition.express.downloadservice.DownloadService;
 import com.nutrition.express.downloadservice.TransferRequest;
 import com.nutrition.express.util.DownloadManager;
@@ -136,16 +134,12 @@ public class DownloadFragment extends Fragment {
 
     private class DownloadVH extends CommonViewHolder<TransferRequest>
             implements View.OnClickListener, DownloadService.DownloadProgress {
-        private SimpleDraweeView thumbnailView;
         private TextView urlView;
-        private ProgressCircle progressView;
 
         private TransferRequest request;
 
         DownloadVH(View itemView) {
             super(itemView);
-            thumbnailView = (SimpleDraweeView) itemView.findViewById(R.id.thumbnail);
-            progressView = (ProgressCircle) itemView.findViewById(R.id.progressCircle);
             urlView = (TextView) itemView.findViewById(R.id.url);
             itemView.setOnClickListener(this);
         }
@@ -153,7 +147,6 @@ public class DownloadFragment extends Fragment {
         @Override
         public void bindView(TransferRequest request) {
             this.request = request;
-            thumbnailView.setImageURI(request.getThumbnailUrl());
             urlView.setText(request.getVideoUrl());
             downloadService.getDownloadState(request, this);
         }
@@ -165,8 +158,7 @@ public class DownloadFragment extends Fragment {
 
         @Override
         public void update(long bytesRead, long contentLength, boolean done) {
-            if (ViewCompat.isAttachedToWindow(progressView)) {
-                progressView.setProgress(contentLength, bytesRead);
+            if (ViewCompat.isAttachedToWindow(itemView)) {
             }
         }
 
@@ -181,19 +173,20 @@ public class DownloadFragment extends Fragment {
     }
 
     private class RxDownloadVH extends CommonViewHolder<DownloadRecord> implements View.OnClickListener {
-        private SimpleDraweeView thumbnailView;
+        private ImageView stateView;
         private TextView urlView, progress;
-        private ProgressCircle progressView;
+        private ClipDrawable progressDrawable;
         private Disposable disposable;
         private DownloadRecord record;
         private int status = 0;
 
-        public RxDownloadVH(View itemView) {
+        RxDownloadVH(View itemView) {
             super(itemView);
-            thumbnailView = (SimpleDraweeView) itemView.findViewById(R.id.thumbnail);
-            progressView = (ProgressCircle) itemView.findViewById(R.id.progressCircle);
+            progressDrawable = (ClipDrawable) itemView.getBackground();
+            stateView = (ImageView) itemView.findViewById(R.id.download_state);
             progress = (TextView) itemView.findViewById(R.id.progress);
             urlView = (TextView) itemView.findViewById(R.id.url);
+            stateView.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
@@ -231,35 +224,37 @@ public class DownloadFragment extends Fragment {
             if (event.getFlag() == status) {
                 return;
             }
-            Uri uri;
-            if (event.getFlag() == DownloadFlag.STARTED) {
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                        .path(String.valueOf(R.mipmap.ic_pause_circle_filled_black_24dp))
-                        .build();
-            } else if (event.getFlag() == DownloadFlag.FAILED) {
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                        .path(String.valueOf(R.mipmap.ic_failed))
-                        .build();
+            status = event.getFlag();
+            if (status == DownloadFlag.STARTED) {
+                stateView.setImageResource(R.mipmap.ic_pause_black_24dp);
+            } else if (status == DownloadFlag.FAILED) {
+                stateView.setImageResource(R.mipmap.ic_failed);
             } else {
-                uri = new Uri.Builder()
-                        .scheme(UriUtil.LOCAL_RESOURCE_SCHEME) // "res"
-                        .path(String.valueOf(R.mipmap.ic_play_circle_filled_black_24dp))
-                        .build();
+                stateView.setImageResource(R.mipmap.ic_play_arrow_black_24dp);
             }
-            thumbnailView.setImageURI(uri);
         }
 
         @Override
         public void onClick(View view) {
-            DownloadManager.getInstance().download(record.getUrl());
+            if (view.getId() == R.id.download_state) {
+                if (status == DownloadFlag.STARTED) {
+                    rxDownload.pauseServiceDownload(record.getUrl());
+                    stateView.setImageResource(R.mipmap.ic_play_arrow_black_24dp);
+                    status = DownloadFlag.PAUSED;
+                } else if (status == DownloadFlag.PAUSED) {
+                    rxDownload.serviceDownload(record.getUrl());
+                    stateView.setImageResource(R.mipmap.ic_pause_black_24dp);
+                    status = DownloadFlag.STARTED;
+                }
+            } else {
+                DownloadManager.getInstance().download(record.getUrl());
+            }
         }
 
         private void updateProgress(DownloadEvent event) {
-            if (ViewCompat.isAttachedToWindow(progressView)) {
+            if (ViewCompat.isAttachedToWindow(stateView)) {
                 DownloadStatus status = event.getDownloadStatus();
-                progressView.setProgress(status.getTotalSize(), status.getDownloadSize());
+                progressDrawable.setLevel(100 * (int) status.getPercentNumber());
                 progress.setText(status.getFormatStatusString());
             } else {
                 if (disposable != null) {

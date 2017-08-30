@@ -1,10 +1,20 @@
 package com.nutrition.express.main.v2;
 
+import android.Manifest;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.OnApplyWindowInsetsListener;
 import android.support.v4.view.ViewCompat;
@@ -18,6 +28,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.nutrition.express.R;
@@ -25,6 +36,7 @@ import com.nutrition.express.download.DownloadFragment;
 import com.nutrition.express.download.DownloadManagerActivity;
 import com.nutrition.express.following.FollowingActivity;
 import com.nutrition.express.likes.LikesActivity;
+import com.nutrition.express.login.LoginActivity;
 import com.nutrition.express.main.DashboardFragment;
 import com.nutrition.express.main.UserContract;
 import com.nutrition.express.main.UserPresenter;
@@ -34,6 +46,11 @@ import com.nutrition.express.model.rest.bean.UserInfo;
 import com.nutrition.express.search.SearchActivity;
 import com.nutrition.express.settings.SettingsActivity;
 import com.nutrition.express.util.FrescoUtils;
+
+import static com.nutrition.express.main.MainActivity.ERROR_401;
+import static com.nutrition.express.main.MainActivity.ERROR_429;
+import static com.nutrition.express.main.MainActivity.STORAGE_PERMISSION;
+import static com.nutrition.express.main.MainActivity.TOAST_MESSAGE;
 
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, UserContract.View {
@@ -80,9 +97,18 @@ public class Main2Activity extends AppCompatActivity
         showVideoFragment();
 
         initData();
+
+        setVolumeControlStream(AudioManager.STREAM_MUSIC);
     }
 
     private void initData() {
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(STORAGE_PERMISSION);
+        intentFilter.addAction(ERROR_401);
+        intentFilter.addAction(ERROR_429);
+        intentFilter.addAction(TOAST_MESSAGE);
+        LocalBroadcastManager.getInstance(this).registerReceiver(receiver, intentFilter);
+
         DataManager.getInstance().refreshData();
         presenter = new UserPresenter(this);
         presenter.getMyInfo();
@@ -205,6 +231,64 @@ public class Main2Activity extends AppCompatActivity
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.fragment_container, fragment, tag)
                 .commit();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(this)
+                .unregisterReceiver(receiver);
+        presenter.onDetach();
+    }
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            switch (intent.getAction()) {
+                case STORAGE_PERMISSION:
+                    requestStoragePermission();
+                    break;
+                case ERROR_401:
+                    Toast.makeText(Main2Activity.this, "Unauthorized, please login", Toast.LENGTH_SHORT).show();
+                    gotoLogin();
+                    break;
+                case ERROR_429:
+                    Toast.makeText(Main2Activity.this, "429 error, please login again", Toast.LENGTH_SHORT).show();
+                    gotoLogin();
+                    break;
+                case TOAST_MESSAGE:
+                    Toast.makeText(Main2Activity.this, intent.getStringExtra(TOAST_MESSAGE), Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+
+    private void gotoLogin() {
+        Intent loginIntent = new Intent(Main2Activity.this, LoginActivity.class);
+        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        loginIntent.putExtra("type", LoginActivity.ROUTE_SWITCH);
+        startActivity(loginIntent);
+    }
+
+    public void requestStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE }, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case 1:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
 }
