@@ -13,8 +13,11 @@ import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 import com.nutrition.express.BuildConfig;
+import com.nutrition.express.MyEventBusIndex;
 import com.nutrition.express.model.rest.RestClient;
 import com.squareup.leakcanary.LeakCanary;
+
+import org.greenrobot.eventbus.EventBus;
 
 import static android.content.ContentValues.TAG;
 
@@ -60,6 +63,9 @@ public class ExpressApplication extends Application {
 
         //init retrofit
         RestClient.getInstance().init(this);
+
+        //init EventBus
+        EventBus.builder().addIndex(new MyEventBusIndex()).installDefaultEventBus();
 
         //information
         if (BuildConfig.DEBUG) {

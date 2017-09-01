@@ -2,17 +2,17 @@ package com.nutrition.express.util;
 
 import android.Manifest;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.nutrition.express.BuildConfig;
 import com.nutrition.express.R;
 import com.nutrition.express.application.ExpressApplication;
-import com.nutrition.express.main.MainActivity;
+import com.nutrition.express.model.event.EventPermission;
+
+import org.greenrobot.eventbus.EventBus;
 
 import io.reactivex.functions.Consumer;
 import zlc.season.rxdownload2.RxDownload;
@@ -63,8 +63,7 @@ public class DownloadManager {
     private boolean canWrite2Storage() {
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(new Intent(MainActivity.STORAGE_PERMISSION));
+            EventBus.getDefault().post(new EventPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE));
             return false;
         }
         return true;

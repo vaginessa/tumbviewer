@@ -1,18 +1,18 @@
 package com.nutrition.express.model.rest;
 
-import android.content.Intent;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.reflect.TypeToken;
 import com.nutrition.express.BuildConfig;
-import com.nutrition.express.application.ExpressApplication;
-import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.event.EventError401;
+import com.nutrition.express.model.event.EventError429;
 import com.nutrition.express.model.rest.bean.BaseBean;
 import com.nutrition.express.model.rest.bean.ErrorBean;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
 
@@ -83,10 +83,7 @@ public class RestCallback<T> implements Callback<BaseBean<T>> {
                 if (dataManager.switchToNextRoute()) {
                     listener.onError(401, "Failed, touch to retry", tag);
                 } else {
-                    LocalBroadcastManager broadcastManager = LocalBroadcastManager
-                            .getInstance(ExpressApplication.getApplication());
-                    Intent intent = new Intent(MainActivity.ERROR_401);
-                    broadcastManager.sendBroadcast(intent);
+                    EventBus.getDefault().post(new EventError401());
                 }
             } else if (errorBean.getMeta().getStatus() == 429) {
                 RestClient.getInstance().cancelAllCall();
@@ -95,10 +92,7 @@ public class RestCallback<T> implements Callback<BaseBean<T>> {
                 if (dataManager.switchToNextRoute()) {
                     listener.onError(429, "Failed, touch to retry", tag);
                 } else {
-                    LocalBroadcastManager broadcastManager = LocalBroadcastManager
-                            .getInstance(ExpressApplication.getApplication());
-                    Intent intent = new Intent(MainActivity.ERROR_429);
-                    broadcastManager.sendBroadcast(intent);
+                    EventBus.getDefault().post(new EventError429());
                 }
             } else {
                 listener.onError(errorBean.getMeta().getStatus(), errorBean.getMeta().getMsg(), tag);

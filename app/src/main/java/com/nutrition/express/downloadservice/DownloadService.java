@@ -11,12 +11,10 @@ import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 
 import com.nutrition.express.R;
 import com.nutrition.express.download.DownloadManagerActivity;
-import com.nutrition.express.main.MainActivity;
 
 import java.util.List;
 
@@ -66,15 +64,6 @@ public class DownloadService extends Service {
             localBinder = new LocalBinder();
         }
         return localBinder;
-    }
-
-    private void toastMessage(String msg) {
-        if (TextUtils.isEmpty(msg)) {
-            return;
-        }
-        Intent intent = new Intent(MainActivity.TOAST_MESSAGE);
-        intent.putExtra(MainActivity.TOAST_MESSAGE, msg);
-        LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
     }
 
     private void ensureNotificationBuilder() {

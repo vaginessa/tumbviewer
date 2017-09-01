@@ -54,6 +54,7 @@ public class DataManager {
     private DataManager() {
         loadTumblrAccounts();
         checkAccounts();
+        isSimpleMode = PreferencesUtils.getBoolean(SettingsActivity.POST_SIMPLE_MODE, false);
     }
 
     private void loadTumblrAccounts() {
@@ -140,6 +141,7 @@ public class DataManager {
             }
         }
         LocalPersistenceHelper.storeShortContent(TUMBLR_ACCOUNT, tumblrAccountList);
+        clearReferenceBlog();
     }
 
     /**
@@ -277,7 +279,7 @@ public class DataManager {
         followingSet.add(blog);
     }
 
-    public void clearReferenceBlog() {
+    private void clearReferenceBlog() {
         referenceBlog.clear();
         referenceBlogSet.clear();
         followingSet.clear();
@@ -287,9 +289,8 @@ public class DataManager {
         return isSimpleMode;
     }
 
-    public void refreshData() {
-        clearReferenceBlog();
-        isSimpleMode = PreferencesUtils.getBoolean(SettingsActivity.POST_SIMPLE_MODE, false);
+    public void setSimpleMode(boolean simpleMode) {
+        isSimpleMode = simpleMode;
     }
 
     /**

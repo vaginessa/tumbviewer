@@ -32,9 +32,12 @@ import com.nutrition.express.login.LoginActivity;
 import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.data.bean.TumblrAccount;
+import com.nutrition.express.model.event.EventRefresh;
 import com.nutrition.express.register.RegisterActivity;
 import com.nutrition.express.util.FrescoUtils;
 import com.nutrition.express.util.PreferencesUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +54,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     List<Object> accounts;
 
     private AppCompatCheckBox simpleCheckBox;
+    private boolean originalMode;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolBar);
+        Toolbar toolbar = findViewById(R.id.toolBar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
@@ -67,14 +71,17 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         findViewById(R.id.settings_clear_cache).setOnClickListener(this);
         findViewById(R.id.settings_add_account).setOnClickListener(this);
         findViewById(R.id.settings_option_simple).setOnClickListener(this);
-        simpleCheckBox = (AppCompatCheckBox) findViewById(R.id.settings_option_simple_checkbox);
+
+        originalMode = PreferencesUtils.getBoolean(POST_SIMPLE_MODE, false);
+        simpleCheckBox = findViewById(R.id.settings_option_simple_checkbox);
+        simpleCheckBox.setChecked(originalMode);
         simpleCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 PreferencesUtils.putBoolean(POST_SIMPLE_MODE, isChecked);
+                DataManager.getInstance().setSimpleMode(simpleCheckBox.isChecked());
             }
         });
-        simpleCheckBox.setChecked(PreferencesUtils.getBoolean(POST_SIMPLE_MODE, false));
 
         List<TumblrAccount> tumblrAccounts = DataManager.getInstance().getTumblrAccounts();
         accounts = new ArrayList<>(tumblrAccounts.size());
@@ -98,6 +105,14 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (simpleCheckBox.isChecked() != originalMode) {
+            EventBus.getDefault().postSticky(new EventRefresh());
+        }
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.settings_register:
@@ -114,7 +129,6 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 break;
             case R.id.settings_option_simple:
                 simpleCheckBox.setChecked(!simpleCheckBox.isChecked());
-                PreferencesUtils.putBoolean(POST_SIMPLE_MODE, simpleCheckBox.isChecked());
                 break;
         }
     }

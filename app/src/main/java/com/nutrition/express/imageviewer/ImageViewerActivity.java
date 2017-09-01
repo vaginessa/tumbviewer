@@ -41,10 +41,12 @@ import com.facebook.drawee.view.DraweeTransition;
 import com.nutrition.express.R;
 import com.nutrition.express.common.DismissFrameLayout;
 import com.nutrition.express.imageviewer.zoomable.ZoomableDraweeView;
-import com.nutrition.express.main.MainActivity;
 import com.nutrition.express.model.data.DataManager;
+import com.nutrition.express.model.event.EventPermission;
 import com.nutrition.express.util.FileUtils;
 import com.nutrition.express.util.FrescoUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -422,8 +424,7 @@ public class ImageViewerActivity extends AppCompatActivity
     private void save() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            LocalBroadcastManager.getInstance(this)
-                    .sendBroadcast(new Intent(MainActivity.STORAGE_PERMISSION));
+            EventBus.getDefault().post(new EventPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE));
         } else {
             desiredSavedCount = 1;
             savedCount = 0;
@@ -435,8 +436,7 @@ public class ImageViewerActivity extends AppCompatActivity
     private void saveAll() {
         if (ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            LocalBroadcastManager.getInstance(this)
-                    .sendBroadcast(new Intent(MainActivity.STORAGE_PERMISSION));
+            EventBus.getDefault().post(new EventPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE));
         } else {
             desiredSavedCount = 0;
             savedCount = 0;

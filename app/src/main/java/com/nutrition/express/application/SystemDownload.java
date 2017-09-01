@@ -3,17 +3,17 @@ package com.nutrition.express.application;
 import android.Manifest;
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.nutrition.express.R;
-import com.nutrition.express.main.MainActivity;
+import com.nutrition.express.model.event.EventPermission;
 import com.nutrition.express.util.FileUtils;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -24,8 +24,7 @@ public class SystemDownload {
     public static long downloadVideo(Context context, String url) {
         if (ContextCompat.checkSelfPermission(context,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            LocalBroadcastManager.getInstance(context)
-                    .sendBroadcast(new Intent(MainActivity.STORAGE_PERMISSION));
+            EventBus.getDefault().post(new EventPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE));
             return -1;
         }
         DownloadManager manager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
