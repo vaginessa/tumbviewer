@@ -3,6 +3,7 @@ package com.nutrition.express.common;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.SystemClock;
 import android.support.annotation.AttrRes;
@@ -58,6 +59,7 @@ public class CommonExoPlayerView extends FrameLayout {
     private LinearLayout controlLayout;
     private TextView time;
     private TextView timeCurrent;
+    private TextView leftTime;
     private ImageView fullscreen;
     private SeekBar progressBar;
     private ProgressBar loadingBar;
@@ -89,6 +91,13 @@ public class CommonExoPlayerView extends FrameLayout {
         public void run() {
             hide();
 //            Log.d("run", "hide action");
+        }
+    };
+
+    private final Runnable updateTimeAction = new Runnable() {
+        @Override
+        public void run() {
+            updateLeftTime();
         }
     };
 
@@ -165,11 +174,21 @@ public class CommonExoPlayerView extends FrameLayout {
         playView.setOnClickListener(componentListener);
 
 //        setOnClickListener(componentListener);
+        leftTime = new TextView(context);
+        FrameLayout.LayoutParams leftParams = new FrameLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        leftParams.gravity = Gravity.BOTTOM;
+        leftParams.bottomMargin = padding / 2;
+        leftParams.leftMargin = padding / 2;
+        leftTime.setLayoutParams(leftParams);
+        leftTime.setTextColor(Color.WHITE);
+        leftTime.setVisibility(GONE);
 
         addView(videoView, 0);
         addView(thumbnailView, 1);
         addView(loadingBar, 2);
         addView(playView, 3);
+        addView(leftTime, 4);
     }
 
     /**
@@ -243,6 +262,7 @@ public class CommonExoPlayerView extends FrameLayout {
         } else {
             controlLayout.setVisibility(VISIBLE);
             playView.setVisibility(VISIBLE);
+            leftTime.setVisibility(GONE);
             updateAll();
         }
         // Call hideAfterTimeout even if already visible to reset the timeout.
@@ -259,7 +279,23 @@ public class CommonExoPlayerView extends FrameLayout {
             removeCallbacks(updateProgressAction);
             removeCallbacks(hideAction);
             hideAtMs = C.TIME_UNSET;
+            updateLeftTime();
         }
+    }
+
+    private void updateLeftTime() {
+        if (!isConnected || !isAttachedToWindow) {
+            leftTime.setVisibility(GONE);
+            return;
+        }
+        if (isControllerVisible()) {
+            return;
+        }
+        long duration = player == null ? 0 : player.getDuration();
+        long position = player == null ? 0 : player.getCurrentPosition();
+        leftTime.setVisibility(VISIBLE);
+        leftTime.setText(stringForTime(duration - position));
+        leftTime.postDelayed(updateTimeAction, 1000);
     }
 
     /**
@@ -474,6 +510,7 @@ public class CommonExoPlayerView extends FrameLayout {
             }
             updatePlayPauseButton();
             updateProgress();
+            updateLeftTime();
         }
 
         @Override
