@@ -9,6 +9,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.WindowManager;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
 import com.facebook.cache.disk.DiskCacheConfig;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
@@ -18,6 +20,8 @@ import com.nutrition.express.model.rest.RestClient;
 import com.squareup.leakcanary.LeakCanary;
 
 import org.greenrobot.eventbus.EventBus;
+
+import io.fabric.sdk.android.Fabric;
 
 import static android.content.ContentValues.TAG;
 
@@ -37,6 +41,8 @@ public class ExpressApplication extends Application {
             return;
         }
         LeakCanary.install(this);
+        Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Answers());
 
         application = this;
         DiskCacheConfig cacheConfig = DiskCacheConfig.newBuilder(this)
