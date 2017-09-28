@@ -32,6 +32,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.ExoPlaybackException;
 import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.PlaybackParameters;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.source.TrackGroupArray;
@@ -499,9 +501,9 @@ public class CommonExoPlayerView extends FrameLayout {
         @Override
         public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
             Log.d("onPlayerStateChanged", playWhenReady + "-" + playbackState);
-            if (playbackState == ExoPlayer.STATE_BUFFERING) {
+            if (playbackState == Player.STATE_BUFFERING) {
                 loadingBar.setVisibility(VISIBLE);
-            } else if (playbackState == ExoPlayer.STATE_ENDED) {
+            } else if (playbackState == Player.STATE_ENDED) {
                 show();
                 playerInstance.abandonAudioFocus();
                 loadingBar.setVisibility(GONE);
@@ -521,6 +523,16 @@ public class CommonExoPlayerView extends FrameLayout {
 
         @Override
         public void onPositionDiscontinuity() {
+
+        }
+
+        @Override
+        public void onRepeatModeChanged(int repeatMode) {
+
+        }
+
+        @Override
+        public void onPlaybackParametersChanged(PlaybackParameters playbackParameters) {
 
         }
     }
