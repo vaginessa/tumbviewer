@@ -120,4 +120,3 @@
 #-keepattributes *Annotation*
 #-keepattributes SourceFile,LineNumberTable
 -keep public class * extends java.lang.Exception
--keepresourcexmlelements manifest/application/meta-data@name=io.fabric.ApiKey

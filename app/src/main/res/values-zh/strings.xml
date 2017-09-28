@@ -84,4 +84,6 @@
     <string name="copy_to_clipboard">已复制到粘贴板</string>
     <string name="download_select_all">选择全部</string>
     <string name="download_complete">下载完成</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
 </resources>
