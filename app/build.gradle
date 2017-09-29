@@ -13,7 +13,7 @@ android {
         applicationId "com.nutrition.humblr"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 23
+        versionCode 25
         versionName "0.9.7"
 
         javaCompileOptions {

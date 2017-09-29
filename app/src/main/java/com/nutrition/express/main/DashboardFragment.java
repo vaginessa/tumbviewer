@@ -16,6 +16,9 @@ import com.nutrition.express.blogposts.PhotoPostVH;
 import com.nutrition.express.common.CommonRVAdapter;
 import com.nutrition.express.common.CommonViewHolder;
 import com.nutrition.express.model.data.bean.PhotoPostsItem;
+import com.nutrition.express.model.event.EventStatusBar;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.util.List;
 
@@ -39,8 +42,22 @@ public class DashboardFragment extends Fragment
                 Fresco.getImagePipeline().pause();
             }
         }
+
+        @Override
+        public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+            if (dy > 10 && status == View.VISIBLE) {
+                //hide
+                status = View.GONE;
+                EventBus.getDefault().post(new EventStatusBar(status));
+            } else if (dy < -10 && status == View.GONE) {
+                //show
+                status = View.VISIBLE;
+                EventBus.getDefault().post(new EventStatusBar(status));
+            }
+        }
     };
     private boolean loaded = false;
+    private int status = View.VISIBLE;
 
     @Nullable
     @Override

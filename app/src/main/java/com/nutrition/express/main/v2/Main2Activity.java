@@ -13,6 +13,7 @@ import android.support.v4.view.WindowInsetsCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -31,6 +32,7 @@ import com.nutrition.express.main.UserContract;
 import com.nutrition.express.main.UserPresenter;
 import com.nutrition.express.main.VideoDashboardFragment;
 import com.nutrition.express.model.event.EventRefresh;
+import com.nutrition.express.model.event.EventStatusBar;
 import com.nutrition.express.model.rest.bean.UserInfo;
 import com.nutrition.express.search.SearchActivity;
 import com.nutrition.express.settings.SettingsActivity;
@@ -223,6 +225,24 @@ public class Main2Activity extends BaseActivity
         if (photoFragment != null) {
             photoFragment.refreshData();
         }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void toggleStatusBar(EventStatusBar eventStatusBar) {
+        int flag = View.SYSTEM_UI_FLAG_LOW_PROFILE
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+        View view = getWindow().getDecorView();
+        if (eventStatusBar.getStatus() == View.VISIBLE) {
+            view.setSystemUiVisibility(view.getSystemUiVisibility() & ~flag);
+        } else {
+            view.setSystemUiVisibility(view.getSystemUiVisibility() | flag);
+        }
+        Log.d("toggleStatusBar", "->" + (eventStatusBar.getStatus() == View.GONE));
     }
 
 }
