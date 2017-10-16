@@ -1,5 +1,6 @@
 package com.nutrition.express.main;
 
+import com.nutrition.express.model.data.DataManager;
 import com.nutrition.express.model.rest.ApiService.UserService;
 import com.nutrition.express.model.rest.ResponseListener;
 import com.nutrition.express.model.rest.RestCallback;
@@ -48,6 +49,7 @@ public class UserPresenter implements UserContract.Presenter, ResponseListener {
         }
         call = null;
         view.showMyInfo((UserInfo) baseBean.getResponse());
+        DataManager.getInstance().setUsers(((UserInfo) baseBean.getResponse()).getUser());
     }
 
     @Override

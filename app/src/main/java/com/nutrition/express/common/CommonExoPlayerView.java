@@ -295,6 +295,9 @@ public class CommonExoPlayerView extends FrameLayout {
         }
         long duration = player == null ? 0 : player.getDuration();
         long position = player == null ? 0 : player.getCurrentPosition();
+        if (duration == C.TIME_UNSET) {
+            return;
+        }
         leftTime.setVisibility(VISIBLE);
         leftTime.setText(stringForTime(duration - position));
         leftTime.postDelayed(updateTimeAction, 1000);
