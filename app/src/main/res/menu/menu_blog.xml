@@ -3,6 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:id="@+id/blog_follow"
         android:title="@string/blog_follow"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/blog_likes"
+        android:title="@string/page_user_like"
+        app:showAsAction="never"
+        />
+
+    <item android:id="@+id/post_filter"
+        android:title="@string/post_filter"
+        app:showAsAction="never"
         />
 </menu>

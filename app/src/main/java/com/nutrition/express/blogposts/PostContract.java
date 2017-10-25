@@ -10,11 +10,15 @@ import com.nutrition.express.common.BaseView;
 public interface PostContract {
     interface Presenter extends BasePresenter<View> {
         void loadData(String blogName);
+        void setShowType(int type);
+        int getShowType();
     }
 
     interface View extends BaseView {
         void showData(Object[] items, boolean hasNext);
+        void resetData(Object[] items, boolean hasNext);
         void onFollowed();
+        void onUnfollowed();
         void hideFollowItem();
     }
 }

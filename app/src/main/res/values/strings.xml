@@ -90,4 +90,11 @@
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="post_filter">filter</string>
+    <array name="post_filter_type">
+        <item>Video and photo</item>
+        <item>Only Video</item>
+        <item>Only Photo</item>
+    </array>
+    <string name="likes_title">%1$s \'s likes</string>
 </resources>

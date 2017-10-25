@@ -194,6 +194,12 @@ public class CommonRVAdapter extends RecyclerView.Adapter<CommonViewHolder> {
         notifyItemChanged(data.size());
     }
 
+    public void showReloading() {
+        data.clear();
+        state = LOADING;
+        notifyDataSetChanged();
+    }
+
     public static Builder newBuilder() {
         return new Builder();
     }

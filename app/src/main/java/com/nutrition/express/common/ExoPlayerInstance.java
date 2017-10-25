@@ -4,6 +4,7 @@ import android.content.Context;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.PowerManager;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -41,6 +42,9 @@ public class ExoPlayerInstance {
 
     private AudioManager am;
     private AudioManager.OnAudioFocusChangeListener afChangeListener;
+
+    private PowerManager powerManager;
+    private PowerManager.WakeLock wakeLock;
 
     private OnDisconnectListener onDisconnectListener;
 
@@ -84,6 +88,7 @@ public class ExoPlayerInstance {
             return;
         }
         requestAudioFocus();
+        keepScreenOn();
         MediaSource source = new ExtractorMediaSource(uri,
                 mediaDataSourceFactory, defaultExtractorsFactory, mainHandler, null);
         player.prepare(source);
@@ -102,6 +107,7 @@ public class ExoPlayerInstance {
         if (player != null && !fullScreenMode) {
             disconnectPrevious();
             abandonAudioFocus();
+            abandonScreenOn();
             player.release();
             player = null;
         }
@@ -156,6 +162,20 @@ public class ExoPlayerInstance {
 
     void startFullScreenMode() {
         fullScreenMode = true;
+    }
+
+    void keepScreenOn() {
+        if (powerManager == null) {
+            powerManager = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+        }
+        wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK, "Humblr");
+        wakeLock.acquire();
+    }
+
+    void abandonScreenOn() {
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+        }
     }
 
     interface OnDisconnectListener {

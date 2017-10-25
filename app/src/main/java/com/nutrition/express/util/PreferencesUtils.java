@@ -24,6 +24,20 @@ public class PreferencesUtils {
         return prefs.getString(key, "");
     }
 
+    public static void putInt(String key, int value) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(ExpressApplication.getApplication());
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putInt(key, value);
+        editor.apply();
+    }
+
+    public static int getInt(String key) {
+        SharedPreferences prefs = PreferenceManager
+                .getDefaultSharedPreferences(ExpressApplication.getApplication());
+        return prefs.getInt(key, 0);
+    }
+
     public static void putBoolean(String key, boolean value) {
         SharedPreferences prefs = PreferenceManager
                 .getDefaultSharedPreferences(ExpressApplication.getApplication());

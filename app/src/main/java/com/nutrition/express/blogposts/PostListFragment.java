@@ -32,7 +32,7 @@ public class PostListFragment extends Fragment
     private CommonRVAdapter adapter;
     private String blogName;
     private boolean loaded = false;
-    private PostPresenter presenter;
+    private PostContract.Presenter presenter;
     private DeletePostPresenter deletePostPresenter;
     private DeleteReceiver deleteReceiver;
     private PostListActivity postListActivity;
@@ -83,7 +83,7 @@ public class PostListFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_video_list, container, false);
-        recyclerView = (RecyclerView) view.findViewById(R.id.recyclerView);
+        recyclerView = view.findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         adapter = buildAdapter();
         recyclerView.setAdapter(adapter);
@@ -113,6 +113,11 @@ public class PostListFragment extends Fragment
     @Override
     public void onFollowed() {
         postListActivity.onFollow();
+    }
+
+    @Override
+    public void onUnfollowed() {
+        postListActivity.onUnfollow();
     }
 
     /**
@@ -146,6 +151,11 @@ public class PostListFragment extends Fragment
         getPostsVideo();
     }
 
+    @Override
+    public void resetData(Object[] items, boolean hasNext) {
+        adapter.resetData(items, hasNext);
+    }
+
     private void getPostsVideo() {
         if (presenter == null) {
             presenter = new PostPresenter(this);
@@ -171,6 +181,16 @@ public class PostListFragment extends Fragment
                 });
         builder.setLoadListener(this);
         return builder.build();
+    }
+
+    public void setPresenter(PostContract.Presenter presenter) {
+        this.presenter = presenter;
+        this.presenter.onAttach(this);
+    }
+
+    public void reloading(int type) {
+        presenter.setShowType(type);
+        adapter.showReloading();
     }
 
     public void scrollToTop() {

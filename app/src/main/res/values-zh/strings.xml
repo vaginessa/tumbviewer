@@ -86,4 +86,11 @@
     <string name="download_complete">下载完成</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="post_filter">过滤</string>
+    <array name="post_filter_type">
+        <item>视频与图片</item>
+        <item>仅视频</item>
+        <item>仅图片</item>
+    </array>
+    <string name="likes_title">%1$s 的喜欢</string>
 </resources>
